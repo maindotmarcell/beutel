@@ -66,7 +66,7 @@ export default function Navbar({
             className="p-2"
             activeOpacity={0.7}
           >
-            <Text className={`text-2xl ${textColor}`}>☰</Text>
+            <Text className={`text-3xl ${textColor}`}>☰</Text>
           </TouchableOpacity>
         )}
       </View>
