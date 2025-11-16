@@ -13,12 +13,12 @@ module.exports = {
     },
     extend: {
       colors: {
-        'theme-primary': '#f97316', // orange-500
-        'theme-primary-light': '#fb923c', // orange-400
-        'theme-primary-dark': '#ea580c', // orange-600
-        'theme-secondary': '#6b7280', // gray-500
-        'theme-secondary-light': '#9ca3af', // gray-400
-        'theme-secondary-dark': '#4b5563', // gray-600
+        'theme-primary': '#9333ea', // purple-600
+        'theme-primary-light': '#a855f7', // purple-500
+        'theme-primary-dark': '#7e22ce', // purple-700
+        'theme-secondary': '#eab308', // yellow-500
+        'theme-secondary-light': '#facc15', // yellow-400
+        'theme-secondary-dark': '#ca8a04', // yellow-600
         'theme-background': '#f9fafb', // gray-50
         'theme-surface': '#ffffff', // white
         'theme-text-primary': '#111827', // gray-900

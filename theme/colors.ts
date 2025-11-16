@@ -40,14 +40,14 @@ export interface Theme {
 
 export const lightTheme: Theme = {
   primary: {
-    main: '#f97316', // orange-500
-    light: '#fb923c', // orange-400
-    dark: '#ea580c', // orange-600
+    main: '#9333ea', // purple-600
+    light: '#a855f7', // purple-500
+    dark: '#7e22ce', // purple-700
   },
   secondary: {
-    main: '#6b7280', // gray-500
-    light: '#9ca3af', // gray-400
-    dark: '#4b5563', // gray-600
+    main: '#eab308', // yellow-500
+    light: '#facc15', // yellow-400
+    dark: '#ca8a04', // yellow-600
   },
   background: {
     main: '#f9fafb', // gray-50
