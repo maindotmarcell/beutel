@@ -3,13 +3,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface NavbarProps {
   onSettingsPress?: () => void;
-  onProfilePress?: () => void;
   onBackPress?: () => void;
 }
 
 export default function Navbar({
   onSettingsPress,
-  onProfilePress,
   onBackPress,
 }: NavbarProps) {
   const insets = useSafeAreaInsets();
@@ -22,14 +20,6 @@ export default function Navbar({
         "Settings",
         "Settings functionality will be implemented here"
       );
-    }
-  };
-
-  const handleProfile = () => {
-    if (onProfilePress) {
-      onProfilePress();
-    } else {
-      Alert.alert("Profile", "Profile functionality will be implemented here");
     }
   };
 
@@ -65,23 +55,13 @@ export default function Navbar({
 
         {/* Action Buttons - Only show when not on settings screen */}
         {!onBackPress && (
-          <View className="flex-row items-center">
-            <TouchableOpacity
-              onPress={handleSettings}
-              className="p-2 mr-2"
-              activeOpacity={0.7}
-            >
-              <Text className="text-xl text-theme-text-primary">⚙️</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={handleProfile}
-              className="p-2"
-              activeOpacity={0.7}
-            >
-              <Text className="text-xl text-theme-text-primary">👤</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            onPress={handleSettings}
+            className="p-2"
+            activeOpacity={0.7}
+          >
+            <Text className="text-2xl text-theme-text-primary">☰</Text>
+          </TouchableOpacity>
         )}
       </View>
     </View>
