@@ -8,6 +8,9 @@ module.exports = {
   ],
   presets: [require('nativewind/preset')],
   theme: {
+    fontFamily: {
+      sans: ['Inter_400Regular'],
+    },
     extend: {
       colors: {
         'theme-primary': '#f97316', // orange-500
@@ -29,6 +32,11 @@ module.exports = {
         'theme-status-error-light': '#fee2e2', // red-100
         'theme-border': '#e5e7eb', // gray-200
         'theme-border-light': '#f3f4f6', // gray-100
+      },
+      fontFamily: {
+        'sans-medium': ['Inter_500Medium'],
+        'sans-semibold': ['Inter_600SemiBold'],
+        'sans-bold': ['Inter_700Bold'],
       },
     },
   },

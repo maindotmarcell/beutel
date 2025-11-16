@@ -1,6 +1,7 @@
-import { ScrollView, View, Text } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { Transaction } from '../types/wallet';
 import TransactionItem from './TransactionItem';
+import Text from './Text';
 
 interface TransactionListProps {
   transactions: Transaction[];

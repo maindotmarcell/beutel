@@ -1,5 +1,6 @@
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import { Transaction } from '../types/wallet';
+import Text from './Text';
 
 interface TransactionItemProps {
   transaction: Transaction;
