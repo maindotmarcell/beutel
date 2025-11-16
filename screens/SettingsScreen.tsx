@@ -1,8 +1,9 @@
-import { View, Text, ScrollView, TouchableOpacity, Switch } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Navbar from '../components/Navbar';
-import { mockSettingsData } from '../data/mockSettingsData';
+import { View, ScrollView, TouchableOpacity, Switch } from "react-native";
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Navbar from "../components/Navbar";
+import Text from "../components/Text";
+import { mockSettingsData } from "../data/mockSettingsData";
 
 interface SettingsScreenProps {
   onBackPress?: () => void;
@@ -15,10 +16,10 @@ export default function SettingsScreen({ onBackPress }: SettingsScreenProps) {
   };
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
@@ -43,13 +44,17 @@ export default function SettingsScreen({ onBackPress }: SettingsScreenProps) {
                 </Text>
               </View>
               <View className="px-4 py-4 border-b border-theme-border">
-                <Text className="text-xs text-theme-text-muted mb-1">Email</Text>
+                <Text className="text-xs text-theme-text-muted mb-1">
+                  Email
+                </Text>
                 <Text className="text-base text-theme-text-primary font-medium">
                   {mockSettingsData.profile.email}
                 </Text>
               </View>
               <View className="px-4 py-4">
-                <Text className="text-xs text-theme-text-muted mb-1">Wallet Address</Text>
+                <Text className="text-xs text-theme-text-muted mb-1">
+                  Wallet Address
+                </Text>
                 <Text className="text-base text-theme-text-primary font-mono">
                   {formatAddress(mockSettingsData.profile.walletAddress)}
                 </Text>
@@ -69,14 +74,20 @@ export default function SettingsScreen({ onBackPress }: SettingsScreenProps) {
                     Two-Factor Authentication
                   </Text>
                   <Text className="text-sm text-theme-text-secondary">
-                    {mockSettingsData.security.twoFactorAuth ? 'Enabled' : 'Disabled'}
+                    {mockSettingsData.security.twoFactorAuth
+                      ? "Enabled"
+                      : "Disabled"}
                   </Text>
                 </View>
                 <Switch
                   value={mockSettingsData.security.twoFactorAuth}
                   disabled
-                  trackColor={{ false: '#e5e7eb', true: '#f97316' }}
-                  thumbColor={mockSettingsData.security.twoFactorAuth ? '#ffffff' : '#f4f3f4'}
+                  trackColor={{ false: "#e5e7eb", true: "#f97316" }}
+                  thumbColor={
+                    mockSettingsData.security.twoFactorAuth
+                      ? "#ffffff"
+                      : "#f4f3f4"
+                  }
                 />
               </View>
               <View className="px-4 py-4 border-b border-theme-border flex-row items-center justify-between">
@@ -85,14 +96,20 @@ export default function SettingsScreen({ onBackPress }: SettingsScreenProps) {
                     Biometric Authentication
                   </Text>
                   <Text className="text-sm text-theme-text-secondary">
-                    {mockSettingsData.security.biometricAuth ? 'Enabled' : 'Disabled'}
+                    {mockSettingsData.security.biometricAuth
+                      ? "Enabled"
+                      : "Disabled"}
                   </Text>
                 </View>
                 <Switch
                   value={mockSettingsData.security.biometricAuth}
                   disabled
-                  trackColor={{ false: '#e5e7eb', true: '#f97316' }}
-                  thumbColor={mockSettingsData.security.biometricAuth ? '#ffffff' : '#f4f3f4'}
+                  trackColor={{ false: "#e5e7eb", true: "#f97316" }}
+                  thumbColor={
+                    mockSettingsData.security.biometricAuth
+                      ? "#ffffff"
+                      : "#f4f3f4"
+                  }
                 />
               </View>
               <View className="px-4 py-4 border-b border-theme-border flex-row items-center justify-between">
@@ -101,14 +118,18 @@ export default function SettingsScreen({ onBackPress }: SettingsScreenProps) {
                     Auto Lock
                   </Text>
                   <Text className="text-sm text-theme-text-secondary">
-                    {mockSettingsData.security.autoLock ? `Lock after ${mockSettingsData.security.autoLockTimeout} minutes` : 'Disabled'}
+                    {mockSettingsData.security.autoLock
+                      ? `Lock after ${mockSettingsData.security.autoLockTimeout} minutes`
+                      : "Disabled"}
                   </Text>
                 </View>
                 <Switch
                   value={mockSettingsData.security.autoLock}
                   disabled
-                  trackColor={{ false: '#e5e7eb', true: '#f97316' }}
-                  thumbColor={mockSettingsData.security.autoLock ? '#ffffff' : '#f4f3f4'}
+                  trackColor={{ false: "#e5e7eb", true: "#f97316" }}
+                  thumbColor={
+                    mockSettingsData.security.autoLock ? "#ffffff" : "#f4f3f4"
+                  }
                 />
               </View>
             </View>
@@ -132,8 +153,12 @@ export default function SettingsScreen({ onBackPress }: SettingsScreenProps) {
                 <Switch
                   value={mockSettingsData.notifications.transactionAlerts}
                   disabled
-                  trackColor={{ false: '#e5e7eb', true: '#f97316' }}
-                  thumbColor={mockSettingsData.notifications.transactionAlerts ? '#ffffff' : '#f4f3f4'}
+                  trackColor={{ false: "#e5e7eb", true: "#f97316" }}
+                  thumbColor={
+                    mockSettingsData.notifications.transactionAlerts
+                      ? "#ffffff"
+                      : "#f4f3f4"
+                  }
                 />
               </View>
               <View className="px-4 py-4 border-b border-theme-border flex-row items-center justify-between">
@@ -148,8 +173,12 @@ export default function SettingsScreen({ onBackPress }: SettingsScreenProps) {
                 <Switch
                   value={mockSettingsData.notifications.priceAlerts}
                   disabled
-                  trackColor={{ false: '#e5e7eb', true: '#f97316' }}
-                  thumbColor={mockSettingsData.notifications.priceAlerts ? '#ffffff' : '#f4f3f4'}
+                  trackColor={{ false: "#e5e7eb", true: "#f97316" }}
+                  thumbColor={
+                    mockSettingsData.notifications.priceAlerts
+                      ? "#ffffff"
+                      : "#f4f3f4"
+                  }
                 />
               </View>
               <View className="px-4 py-4 border-b border-theme-border flex-row items-center justify-between">
@@ -164,8 +193,12 @@ export default function SettingsScreen({ onBackPress }: SettingsScreenProps) {
                 <Switch
                   value={mockSettingsData.notifications.securityAlerts}
                   disabled
-                  trackColor={{ false: '#e5e7eb', true: '#f97316' }}
-                  thumbColor={mockSettingsData.notifications.securityAlerts ? '#ffffff' : '#f4f3f4'}
+                  trackColor={{ false: "#e5e7eb", true: "#f97316" }}
+                  thumbColor={
+                    mockSettingsData.notifications.securityAlerts
+                      ? "#ffffff"
+                      : "#f4f3f4"
+                  }
                 />
               </View>
               <View className="px-4 py-4 flex-row items-center justify-between">
@@ -180,8 +213,12 @@ export default function SettingsScreen({ onBackPress }: SettingsScreenProps) {
                 <Switch
                   value={mockSettingsData.notifications.marketingEmails}
                   disabled
-                  trackColor={{ false: '#e5e7eb', true: '#f97316' }}
-                  thumbColor={mockSettingsData.notifications.marketingEmails ? '#ffffff' : '#f4f3f4'}
+                  trackColor={{ false: "#e5e7eb", true: "#f97316" }}
+                  thumbColor={
+                    mockSettingsData.notifications.marketingEmails
+                      ? "#ffffff"
+                      : "#f4f3f4"
+                  }
                 />
               </View>
             </View>
@@ -194,13 +231,18 @@ export default function SettingsScreen({ onBackPress }: SettingsScreenProps) {
             </Text>
             <View className="bg-theme-surface rounded-xl border border-theme-border overflow-hidden">
               <View className="px-4 py-4 border-b border-theme-border">
-                <Text className="text-xs text-theme-text-muted mb-1">Version</Text>
+                <Text className="text-xs text-theme-text-muted mb-1">
+                  Version
+                </Text>
                 <Text className="text-base text-theme-text-primary font-medium">
-                  {mockSettingsData.appInfo.version} ({mockSettingsData.appInfo.buildNumber})
+                  {mockSettingsData.appInfo.version} (
+                  {mockSettingsData.appInfo.buildNumber})
                 </Text>
               </View>
               <View className="px-4 py-4">
-                <Text className="text-xs text-theme-text-muted mb-1">Last Updated</Text>
+                <Text className="text-xs text-theme-text-muted mb-1">
+                  Last Updated
+                </Text>
                 <Text className="text-base text-theme-text-primary font-medium">
                   {formatDate(mockSettingsData.appInfo.lastUpdated)}
                 </Text>
@@ -212,4 +254,3 @@ export default function SettingsScreen({ onBackPress }: SettingsScreenProps) {
     </SafeAreaView>
   );
 }
-

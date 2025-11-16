@@ -1,5 +1,6 @@
-import { View, Text, TouchableOpacity, Alert } from "react-native";
+import { View, TouchableOpacity, Alert } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Text from "./Text";
 
 interface NavbarProps {
   onSettingsPress?: () => void;
