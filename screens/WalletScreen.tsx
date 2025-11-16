@@ -1,19 +1,26 @@
-import { View, Text, Alert } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Navbar from '../components/Navbar';
-import BalanceCard from '../components/BalanceCard';
-import TransactionList from '../components/TransactionList';
-import ActionButton from '../components/ActionButton';
-import { mockWalletData } from '../data/mockWalletData';
+import { View, Text, Alert } from "react-native";
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Navbar from "../components/Navbar";
+import BalanceCard from "../components/BalanceCard";
+import TransactionList from "../components/TransactionList";
+import ActionButton from "../components/ActionButton";
+import { mockWalletData } from "../data/mockWalletData";
 
-export default function WalletScreen() {
+interface WalletScreenProps {
+  onSettingsPress?: () => void;
+}
+
+export default function WalletScreen({ onSettingsPress }: WalletScreenProps) {
   const handleSend = () => {
-    Alert.alert('Send Bitcoin', 'Send functionality will be implemented here');
+    Alert.alert("Send Bitcoin", "Send functionality will be implemented here");
   };
 
   const handleReceive = () => {
-    Alert.alert('Receive Bitcoin', 'Receive functionality will be implemented here');
+    Alert.alert(
+      "Receive Bitcoin",
+      "Receive functionality will be implemented here"
+    );
   };
 
   return (
@@ -21,7 +28,7 @@ export default function WalletScreen() {
       <StatusBar style="dark" />
       <View className="flex-1">
         {/* Navbar */}
-        <Navbar />
+        <Navbar onSettingsPress={onSettingsPress} />
 
         {/* Balance Card */}
         <BalanceCard balance={mockWalletData.balance} />
@@ -44,7 +51,9 @@ export default function WalletScreen() {
 
         {/* Transaction List Header */}
         <View className="px-4 mb-2">
-          <Text className="text-lg font-semibold text-theme-text-primary">Recent Transactions</Text>
+          <Text className="text-lg font-semibold text-theme-text-primary">
+            Recent Transactions
+          </Text>
         </View>
 
         {/* Transaction List */}
@@ -53,4 +62,3 @@ export default function WalletScreen() {
     </SafeAreaView>
   );
 }
-
