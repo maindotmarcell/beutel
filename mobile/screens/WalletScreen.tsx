@@ -31,9 +31,9 @@ export default function WalletScreen({ onSettingsPress }: WalletScreenProps) {
       <View className="flex-1">
         {/* Gradient Background Container */}
         <LinearGradient
-          colors={['#1a0a2e', '#9333ea']}
+          colors={['#1a0a2e', '#4c1d95', '#9333ea']}
           start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
+          end={{ x: 1, y: 1 }}
           className="pb-6"
         >
           {/* Navbar */}
