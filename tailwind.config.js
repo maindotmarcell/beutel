@@ -21,6 +21,7 @@ module.exports = {
         'theme-secondary-dark': '#ca8a04', // yellow-600
         'theme-background': '#f9fafb', // gray-50
         'theme-surface': '#ffffff', // white
+        'theme-surface-soft': '#fafafa', // soft white
         'theme-text-primary': '#111827', // gray-900
         'theme-text-secondary': '#4b5563', // gray-600
         'theme-text-muted': '#9ca3af', // gray-400

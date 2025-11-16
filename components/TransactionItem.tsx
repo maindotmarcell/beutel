@@ -51,7 +51,7 @@ export default function TransactionItem({ transaction }: TransactionItemProps) {
   const amountPrefix = isSend ? '-' : '+';
 
   return (
-    <View className="bg-theme-surface border-b border-theme-border px-4 py-4">
+    <View className="bg-theme-surface-soft border-b border-theme-border px-4 py-4">
       <View className="flex-row items-center justify-between">
         <View className="flex-1">
           <View className="flex-row items-center mb-1">

@@ -10,7 +10,10 @@ export default function BalanceCard({ balance }: BalanceCardProps) {
   const usdValue = balance * 45000;
 
   return (
-    <View className="bg-theme-primary rounded-2xl p-6 mx-4 my-4 shadow-lg">
+    <View 
+      className="mx-4 my-4 p-6 rounded-3xl"
+      style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+    >
       <Text className="text-white opacity-80 text-sm font-medium mb-2">Total Balance</Text>
       <Text className="text-white text-4xl font-bold mb-1">
         {balance.toFixed(8)} BTC

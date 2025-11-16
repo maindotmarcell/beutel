@@ -30,9 +30,14 @@ export default function Navbar({
     }
   };
 
+  const isOnGradient = !onBackPress;
+  const bgClass = isOnGradient ? '' : 'bg-theme-surface';
+  const borderClass = isOnGradient ? '' : 'border-b border-theme-border';
+  const textColor = isOnGradient ? 'text-white' : 'text-theme-text-primary';
+
   return (
     <View
-      className="bg-theme-surface px-4 border-b border-theme-border"
+      className={`${bgClass} px-4 ${borderClass}`}
       style={{ paddingTop: insets.top + 8, paddingBottom: 12 }}
     >
       <View className="flex-row items-center justify-between">
@@ -43,13 +48,13 @@ export default function Navbar({
             className="flex-row items-center"
             activeOpacity={0.7}
           >
-            <Text className="text-xl text-theme-text-primary mr-2">←</Text>
-            <Text className="text-lg font-semibold text-theme-text-primary">
+            <Text className={`text-xl ${textColor} mr-2`}>←</Text>
+            <Text className={`text-lg font-semibold ${textColor}`}>
               Settings
             </Text>
           </TouchableOpacity>
         ) : (
-          <Text className="text-2xl font-bold text-theme-text-primary">
+          <Text className={`text-2xl font-bold ${textColor}`}>
             beutel
           </Text>
         )}
@@ -61,7 +66,7 @@ export default function Navbar({
             className="p-2"
             activeOpacity={0.7}
           >
-            <Text className="text-2xl text-theme-text-primary">☰</Text>
+            <Text className={`text-2xl ${textColor}`}>☰</Text>
           </TouchableOpacity>
         )}
       </View>
