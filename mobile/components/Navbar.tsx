@@ -4,11 +4,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 interface NavbarProps {
   onSettingsPress?: () => void;
   onProfilePress?: () => void;
+  onBackPress?: () => void;
 }
 
 export default function Navbar({
   onSettingsPress,
   onProfilePress,
+  onBackPress,
 }: NavbarProps) {
   const insets = useSafeAreaInsets();
 
@@ -31,35 +33,56 @@ export default function Navbar({
     }
   };
 
+  const handleBack = () => {
+    if (onBackPress) {
+      onBackPress();
+    }
+  };
+
   return (
     <View
       className="bg-theme-surface px-4 border-b border-theme-border"
       style={{ paddingTop: insets.top + 8, paddingBottom: 12 }}
     >
       <View className="flex-row items-center justify-between">
-        {/* App Name */}
-        <Text className="text-2xl font-bold text-theme-text-primary">
-          beutel
-        </Text>
-
-        {/* Action Buttons */}
-        <View className="flex-row items-center">
+        {/* Back Button or App Name */}
+        {onBackPress ? (
           <TouchableOpacity
-            onPress={handleSettings}
-            className="p-2 mr-2"
+            onPress={handleBack}
+            className="flex-row items-center"
             activeOpacity={0.7}
           >
-            <Text className="text-xl text-theme-text-primary">⚙️</Text>
+            <Text className="text-xl text-theme-text-primary mr-2">←</Text>
+            <Text className="text-lg font-semibold text-theme-text-primary">
+              Settings
+            </Text>
           </TouchableOpacity>
+        ) : (
+          <Text className="text-2xl font-bold text-theme-text-primary">
+            beutel
+          </Text>
+        )}
 
-          <TouchableOpacity
-            onPress={handleProfile}
-            className="p-2"
-            activeOpacity={0.7}
-          >
-            <Text className="text-xl text-theme-text-primary">👤</Text>
-          </TouchableOpacity>
-        </View>
+        {/* Action Buttons - Only show when not on settings screen */}
+        {!onBackPress && (
+          <View className="flex-row items-center">
+            <TouchableOpacity
+              onPress={handleSettings}
+              className="p-2 mr-2"
+              activeOpacity={0.7}
+            >
+              <Text className="text-xl text-theme-text-primary">⚙️</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handleProfile}
+              className="p-2"
+              activeOpacity={0.7}
+            >
+              <Text className="text-xl text-theme-text-primary">👤</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </View>
   );
