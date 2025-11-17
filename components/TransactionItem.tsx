@@ -1,12 +1,16 @@
-import { View } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import { Transaction } from "../types/wallet";
 import Text from "./Text";
 
 interface TransactionItemProps {
   transaction: Transaction;
+  onPress?: () => void;
 }
 
-export default function TransactionItem({ transaction }: TransactionItemProps) {
+export default function TransactionItem({
+  transaction,
+  onPress,
+}: TransactionItemProps) {
   const formatAddress = (address: string) => {
     if (address.length <= 16) return address;
     return `${address.slice(0, 8)}...${address.slice(-8)}`;
@@ -100,7 +104,12 @@ export default function TransactionItem({ transaction }: TransactionItemProps) {
   const icon = transaction.status === "failed" ? "✕" : isSend ? "↑" : "↓";
 
   return (
-    <View className="bg-theme-surface-soft border-b border-theme-border px-4 py-4">
+    <TouchableOpacity
+      className="bg-theme-surface-soft border-b border-theme-border px-4 py-4"
+      onPress={onPress}
+      activeOpacity={0.7}
+      disabled={!onPress}
+    >
       <View className="flex-row items-center justify-between">
         <View className="flex-1">
           <View className="flex-row items-center mb-1">
@@ -130,6 +139,6 @@ export default function TransactionItem({ transaction }: TransactionItemProps) {
           <Text className={`text-xl font-bold ${iconTextColor}`}>{icon}</Text>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
