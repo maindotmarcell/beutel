@@ -8,12 +8,17 @@ import TransactionList from "../components/TransactionList";
 import ActionButton from "../components/ActionButton";
 import Text from "../components/Text";
 import { mockWalletData } from "../data/mockWalletData";
+import { Transaction } from "../types/wallet";
 
 interface WalletScreenProps {
   onSettingsPress?: () => void;
+  onTransactionPress?: (transaction: Transaction) => void;
 }
 
-export default function WalletScreen({ onSettingsPress }: WalletScreenProps) {
+export default function WalletScreen({
+  onSettingsPress,
+  onTransactionPress,
+}: WalletScreenProps) {
   const handleSend = () => {
     Alert.alert("Send Bitcoin", "Send functionality will be implemented here");
   };
@@ -67,7 +72,10 @@ export default function WalletScreen({ onSettingsPress }: WalletScreenProps) {
         </View>
 
         {/* Transaction List */}
-        <TransactionList transactions={mockWalletData.transactions} />
+        <TransactionList
+          transactions={mockWalletData.transactions}
+          onTransactionPress={onTransactionPress}
+        />
       </View>
     </SafeAreaView>
   );

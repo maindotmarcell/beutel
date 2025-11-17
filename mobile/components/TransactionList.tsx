@@ -5,9 +5,13 @@ import Text from './Text';
 
 interface TransactionListProps {
   transactions: Transaction[];
+  onTransactionPress?: (transaction: Transaction) => void;
 }
 
-export default function TransactionList({ transactions }: TransactionListProps) {
+export default function TransactionList({
+  transactions,
+  onTransactionPress,
+}: TransactionListProps) {
   if (transactions.length === 0) {
     return (
       <View className="flex-1 items-center justify-center py-12">
@@ -20,7 +24,15 @@ export default function TransactionList({ transactions }: TransactionListProps) 
     <ScrollView className="flex-1 bg-theme-background">
       <View className="bg-theme-surface rounded-t-3xl overflow-hidden">
         {transactions.map((transaction) => (
-          <TransactionItem key={transaction.id} transaction={transaction} />
+          <TransactionItem
+            key={transaction.id}
+            transaction={transaction}
+            onPress={
+              onTransactionPress
+                ? () => onTransactionPress(transaction)
+                : undefined
+            }
+          />
         ))}
       </View>
     </ScrollView>

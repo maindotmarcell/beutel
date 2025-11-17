@@ -28,7 +28,7 @@ export default function SettingsScreen({ onBackPress }: SettingsScreenProps) {
       <StatusBar style="dark" />
       <View className="flex-1">
         {/* Navbar */}
-        <Navbar onBackPress={onBackPress} />
+        <Navbar onBackPress={onBackPress} title="Settings" />
 
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {/* Profile Section */}

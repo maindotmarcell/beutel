@@ -2,6 +2,8 @@ export type TransactionType = 'send' | 'receive';
 
 export type TransactionStatus = 'pending' | 'confirmed' | 'failed';
 
+export type TransactionNetworkType = 'on-chain' | 'lightning';
+
 export interface Transaction {
   id: string;
   type: TransactionType;
@@ -9,6 +11,8 @@ export interface Transaction {
   address: string;
   status: TransactionStatus;
   timestamp: Date;
+  fee: number; // in BTC
+  transactionType: TransactionNetworkType; // on-chain or lightning
 }
 
 export interface WalletData {
