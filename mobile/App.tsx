@@ -3,6 +3,9 @@ import { Animated, Dimensions, Easing } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useFonts } from "expo-font";
+import { BlurView } from "expo-blur";
+
+const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -13,10 +16,11 @@ import "./global.css";
 import WalletScreen from "./screens/WalletScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import TransactionDetailScreen from "./screens/TransactionDetailScreen";
+import SendScreen from "./screens/SendScreen";
 import { ThemeProvider } from "./theme/ThemeContext";
 import { Transaction } from "./types/wallet";
 
-type Screen = "wallet" | "settings" | "transactionDetail";
+type Screen = "wallet" | "settings" | "transactionDetail" | "send";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 const ANIMATION_DURATION = 300;
@@ -47,6 +51,11 @@ export default function App() {
   ).current;
   const transactionDetailOpacity = useRef(new Animated.Value(0)).current;
 
+  // Animation values for send screen
+  const sendTranslateY = useRef(new Animated.Value(-SCREEN_HEIGHT)).current;
+  const sendOpacity = useRef(new Animated.Value(0)).current;
+  const blurIntensity = useRef(new Animated.Value(0)).current;
+
   const handleSettingsPress = () => {
     setCurrentScreen("settings");
   };
@@ -60,7 +69,15 @@ export default function App() {
     setCurrentScreen("transactionDetail");
   };
 
+  const handleSend = () => {
+    setCurrentScreen("send");
+  };
+
   const handleTransactionDetailBackPress = () => {
+    setCurrentScreen("wallet");
+  };
+
+  const handleSendClose = () => {
     setCurrentScreen("wallet");
   };
 
@@ -137,6 +154,55 @@ export default function App() {
           useNativeDriver: true,
         }),
       ]).start();
+    } else if (currentScreen === "send") {
+      // Animate send screen sliding in from bottom
+      Animated.parallel([
+        Animated.timing(sendTranslateY, {
+          toValue: 0,
+          duration: ANIMATION_DURATION,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(sendOpacity, {
+          toValue: 1,
+          duration: ANIMATION_DURATION,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        // Blur wallet screen background
+        Animated.timing(blurIntensity, {
+          toValue: 20,
+          duration: ANIMATION_DURATION,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: false,
+        }),
+        // Hide settings screen
+        Animated.timing(settingsTranslateX, {
+          toValue: SCREEN_WIDTH,
+          duration: ANIMATION_DURATION,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(settingsOpacity, {
+          toValue: 0,
+          duration: ANIMATION_DURATION,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        // Hide transaction detail screen
+        Animated.timing(transactionDetailTranslateY, {
+          toValue: SCREEN_HEIGHT,
+          duration: ANIMATION_DURATION,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(transactionDetailOpacity, {
+          toValue: 0,
+          duration: ANIMATION_DURATION,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+      ]).start();
     } else {
       // Animate back to wallet screen
       Animated.parallel([
@@ -165,6 +231,26 @@ export default function App() {
           duration: ANIMATION_DURATION,
           easing: Easing.out(Easing.cubic),
           useNativeDriver: true,
+        }),
+        // Hide send screen
+        Animated.timing(sendTranslateY, {
+          toValue: -SCREEN_HEIGHT,
+          duration: ANIMATION_DURATION,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(sendOpacity, {
+          toValue: 0,
+          duration: ANIMATION_DURATION,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        // Remove blur from wallet screen
+        Animated.timing(blurIntensity, {
+          toValue: 0,
+          duration: ANIMATION_DURATION,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: false,
         }),
         // Fade in wallet screen
         Animated.timing(walletOpacity, {
@@ -197,8 +283,18 @@ export default function App() {
           <WalletScreen
             onSettingsPress={handleSettingsPress}
             onTransactionPress={handleTransactionPress}
+            onSendPress={handleSend}
           />
         </Animated.View>
+        <AnimatedBlurView
+          intensity={blurIntensity}
+          style={{
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+          }}
+          pointerEvents="none"
+        />
         <Animated.View
           style={{
             position: "absolute",
@@ -230,6 +326,18 @@ export default function App() {
             />
           </Animated.View>
         )}
+        <Animated.View
+          style={{
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            opacity: sendOpacity,
+            transform: [{ translateY: sendTranslateY }],
+          }}
+          pointerEvents={currentScreen === "send" ? "auto" : "none"}
+        >
+          <SendScreen onClose={handleSendClose} />
+        </Animated.View>
         <StatusBar style="auto" />
       </ThemeProvider>
     </SafeAreaProvider>
