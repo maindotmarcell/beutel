@@ -13,14 +13,16 @@ import { Transaction } from "../types/wallet";
 interface WalletScreenProps {
   onSettingsPress?: () => void;
   onTransactionPress?: (transaction: Transaction) => void;
+  onSendPress?: () => void;
 }
 
 export default function WalletScreen({
   onSettingsPress,
   onTransactionPress,
+  onSendPress,
 }: WalletScreenProps) {
   const handleSend = () => {
-    Alert.alert("Send Bitcoin", "Send functionality will be implemented here");
+    onSendPress?.();
   };
 
   const handleReceive = () => {
@@ -36,7 +38,7 @@ export default function WalletScreen({
       <View className="flex-1">
         {/* Gradient Background Container */}
         <LinearGradient
-          colors={['#1a0a2e', '#4c1d95', '#9333ea']}
+          colors={["#1a0a2e", "#4c1d95", "#9333ea"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           className="pb-6"
