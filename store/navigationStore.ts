@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { Animated, Dimensions, Easing } from "react-native";
 import { Transaction } from "../types/wallet";
 
-type Screen = "wallet" | "settings" | "transactionDetail" | "send";
+type Screen = "wallet" | "settings" | "transactionDetail" | "send" | "receive";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 const ANIMATION_DURATION = 300;
@@ -21,6 +21,8 @@ interface NavigationStore {
   transactionDetailOpacity: Animated.Value;
   sendTranslateY: Animated.Value;
   sendOpacity: Animated.Value;
+  receiveTranslateY: Animated.Value;
+  receiveOpacity: Animated.Value;
   blurIntensity: Animated.Value;
 
   // Actions
@@ -28,9 +30,11 @@ interface NavigationStore {
   navigateToWallet: () => void;
   navigateToTransactionDetail: (transaction: Transaction) => void;
   navigateToSend: () => void;
+  navigateToReceive: () => void;
   navigateBack: () => void;
   closeTransactionDetail: () => void;
   closeSend: () => void;
+  closeReceive: () => void;
 
   // Internal animation method
   animateScreenTransition: (screen: Screen) => void;
@@ -46,6 +50,8 @@ const createAnimationValues = () => ({
   transactionDetailOpacity: new Animated.Value(0),
   sendTranslateY: new Animated.Value(-SCREEN_HEIGHT),
   sendOpacity: new Animated.Value(0),
+  receiveTranslateY: new Animated.Value(-SCREEN_HEIGHT),
+  receiveOpacity: new Animated.Value(0),
   blurIntensity: new Animated.Value(0),
 });
 
@@ -62,6 +68,8 @@ export const useNavigationStore = create<NavigationStore>((set, get) => {
       transactionDetailOpacity,
       sendTranslateY,
       sendOpacity,
+      receiveTranslateY,
+      receiveOpacity,
       blurIntensity,
     } = get();
 
@@ -186,6 +194,55 @@ export const useNavigationStore = create<NavigationStore>((set, get) => {
           useNativeDriver: true,
         }),
       ]).start();
+    } else if (screen === "receive") {
+      // Animate receive screen sliding in from bottom
+      Animated.parallel([
+        Animated.timing(receiveTranslateY, {
+          toValue: 0,
+          duration: ANIMATION_DURATION,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(receiveOpacity, {
+          toValue: 1,
+          duration: ANIMATION_DURATION,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        // Blur wallet screen background
+        Animated.timing(blurIntensity, {
+          toValue: 20,
+          duration: ANIMATION_DURATION,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: false,
+        }),
+        // Hide settings screen
+        Animated.timing(settingsTranslateX, {
+          toValue: SCREEN_WIDTH,
+          duration: ANIMATION_DURATION,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(settingsOpacity, {
+          toValue: 0,
+          duration: ANIMATION_DURATION,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        // Hide transaction detail screen
+        Animated.timing(transactionDetailTranslateY, {
+          toValue: SCREEN_HEIGHT,
+          duration: ANIMATION_DURATION,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(transactionDetailOpacity, {
+          toValue: 0,
+          duration: ANIMATION_DURATION,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+      ]).start();
     } else {
       // Animate back to wallet screen
       Animated.parallel([
@@ -223,6 +280,19 @@ export const useNavigationStore = create<NavigationStore>((set, get) => {
           useNativeDriver: true,
         }),
         Animated.timing(sendOpacity, {
+          toValue: 0,
+          duration: ANIMATION_DURATION,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        // Hide receive screen
+        Animated.timing(receiveTranslateY, {
+          toValue: -SCREEN_HEIGHT,
+          duration: ANIMATION_DURATION,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(receiveOpacity, {
           toValue: 0,
           duration: ANIMATION_DURATION,
           easing: Easing.out(Easing.cubic),
@@ -278,6 +348,11 @@ export const useNavigationStore = create<NavigationStore>((set, get) => {
       get().animateScreenTransition("send");
     },
 
+    navigateToReceive: () => {
+      set({ currentScreen: "receive" });
+      get().animateScreenTransition("receive");
+    },
+
     navigateBack: () => {
       set({ currentScreen: "wallet" });
       get().animateScreenTransition("wallet");
@@ -326,6 +401,11 @@ export const useNavigationStore = create<NavigationStore>((set, get) => {
     },
 
     closeSend: () => {
+      set({ currentScreen: "wallet" });
+      get().animateScreenTransition("wallet");
+    },
+
+    closeReceive: () => {
       set({ currentScreen: "wallet" });
       get().animateScreenTransition("wallet");
     },
