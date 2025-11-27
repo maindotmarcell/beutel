@@ -5,6 +5,7 @@ import WalletScreen from "../screens/WalletScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import TransactionDetailScreen from "../screens/TransactionDetailScreen";
 import SendScreen from "../screens/SendScreen";
+import ReceiveScreen from "../screens/ReceiveScreen";
 import { useNavigationStore } from "../store/navigationStore";
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
@@ -21,6 +22,8 @@ export default function ViewWrapper() {
     transactionDetailOpacity,
     sendTranslateY,
     sendOpacity,
+    receiveTranslateY,
+    receiveOpacity,
     blurIntensity,
   } = useNavigationStore();
 
@@ -86,6 +89,18 @@ export default function ViewWrapper() {
         pointerEvents={currentScreen === "send" ? "auto" : "none"}
       >
         <SendScreen />
+      </Animated.View>
+      <Animated.View
+        style={{
+          position: "absolute",
+          width: "100%",
+          height: "100%",
+          opacity: receiveOpacity,
+          transform: [{ translateY: receiveTranslateY }],
+        }}
+        pointerEvents={currentScreen === "receive" ? "auto" : "none"}
+      >
+        <ReceiveScreen />
       </Animated.View>
       <StatusBar style="auto" />
     </>

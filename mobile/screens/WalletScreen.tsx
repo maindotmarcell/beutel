@@ -1,4 +1,4 @@
-import { View, Alert } from "react-native";
+import { View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
@@ -11,7 +11,7 @@ import { mockWalletData } from "../data/mockWalletData";
 import { useNavigationStore } from "../store/navigationStore";
 
 export default function WalletScreen() {
-  const { navigateToSend, navigateToSettings, navigateToTransactionDetail } =
+  const { navigateToSend, navigateToReceive, navigateToSettings, navigateToTransactionDetail } =
     useNavigationStore();
 
   const handleSend = () => {
@@ -19,10 +19,7 @@ export default function WalletScreen() {
   };
 
   const handleReceive = () => {
-    Alert.alert(
-      "Receive Bitcoin",
-      "Receive functionality will be implemented here"
-    );
+    navigateToReceive();
   };
 
   return (
