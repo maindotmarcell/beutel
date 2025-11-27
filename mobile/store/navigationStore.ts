@@ -284,8 +284,45 @@ export const useNavigationStore = create<NavigationStore>((set, get) => {
     },
 
     closeTransactionDetail: () => {
-      set({ currentScreen: "wallet", selectedTransaction: null });
-      get().animateScreenTransition("wallet");
+      const {
+        walletOpacity,
+        transactionDetailTranslateY,
+        transactionDetailOpacity,
+        blurIntensity,
+      } = get();
+
+      set({ currentScreen: "wallet" });
+
+      // Explicitly restore wallet opacity, remove blur, and hide transaction detail
+      Animated.parallel([
+        Animated.timing(transactionDetailTranslateY, {
+          toValue: SCREEN_HEIGHT,
+          duration: ANIMATION_DURATION,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(transactionDetailOpacity, {
+          toValue: 0,
+          duration: ANIMATION_DURATION,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(walletOpacity, {
+          toValue: 1,
+          duration: ANIMATION_DURATION,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(blurIntensity, {
+          toValue: 0,
+          duration: ANIMATION_DURATION,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: false,
+        }),
+      ]).start(() => {
+        // Clear selectedTransaction after animation completes to prevent white overlay
+        set({ selectedTransaction: null });
+      });
     },
 
     closeSend: () => {

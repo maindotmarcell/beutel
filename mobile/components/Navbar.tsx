@@ -13,7 +13,7 @@ export default function Navbar({
   showCloseButton = false,
 }: NavbarProps) {
   const insets = useSafeAreaInsets();
-  const { navigateToSettings, navigateToWallet, closeTransactionDetail } =
+  const { navigateToSettings, navigateToWallet, closeTransactionDetail, currentScreen } =
     useNavigationStore();
 
   const handleSettings = () => {
@@ -22,7 +22,12 @@ export default function Navbar({
 
   const handleBack = () => {
     if (showCloseButton) {
-      closeTransactionDetail();
+      // If on settings screen, navigate back to wallet; otherwise close transaction detail
+      if (currentScreen === "settings") {
+        navigateToWallet();
+      } else {
+        closeTransactionDetail();
+      }
     } else {
       navigateToWallet();
     }
