@@ -4,12 +4,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Navbar from "../components/Navbar";
 import Text from "../components/Text";
 import { mockSettingsData } from "../data/mockSettingsData";
+import { useNavigationStore } from "../store/navigationStore";
 
-interface SettingsScreenProps {
-  onBackPress?: () => void;
-}
-
-export default function SettingsScreen({ onBackPress }: SettingsScreenProps) {
+export default function SettingsScreen() {
   const formatAddress = (address: string) => {
     if (address.length <= 16) return address;
     return `${address.slice(0, 8)}...${address.slice(-8)}`;
@@ -28,7 +25,7 @@ export default function SettingsScreen({ onBackPress }: SettingsScreenProps) {
       <StatusBar style="dark" />
       <View className="flex-1">
         {/* Navbar */}
-        <Navbar onBackPress={onBackPress} title="Settings" showCloseButton={true} />
+        <Navbar title="Settings" showCloseButton={true} />
 
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {/* Profile Section */}

@@ -4,17 +4,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import * as Clipboard from "expo-clipboard";
 import Navbar from "../components/Navbar";
 import Text from "../components/Text";
-import { Transaction } from "../types/wallet";
+import { useNavigationStore } from "../store/navigationStore";
 
-interface TransactionDetailScreenProps {
-  transaction: Transaction;
-  onBackPress?: () => void;
-}
+export default function TransactionDetailScreen() {
+  const { selectedTransaction, closeTransactionDetail } = useNavigationStore();
 
-export default function TransactionDetailScreen({
-  transaction,
-  onBackPress,
-}: TransactionDetailScreenProps) {
+  if (!selectedTransaction) {
+    return null;
+  }
+
+  const transaction = selectedTransaction;
   const formatDate = (date: Date) => {
     return date.toLocaleDateString("en-US", {
       year: "numeric",
@@ -108,11 +107,7 @@ export default function TransactionDetailScreen({
       <StatusBar style="dark" />
       <View className="flex-1">
         {/* Navbar */}
-        <Navbar
-          onBackPress={onBackPress}
-          title="Transaction"
-          showCloseButton={true}
-        />
+        <Navbar title="Transaction" showCloseButton={true} />
 
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {/* Transaction Header */}

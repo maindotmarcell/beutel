@@ -1,40 +1,36 @@
 import { View, TouchableOpacity, Alert } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Text from "./Text";
+import { useNavigationStore } from "../store/navigationStore";
 
 interface NavbarProps {
-  onSettingsPress?: () => void;
-  onBackPress?: () => void;
   title?: string;
   showCloseButton?: boolean;
 }
 
 export default function Navbar({
-  onSettingsPress,
-  onBackPress,
   title,
   showCloseButton = false,
 }: NavbarProps) {
   const insets = useSafeAreaInsets();
+  const { navigateToSettings, navigateToWallet, closeTransactionDetail } =
+    useNavigationStore();
 
   const handleSettings = () => {
-    if (onSettingsPress) {
-      onSettingsPress();
-    } else {
-      Alert.alert(
-        "Settings",
-        "Settings functionality will be implemented here"
-      );
-    }
+    navigateToSettings();
   };
 
   const handleBack = () => {
-    if (onBackPress) {
-      onBackPress();
+    if (showCloseButton) {
+      closeTransactionDetail();
+    } else {
+      navigateToWallet();
     }
   };
 
-  const isOnGradient = !onBackPress;
+  const hasBackAction = showCloseButton || title;
+
+  const isOnGradient = !hasBackAction;
   const bgClass = isOnGradient ? '' : 'bg-theme-surface';
   const borderClass = isOnGradient ? '' : 'border-b border-theme-border';
   const textColor = isOnGradient ? 'text-white' : 'text-theme-text-primary';
@@ -46,7 +42,7 @@ export default function Navbar({
     >
       <View className="flex-row items-center justify-between">
         {/* Back Button, Close Button, or App Name */}
-        {onBackPress ? (
+        {hasBackAction ? (
           showCloseButton ? (
             <>
               <Text className={`text-2xl font-bold ${textColor}`}>
@@ -79,7 +75,7 @@ export default function Navbar({
         )}
 
         {/* Action Buttons - Only show when not on settings screen and not showing close button */}
-        {!onBackPress && (
+        {!hasBackAction && (
           <TouchableOpacity
             onPress={handleSettings}
             className="p-2"

@@ -7,12 +7,10 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Text from "../components/Text";
+import { useNavigationStore } from "../store/navigationStore";
 
-interface SendScreenProps {
-  onClose?: () => void;
-}
-
-export default function SendScreen({ onClose }: SendScreenProps) {
+export default function SendScreen() {
+  const { closeSend } = useNavigationStore();
   const insets = useSafeAreaInsets();
 
   return (
@@ -34,7 +32,7 @@ export default function SendScreen({ onClose }: SendScreenProps) {
               Send Bitcoin
             </Text>
             <TouchableOpacity
-              onPress={onClose}
+              onPress={closeSend}
               className="p-2"
               activeOpacity={0.7}
             >

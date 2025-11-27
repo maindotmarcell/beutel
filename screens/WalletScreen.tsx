@@ -8,21 +8,14 @@ import TransactionList from "../components/TransactionList";
 import ActionButton from "../components/ActionButton";
 import Text from "../components/Text";
 import { mockWalletData } from "../data/mockWalletData";
-import { Transaction } from "../types/wallet";
+import { useNavigationStore } from "../store/navigationStore";
 
-interface WalletScreenProps {
-  onSettingsPress?: () => void;
-  onTransactionPress?: (transaction: Transaction) => void;
-  onSendPress?: () => void;
-}
+export default function WalletScreen() {
+  const { navigateToSend, navigateToSettings, navigateToTransactionDetail } =
+    useNavigationStore();
 
-export default function WalletScreen({
-  onSettingsPress,
-  onTransactionPress,
-  onSendPress,
-}: WalletScreenProps) {
   const handleSend = () => {
-    onSendPress?.();
+    navigateToSend();
   };
 
   const handleReceive = () => {
@@ -44,7 +37,7 @@ export default function WalletScreen({
           className="pb-6"
         >
           {/* Navbar */}
-          <Navbar onSettingsPress={onSettingsPress} />
+          <Navbar />
 
           {/* Balance Card */}
           <BalanceCard balance={mockWalletData.balance} />
@@ -76,7 +69,7 @@ export default function WalletScreen({
         {/* Transaction List */}
         <TransactionList
           transactions={mockWalletData.transactions}
-          onTransactionPress={onTransactionPress}
+          onTransactionPress={navigateToTransactionDetail}
         />
       </View>
     </SafeAreaView>
