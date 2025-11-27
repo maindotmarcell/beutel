@@ -5,6 +5,8 @@ import {
   Platform,
   TextInput,
 } from "react-native";
+import { useState } from "react";
+import * as Clipboard from "expo-clipboard";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Text from "../components/Text";
 import { useNavigationStore } from "../store/navigationStore";
@@ -14,6 +16,15 @@ export default function ReceiveScreen() {
   const { closeReceive } = useNavigationStore();
   const insets = useSafeAreaInsets();
   const receiveAddress = mockSettingsData.profile.walletAddress;
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    await Clipboard.setStringAsync(receiveAddress);
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
+  };
 
   return (
     <KeyboardAvoidingView
@@ -58,14 +69,30 @@ export default function ReceiveScreen() {
               <Text className="text-sm text-theme-text-muted mb-2">
                 Your Receive Address
               </Text>
-              <TextInput
-                className="bg-theme-background border border-theme-border rounded-xl px-4 py-3 text-theme-text-primary font-mono"
-                value={receiveAddress}
-                editable={false}
-                selectTextOnFocus
-                style={{ fontSize: 14 }}
-                multiline
-              />
+              <View className="flex-row items-center gap-2">
+                <TextInput
+                  className="flex-1 bg-theme-background border border-theme-border rounded-xl px-4 py-3 text-theme-text-primary font-mono"
+                  value={receiveAddress}
+                  editable={false}
+                  selectTextOnFocus
+                  style={{ fontSize: 14 }}
+                  multiline
+                />
+                <TouchableOpacity
+                  onPress={handleCopy}
+                  className="bg-theme-background border border-theme-border rounded-xl px-4 py-3 items-center justify-center min-w-[60px]"
+                  activeOpacity={0.7}
+                >
+                  <Text className="text-theme-text-primary text-lg">
+                    {copied ? "✓" : "📋"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              {copied && (
+                <Text className="text-sm text-theme-text-muted mt-2 text-center">
+                  Copied!
+                </Text>
+              )}
             </View>
           </View>
         </View>
@@ -73,4 +100,3 @@ export default function ReceiveScreen() {
     </KeyboardAvoidingView>
   );
 }
-
