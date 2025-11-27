@@ -9,9 +9,10 @@ import ActionButton from "../components/ActionButton";
 import Text from "../components/Text";
 import { mockWalletData } from "../data/mockWalletData";
 import { useNavigationStore } from "../store/navigationStore";
+import { defaultTheme } from "../theme/colors";
 
 export default function WalletScreen() {
-  const { navigateToSend, navigateToReceive, navigateToSettings, navigateToTransactionDetail } =
+  const { navigateToSend, navigateToReceive, navigateToTransactionDetail } =
     useNavigationStore();
 
   const handleSend = () => {
@@ -28,7 +29,12 @@ export default function WalletScreen() {
       <View className="flex-1">
         {/* Gradient Background Container */}
         <LinearGradient
-          colors={["#1a0a2e", "#4c1d95", "#9333ea"]}
+          colors={[
+            "#2d0a4d",
+            defaultTheme.primary.dark,
+            defaultTheme.primary.main,
+          ]}
+          locations={[0, 0.8, 0.95]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           className="pb-6"
