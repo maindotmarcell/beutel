@@ -7,7 +7,6 @@ import {
   Inter_700Bold,
 } from "@expo-google-fonts/inter";
 import "./global.css";
-import { ThemeProvider } from "./theme/ThemeContext";
 import ViewWrapper from "./components/ViewWrapper";
 
 export default function App() {
@@ -24,9 +23,7 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <ThemeProvider>
-        <ViewWrapper />
-      </ThemeProvider>
+      <ViewWrapper />
     </SafeAreaProvider>
   );
 }
