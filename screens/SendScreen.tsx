@@ -76,7 +76,7 @@ export default function SendScreen() {
                 // TODO: Implement send transaction logic
                 console.log("Send transaction");
               }}
-              className="bg-theme-secondary rounded-xl py-4 items-center"
+              className="bg-theme-primary-light rounded-xl py-4 items-center"
             >
               <Text className="text-white font-semibold text-base">Send</Text>
             </TouchableOpacity>

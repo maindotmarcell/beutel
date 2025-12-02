@@ -1,7 +1,6 @@
 import { View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
 import Navbar from "../components/Navbar";
 import BalanceCard from "../components/BalanceCard";
 import TransactionList from "../components/TransactionList";
@@ -28,17 +27,7 @@ export default function WalletScreen() {
     <SafeAreaView className="flex-1 bg-theme-background" edges={[]}>
       <StatusBar style="dark" />
       <View className="flex-1">
-        <LinearGradient
-          colors={[
-            "#2d0a4d",
-            theme.primary.dark,
-            theme.primary.main,
-          ]}
-          locations={[0, 0.8, 0.95]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          className="pb-6"
-        >
+        <View style={{ backgroundColor: theme.primary.main }} className="pb-6">
           <Navbar />
           <BalanceCard balance={mockWalletData.balance} />
           <View className="flex-row px-4 mb-4">
@@ -55,7 +44,7 @@ export default function WalletScreen() {
               variant="secondary"
             />
           </View>
-        </LinearGradient>
+        </View>
 
         <TransactionListHeader />
 
