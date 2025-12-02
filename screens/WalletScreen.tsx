@@ -9,11 +9,12 @@ import ActionButton from "../components/ActionButton";
 import Text from "../components/Text";
 import { mockWalletData } from "../data/mockWalletData";
 import { useNavigationStore } from "../store/navigationStore";
-import { defaultTheme } from "../theme/colors";
+import { useThemeStore } from "../store/themeStore";
 
 export default function WalletScreen() {
   const { navigateToSend, navigateToReceive, navigateToTransactionDetail } =
     useNavigationStore();
+  const { theme } = useThemeStore();
 
   const handleSend = () => {
     navigateToSend();
@@ -27,25 +28,19 @@ export default function WalletScreen() {
     <SafeAreaView className="flex-1 bg-theme-background" edges={[]}>
       <StatusBar style="dark" />
       <View className="flex-1">
-        {/* Gradient Background Container */}
         <LinearGradient
           colors={[
             "#2d0a4d",
-            defaultTheme.primary.dark,
-            defaultTheme.primary.main,
+            theme.primary.dark,
+            theme.primary.main,
           ]}
           locations={[0, 0.8, 0.95]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           className="pb-6"
         >
-          {/* Navbar */}
           <Navbar />
-
-          {/* Balance Card */}
           <BalanceCard balance={mockWalletData.balance} />
-
-          {/* Action Buttons */}
           <View className="flex-row px-4 mb-4">
             <ActionButton
               label="Send"
@@ -62,19 +57,23 @@ export default function WalletScreen() {
           </View>
         </LinearGradient>
 
-        {/* Transaction List Header */}
-        <View className="px-4 mb-2 mt-6">
-          <Text className="text-lg font-semibold text-theme-text-primary">
-            Recent Transactions
-          </Text>
-        </View>
+        <TransactionListHeader />
 
-        {/* Transaction List */}
         <TransactionList
           transactions={mockWalletData.transactions}
           onTransactionPress={navigateToTransactionDetail}
         />
       </View>
     </SafeAreaView>
+  );
+}
+
+function TransactionListHeader() {
+  return (
+    <View className="px-4 mb-2 mt-6">
+      <Text className="text-lg font-semibold text-theme-text-primary">
+        Recent Transactions
+      </Text>
+    </View>
   );
 }
