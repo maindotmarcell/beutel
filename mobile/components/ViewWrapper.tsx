@@ -41,15 +41,7 @@ export default function ViewWrapper() {
       >
         <WalletScreen />
       </Animated.View>
-      <AnimatedBlurView
-        intensity={blurIntensity}
-        style={{
-          position: "absolute",
-          width: "100%",
-          height: "100%",
-        }}
-        pointerEvents="none"
-      />
+
       <Animated.View
         style={{
           position: "absolute",
@@ -62,6 +54,7 @@ export default function ViewWrapper() {
       >
         <SettingsScreen />
       </Animated.View>
+
       {selectedTransaction && (
         <Animated.View
           style={{
@@ -78,6 +71,17 @@ export default function ViewWrapper() {
           <TransactionDetailScreen />
         </Animated.View>
       )}
+
+      <AnimatedBlurView
+        intensity={blurIntensity}
+        style={{
+          position: "absolute",
+          width: "100%",
+          height: "100%",
+        }}
+        pointerEvents="none"
+      />
+
       <Animated.View
         style={{
           position: "absolute",
@@ -90,6 +94,7 @@ export default function ViewWrapper() {
       >
         <SendScreen />
       </Animated.View>
+
       <Animated.View
         style={{
           position: "absolute",
@@ -102,6 +107,7 @@ export default function ViewWrapper() {
       >
         <ReceiveScreen />
       </Animated.View>
+
       <StatusBar style="auto" />
     </>
   );

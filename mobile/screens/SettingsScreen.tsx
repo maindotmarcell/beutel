@@ -79,7 +79,7 @@ export default function SettingsScreen() {
                 <Switch
                   value={mockSettingsData.security.twoFactorAuth}
                   disabled
-                  trackColor={{ false: "#e5e7eb", true: "#9333ea" }}
+                  trackColor={{ false: "#e5e7eb", true: "#4169E1" }}
                   thumbColor={
                     mockSettingsData.security.twoFactorAuth
                       ? "#ffffff"
@@ -101,7 +101,7 @@ export default function SettingsScreen() {
                 <Switch
                   value={mockSettingsData.security.biometricAuth}
                   disabled
-                  trackColor={{ false: "#e5e7eb", true: "#9333ea" }}
+                  trackColor={{ false: "#e5e7eb", true: "#4169E1" }}
                   thumbColor={
                     mockSettingsData.security.biometricAuth
                       ? "#ffffff"
@@ -123,7 +123,7 @@ export default function SettingsScreen() {
                 <Switch
                   value={mockSettingsData.security.autoLock}
                   disabled
-                  trackColor={{ false: "#e5e7eb", true: "#9333ea" }}
+                  trackColor={{ false: "#e5e7eb", true: "#4169E1" }}
                   thumbColor={
                     mockSettingsData.security.autoLock ? "#ffffff" : "#f4f3f4"
                   }
@@ -150,7 +150,7 @@ export default function SettingsScreen() {
                 <Switch
                   value={mockSettingsData.notifications.transactionAlerts}
                   disabled
-                  trackColor={{ false: "#e5e7eb", true: "#9333ea" }}
+                  trackColor={{ false: "#e5e7eb", true: "#4169E1" }}
                   thumbColor={
                     mockSettingsData.notifications.transactionAlerts
                       ? "#ffffff"
@@ -170,7 +170,7 @@ export default function SettingsScreen() {
                 <Switch
                   value={mockSettingsData.notifications.priceAlerts}
                   disabled
-                  trackColor={{ false: "#e5e7eb", true: "#9333ea" }}
+                  trackColor={{ false: "#e5e7eb", true: "#4169E1" }}
                   thumbColor={
                     mockSettingsData.notifications.priceAlerts
                       ? "#ffffff"
@@ -190,7 +190,7 @@ export default function SettingsScreen() {
                 <Switch
                   value={mockSettingsData.notifications.securityAlerts}
                   disabled
-                  trackColor={{ false: "#e5e7eb", true: "#9333ea" }}
+                  trackColor={{ false: "#e5e7eb", true: "#4169E1" }}
                   thumbColor={
                     mockSettingsData.notifications.securityAlerts
                       ? "#ffffff"
@@ -210,7 +210,7 @@ export default function SettingsScreen() {
                 <Switch
                   value={mockSettingsData.notifications.marketingEmails}
                   disabled
-                  trackColor={{ false: "#e5e7eb", true: "#9333ea" }}
+                  trackColor={{ false: "#e5e7eb", true: "#4169E1" }}
                   thumbColor={
                     mockSettingsData.notifications.marketingEmails
                       ? "#ffffff"

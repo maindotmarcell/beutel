@@ -40,23 +40,23 @@ export interface Theme {
 
 export const lightTheme: Theme = {
   primary: {
-    main: "#5E07B6", // Electric Violet
-    light: "#7c3aed", // lighter violet
-    dark: "#4c1d95", // darker violet
+    main: "#4169E1", // Royal Blue
+    light: "#6B8AE8", // lighter royal blue
+    dark: "#2E4AB3", // darker royal blue
   },
   secondary: {
-    main: "#E0F003", // Neon Lime Yellow
-    light: "#f0ff3e", // lighter lime yellow
-    dark: "#b8c002", // darker lime yellow
+    main: "#FFCBA4", // Peach
+    light: "#FFD9C0", // lighter peach
+    dark: "#CCA383", // darker peach
   },
   background: {
-    main: "#f9fafb", // gray-50
-    surface: "#ffffff", // white
+    main: "#F5F5F5", // softer gray
+    surface: "#FAFAFA", // soft off-white
   },
   text: {
-    primary: "#111827", // gray-900
-    secondary: "#4b5563", // gray-600
-    muted: "#9ca3af", // gray-400
+    primary: "#1A1A1A", // softer black
+    secondary: "#5A5A5A", // softer gray-600
+    muted: "#A0A0A0", // softer gray-400
   },
   status: {
     success: {
@@ -73,8 +73,8 @@ export const lightTheme: Theme = {
     },
   },
   border: {
-    main: "#e5e7eb", // gray-200
-    light: "#f3f4f6", // gray-100
+    main: "#E8E8E8", // softer gray-200
+    light: "#F0F0F0", // softer gray-100
   },
 };
 
