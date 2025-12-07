@@ -6,8 +6,8 @@ import {
   Inter_600SemiBold,
   Inter_700Bold,
 } from "@expo-google-fonts/inter";
-import "./global.css";
-import ViewWrapper from "./components/ViewWrapper";
+import "../global.css";
+import ViewWrapper from "@/components/ViewWrapper";
 
 export default function App() {
   const [fontsLoaded] = useFonts({

@@ -1,4 +1,4 @@
-import { WalletData } from '../types/wallet';
+import { WalletData } from '@/types/wallet';
 
 export const mockWalletData: WalletData = {
   balance: 0.025,

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { Animated, Dimensions, Easing } from "react-native";
-import { Transaction } from "../types/wallet";
+import { Transaction } from "@/types/wallet";
 
 type Screen = "wallet" | "settings" | "transactionDetail" | "send" | "receive";
 

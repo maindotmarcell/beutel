@@ -1,10 +1,10 @@
 import { View, ScrollView, TouchableOpacity, Switch } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Navbar from "../components/Navbar";
-import Text from "../components/Text";
-import { mockSettingsData } from "../data/mockSettingsData";
-import { useNavigationStore } from "../store/navigationStore";
+import Navbar from "@/components/Navbar";
+import Text from "@/components/Text";
+import { mockSettingsData } from "@/data/mockSettingsData";
+import { useNavigationStore } from "@/store/navigationStore";
 
 export default function SettingsScreen() {
   const formatAddress = (address: string) => {

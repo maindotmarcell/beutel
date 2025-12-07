@@ -1,7 +1,7 @@
 import { View, TouchableOpacity, Alert } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Text from "./Text";
-import { useNavigationStore } from "../store/navigationStore";
+import Text from "@/components/Text";
+import { useNavigationStore } from "@/store/navigationStore";
 
 interface NavbarProps {
   title?: string;

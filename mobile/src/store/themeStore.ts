@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Theme, lightTheme } from "../theme/colors";
+import { Theme, lightTheme } from "@/theme/colors";
 
 interface ThemeStore {
   // State

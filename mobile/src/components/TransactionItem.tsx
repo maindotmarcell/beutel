@@ -1,6 +1,6 @@
 import { View, TouchableOpacity } from "react-native";
-import { Transaction } from "../types/wallet";
-import Text from "./Text";
+import { Transaction } from "@/types/wallet";
+import Text from "@/components/Text";
 
 interface TransactionItemProps {
   transaction: Transaction;

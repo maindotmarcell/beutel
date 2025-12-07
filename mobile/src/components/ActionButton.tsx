@@ -1,5 +1,5 @@
 import { TouchableOpacity, View } from 'react-native';
-import Text from './Text';
+import Text from '@/components/Text';
 
 interface ActionButtonProps {
   label: string;

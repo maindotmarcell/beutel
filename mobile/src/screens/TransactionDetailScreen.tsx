@@ -2,9 +2,9 @@ import { View, ScrollView, TouchableOpacity, Alert } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Clipboard from "expo-clipboard";
-import Navbar from "../components/Navbar";
-import Text from "../components/Text";
-import { useNavigationStore } from "../store/navigationStore";
+import Navbar from "@/components/Navbar";
+import Text from "@/components/Text";
+import { useNavigationStore } from "@/store/navigationStore";
 
 export default function TransactionDetailScreen() {
   const { selectedTransaction, closeTransactionDetail } = useNavigationStore();
