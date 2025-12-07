@@ -8,9 +8,9 @@ import {
 import { useState } from "react";
 import * as Clipboard from "expo-clipboard";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Text from "../components/Text";
-import { useNavigationStore } from "../store/navigationStore";
-import { mockSettingsData } from "../data/mockSettingsData";
+import Text from "@/components/Text";
+import { useNavigationStore } from "@/store/navigationStore";
+import { mockSettingsData } from "@/data/mockSettingsData";
 
 export default function ReceiveScreen() {
   const { closeReceive } = useNavigationStore();

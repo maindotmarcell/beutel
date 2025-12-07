@@ -6,8 +6,8 @@ import {
   Platform,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Text from "../components/Text";
-import { useNavigationStore } from "../store/navigationStore";
+import Text from "@/components/Text";
+import { useNavigationStore } from "@/store/navigationStore";
 
 export default function SendScreen() {
   const { closeSend } = useNavigationStore();

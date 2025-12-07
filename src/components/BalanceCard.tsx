@@ -1,13 +1,13 @@
 import { View } from "react-native";
-import Text from "./Text";
+import Text from "@/components/Text";
 
 interface BalanceCardProps {
   balance: number;
 }
 
 export default function BalanceCard({ balance }: BalanceCardProps) {
-  // Assuming 1 BTC = $45,000 USD for dummy data
-  const usdValue = balance * 45000;
+  // Assuming 1 BTC = $100,000 USD for dummy data
+  const usdValue = balance * 100000;
 
   return (
     <View

@@ -1,12 +1,12 @@
 import { StatusBar } from "expo-status-bar";
 import { Animated } from "react-native";
 import { BlurView } from "expo-blur";
-import WalletScreen from "../screens/WalletScreen";
-import SettingsScreen from "../screens/SettingsScreen";
-import TransactionDetailScreen from "../screens/TransactionDetailScreen";
-import SendScreen from "../screens/SendScreen";
-import ReceiveScreen from "../screens/ReceiveScreen";
-import { useNavigationStore } from "../store/navigationStore";
+import WalletScreen from "@/screens/WalletScreen";
+import SettingsScreen from "@/screens/SettingsScreen";
+import TransactionDetailScreen from "@/screens/TransactionDetailScreen";
+import SendScreen from "@/screens/SendScreen";
+import ReceiveScreen from "@/screens/ReceiveScreen";
+import { useNavigationStore } from "@/store/navigationStore";
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 

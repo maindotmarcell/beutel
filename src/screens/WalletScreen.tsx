@@ -1,14 +1,14 @@
 import { View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Navbar from "../components/Navbar";
-import BalanceCard from "../components/BalanceCard";
-import TransactionList from "../components/TransactionList";
-import ActionButton from "../components/ActionButton";
-import Text from "../components/Text";
-import { mockWalletData } from "../data/mockWalletData";
-import { useNavigationStore } from "../store/navigationStore";
-import { useThemeStore } from "../store/themeStore";
+import Navbar from "@/components/Navbar";
+import BalanceCard from "@/components/BalanceCard";
+import TransactionList from "@/components/TransactionList";
+import ActionButton from "@/components/ActionButton";
+import Text from "@/components/Text";
+import { mockWalletData } from "@/data/mockWalletData";
+import { useNavigationStore } from "@/store/navigationStore";
+import { useThemeStore } from "@/store/themeStore";
 
 export default function WalletScreen() {
   const { navigateToSend, navigateToReceive, navigateToTransactionDetail } =
