@@ -10,12 +10,12 @@ import * as Clipboard from "expo-clipboard";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Text from "@/components/Text";
 import { useNavigationStore } from "@/store/navigationStore";
-import { mockSettingsData } from "@/data/mockSettingsData";
+import { getReceiveAddress } from "@/services";
 
 export default function ReceiveScreen() {
   const { closeReceive } = useNavigationStore();
   const insets = useSafeAreaInsets();
-  const receiveAddress = mockSettingsData.profile.walletAddress;
+  const receiveAddress = getReceiveAddress();
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {

@@ -6,7 +6,7 @@ import BalanceCard from "@/components/BalanceCard";
 import TransactionList from "@/components/TransactionList";
 import ActionButton from "@/components/ActionButton";
 import Text from "@/components/Text";
-import { mockWalletData } from "@/data/mockWalletData";
+import { getWalletBalance, getTransactions } from "@/services";
 import { useNavigationStore } from "@/store/navigationStore";
 import { useThemeStore } from "@/store/themeStore";
 
@@ -14,6 +14,9 @@ export default function WalletScreen() {
   const { navigateToSend, navigateToReceive, navigateToTransactionDetail } =
     useNavigationStore();
   const { theme } = useThemeStore();
+
+  const balance = getWalletBalance();
+  const transactions = getTransactions();
 
   const handleSend = () => {
     navigateToSend();
@@ -29,7 +32,7 @@ export default function WalletScreen() {
       <View className="flex-1">
         <View style={{ backgroundColor: theme.primary.main }} className="pb-6">
           <Navbar />
-          <BalanceCard balance={mockWalletData.balance} />
+          <BalanceCard balance={balance} />
           <View className="flex-row px-4 mb-4">
             <ActionButton
               label="Send"
@@ -49,7 +52,7 @@ export default function WalletScreen() {
         <TransactionListHeader />
 
         <TransactionList
-          transactions={mockWalletData.transactions}
+          transactions={transactions}
           onTransactionPress={navigateToTransactionDetail}
         />
       </View>
