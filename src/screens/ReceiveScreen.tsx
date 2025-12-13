@@ -8,6 +8,7 @@ import {
 import { useState } from "react";
 import * as Clipboard from "expo-clipboard";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import QRCode from "react-native-qrcode-svg";
 import Text from "@/components/Text";
 import { useNavigationStore } from "@/store/navigationStore";
 import { useWalletStore } from "@/store/walletStore";
@@ -64,12 +65,22 @@ export default function ReceiveScreen() {
 
           {/* Content */}
           <View className="px-6 py-6">
-            {/* QR Code Placeholder */}
+            {/* QR Code */}
             <View className="mb-6 items-center">
-              <View className="w-64 h-64 border-2 border-theme-border rounded-xl items-center justify-center bg-theme-background">
-                <Text className="text-theme-text-muted text-sm">
-                  QR Code Placeholder
-                </Text>
+              <View className="w-64 h-64 border-2 border-theme-border rounded-xl items-center justify-center bg-white overflow-hidden">
+                {address ? (
+                  <QRCode
+                    value={`bitcoin:${address}`}
+                    size={240}
+                    color="#000000"
+                    backgroundColor="#FFFFFF"
+                    quietZone={8}
+                  />
+                ) : (
+                  <Text className="text-theme-text-muted text-sm">
+                    QR Code Placeholder
+                  </Text>
+                )}
               </View>
             </View>
 
