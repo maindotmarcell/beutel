@@ -1,5 +1,10 @@
 import { create } from "zustand";
-import { NetworkType, TransactionPreview, UTXO } from "@/types/wallet";
+import {
+  NetworkType,
+  TransactionPreview,
+  UTXO,
+  Transaction,
+} from "@/types/wallet";
 import * as keyService from "@/services/keyService";
 import * as bitcoinService from "@/services/bitcoinService";
 import * as mempoolService from "@/services/mempoolService";
@@ -22,6 +27,11 @@ interface WalletState {
   unconfirmedBalance: number;
   isBalanceLoading: boolean;
 
+  // Transactions
+  transactions: Transaction[];
+  isTransactionsLoading: boolean;
+  transactionsError: string | null;
+
   // Send transaction state
   isSending: boolean;
   sendError: string | null;
@@ -37,6 +47,7 @@ interface WalletState {
   deleteWallet: () => Promise<void>;
   refreshAddress: () => Promise<void>;
   fetchBalance: () => Promise<void>;
+  fetchTransactions: () => Promise<void>;
 
   // Send transaction actions
   prepareSendTransaction: (
@@ -59,6 +70,11 @@ export const useWalletStore = create<WalletState>((set, get) => ({
   unconfirmedBalance: 0,
   isBalanceLoading: false,
 
+  // Transactions
+  transactions: [],
+  isTransactionsLoading: false,
+  transactionsError: null,
+
   // Send transaction state
   isSending: false,
   sendError: null,
@@ -67,10 +83,11 @@ export const useWalletStore = create<WalletState>((set, get) => ({
   utxos: [],
 
   setNetwork: (network: NetworkType) => {
-    set({ network, balance: 0, unconfirmedBalance: 0 });
+    set({ network, balance: 0, unconfirmedBalance: 0, transactions: [] });
     // Refresh address and balance for new network
     get().refreshAddress();
     get().fetchBalance();
+    get().fetchTransactions();
   },
 
   initializeWallet: async () => {
@@ -89,8 +106,9 @@ export const useWalletStore = create<WalletState>((set, get) => ({
             address: info.address,
             publicKey: info.publicKey,
           });
-          // Fetch balance after initialization
+          // Fetch balance and transactions after initialization
           get().fetchBalance();
+          get().fetchTransactions();
         }
       }
 
@@ -127,8 +145,9 @@ export const useWalletStore = create<WalletState>((set, get) => ({
         publicKey: info.publicKey,
       });
 
-      // Fetch balance (will be 0 for new wallet but good to initialize)
+      // Fetch balance and transactions (will be 0/empty for new wallet but good to initialize)
       get().fetchBalance();
+      get().fetchTransactions();
 
       // Return mnemonic so user can back it up
       return mnemonic;
@@ -165,8 +184,9 @@ export const useWalletStore = create<WalletState>((set, get) => ({
         publicKey: info.publicKey,
       });
 
-      // Fetch balance for imported wallet
+      // Fetch balance and transactions for imported wallet
       get().fetchBalance();
+      get().fetchTransactions();
     } catch (error) {
       set({
         isLoading: false,
@@ -190,6 +210,8 @@ export const useWalletStore = create<WalletState>((set, get) => ({
         publicKey: null,
         balance: 0,
         unconfirmedBalance: 0,
+        transactions: [],
+        transactionsError: null,
       });
     } catch (error) {
       set({
@@ -241,6 +263,36 @@ export const useWalletStore = create<WalletState>((set, get) => ({
         isBalanceLoading: false,
         error:
           error instanceof Error ? error.message : "Failed to fetch balance",
+      });
+    }
+  },
+
+  fetchTransactions: async () => {
+    const { address, network } = get();
+
+    if (!address) {
+      return;
+    }
+
+    set({ isTransactionsLoading: true, transactionsError: null });
+
+    try {
+      const transactions = await mempoolService.getAddressTransactions(
+        address,
+        network
+      );
+      set({
+        transactions,
+        isTransactionsLoading: false,
+        transactionsError: null,
+      });
+    } catch (error) {
+      set({
+        isTransactionsLoading: false,
+        transactionsError:
+          error instanceof Error
+            ? error.message
+            : "Failed to fetch transactions",
       });
     }
   },
@@ -355,8 +407,9 @@ export const useWalletStore = create<WalletState>((set, get) => ({
         utxos: [],
       });
 
-      // Refresh balance after sending
+      // Refresh balance and transactions after sending
       get().fetchBalance();
+      get().fetchTransactions();
 
       return txid;
     } catch (error) {
