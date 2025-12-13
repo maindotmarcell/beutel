@@ -1,13 +1,14 @@
-import { HDKey } from '@scure/bip32';
-import { mnemonicToSeedSync } from '@scure/bip39';
-import * as btc from '@scure/btc-signer';
-import { signSchnorr } from '@scure/btc-signer/utils.js';
-import { hex } from '@scure/base';
-import { NetworkType } from '@/types/wallet';
+import { HDKey } from "@scure/bip32";
+import { mnemonicToSeedSync } from "@scure/bip39";
+import * as btc from "@scure/btc-signer";
+import { signSchnorr } from "@scure/btc-signer/utils.js";
+import { hex } from "@scure/base";
+import { NetworkType } from "@/types/wallet";
 
 // Bitcoin network configurations
 const NETWORKS = {
   mainnet: btc.NETWORK,
+  testnet3: btc.TEST_NETWORK,
   testnet4: btc.TEST_NETWORK,
   signet: btc.TEST_NETWORK,
 } as const;
@@ -17,8 +18,12 @@ const NETWORKS = {
  * m/86'/coin'/account'/change/index
  * coin: 0 for mainnet, 1 for testnet/testnet4/signet
  */
-function getDerivationPath(network: NetworkType, accountIndex: number = 0, addressIndex: number = 0): string {
-  const coinType = network === 'mainnet' ? 0 : 1;
+function getDerivationPath(
+  network: NetworkType,
+  accountIndex: number = 0,
+  addressIndex: number = 0
+): string {
+  const coinType = network === "mainnet" ? 0 : 1;
   return `m/86'/${coinType}'/${accountIndex}'/0/${addressIndex}`;
 }
 
@@ -42,11 +47,11 @@ export function derivePrivateKey(
   const masterKey = getMasterKey(mnemonic);
   const path = getDerivationPath(network, accountIndex, addressIndex);
   const child = masterKey.derive(path);
-  
+
   if (!child.privateKey) {
-    throw new Error('Failed to derive private key');
+    throw new Error("Failed to derive private key");
   }
-  
+
   return child.privateKey;
 }
 
@@ -68,16 +73,21 @@ export function getAddress(
   accountIndex: number = 0,
   addressIndex: number = 0
 ): string {
-  const privateKey = derivePrivateKey(mnemonic, network, accountIndex, addressIndex);
+  const privateKey = derivePrivateKey(
+    mnemonic,
+    network,
+    accountIndex,
+    addressIndex
+  );
   const networkConfig = NETWORKS[network];
-  
+
   // Create P2TR (Taproot) output
   const p2tr = btc.p2tr(privateKey, undefined, networkConfig);
-  
+
   if (!p2tr.address) {
-    throw new Error('Failed to generate address');
+    throw new Error("Failed to generate address");
   }
-  
+
   return p2tr.address;
 }
 
@@ -90,17 +100,25 @@ export function getPublicKeyHex(
   accountIndex: number = 0,
   addressIndex: number = 0
 ): string {
-  const privateKey = derivePrivateKey(mnemonic, network, accountIndex, addressIndex);
+  const privateKey = derivePrivateKey(
+    mnemonic,
+    network,
+    accountIndex,
+    addressIndex
+  );
   const networkConfig = NETWORKS[network];
   const p2tr = btc.p2tr(privateKey, undefined, networkConfig);
-  
+
   return hex.encode(p2tr.tweakedPubkey);
 }
 
 /**
  * Sign a message using Schnorr signature (BIP340) for Taproot
  */
-export function signMessage(message: Uint8Array, privateKey: Uint8Array): Uint8Array {
+export function signMessage(
+  message: Uint8Array,
+  privateKey: Uint8Array
+): Uint8Array {
   // Use schnorr signature for Taproot
   return signSchnorr(message, privateKey);
 }
@@ -133,4 +151,3 @@ export function isValidAddress(address: string, network: NetworkType): boolean {
     return false;
   }
 }
-
