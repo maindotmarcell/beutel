@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { NetworkType } from '@/types/wallet';
 import * as keyService from '@/services/keyService';
 import * as bitcoinService from '@/services/bitcoinService';
+import * as mempoolService from '@/services/mempoolService';
 
 interface WalletState {
   // Wallet state
@@ -16,6 +17,11 @@ interface WalletState {
   address: string | null;
   publicKey: string | null;
   
+  // Balance (in satoshis)
+  balance: number;
+  unconfirmedBalance: number;
+  isBalanceLoading: boolean;
+  
   // Actions
   setNetwork: (network: NetworkType) => void;
   initializeWallet: () => Promise<void>;
@@ -23,6 +29,7 @@ interface WalletState {
   importWallet: (mnemonic: string) => Promise<void>;
   deleteWallet: () => Promise<void>;
   refreshAddress: () => Promise<void>;
+  fetchBalance: () => Promise<void>;
 }
 
 export const useWalletStore = create<WalletState>((set, get) => ({
@@ -30,14 +37,18 @@ export const useWalletStore = create<WalletState>((set, get) => ({
   isInitialized: false,
   isLoading: false,
   error: null,
-  network: 'testnet', // Default to testnet for safety
+  network: 'testnet4', // Default to testnet4 for safety
   address: null,
   publicKey: null,
+  balance: 0,
+  unconfirmedBalance: 0,
+  isBalanceLoading: false,
 
   setNetwork: (network: NetworkType) => {
-    set({ network });
-    // Refresh address for new network
+    set({ network, balance: 0, unconfirmedBalance: 0 });
+    // Refresh address and balance for new network
     get().refreshAddress();
+    get().fetchBalance();
   },
 
   initializeWallet: async () => {
@@ -56,6 +67,8 @@ export const useWalletStore = create<WalletState>((set, get) => ({
             address: info.address,
             publicKey: info.publicKey,
           });
+          // Fetch balance after initialization
+          get().fetchBalance();
         }
       }
       
@@ -88,6 +101,9 @@ export const useWalletStore = create<WalletState>((set, get) => ({
         address: info.address,
         publicKey: info.publicKey,
       });
+      
+      // Fetch balance (will be 0 for new wallet but good to initialize)
+      get().fetchBalance();
       
       // Return mnemonic so user can back it up
       return mnemonic;
@@ -122,6 +138,9 @@ export const useWalletStore = create<WalletState>((set, get) => ({
         address: info.address,
         publicKey: info.publicKey,
       });
+      
+      // Fetch balance for imported wallet
+      get().fetchBalance();
     } catch (error) {
       set({
         isLoading: false,
@@ -142,6 +161,8 @@ export const useWalletStore = create<WalletState>((set, get) => ({
         isLoading: false,
         address: null,
         publicKey: null,
+        balance: 0,
+        unconfirmedBalance: 0,
       });
     } catch (error) {
       set({
@@ -166,6 +187,30 @@ export const useWalletStore = create<WalletState>((set, get) => ({
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : 'Failed to refresh address',
+      });
+    }
+  },
+
+  fetchBalance: async () => {
+    const { address, network } = get();
+    
+    if (!address) {
+      return;
+    }
+    
+    set({ isBalanceLoading: true });
+    
+    try {
+      const result = await mempoolService.getAddressBalance(address, network);
+      set({
+        balance: result.confirmed,
+        unconfirmedBalance: result.unconfirmed,
+        isBalanceLoading: false,
+      });
+    } catch (error) {
+      set({
+        isBalanceLoading: false,
+        error: error instanceof Error ? error.message : 'Failed to fetch balance',
       });
     }
   },

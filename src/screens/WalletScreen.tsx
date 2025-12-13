@@ -1,22 +1,34 @@
-import { View } from "react-native";
+import { View, RefreshControl, ScrollView } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useCallback, useState } from "react";
 import Navbar from "@/components/Navbar";
 import BalanceCard from "@/components/BalanceCard";
 import TransactionList from "@/components/TransactionList";
 import ActionButton from "@/components/ActionButton";
 import Text from "@/components/Text";
-import { getWalletBalance, getTransactions } from "@/services";
+import { getTransactions } from "@/services";
 import { useNavigationStore } from "@/store/navigationStore";
 import { useThemeStore } from "@/store/themeStore";
+import { useWalletStore } from "@/store/walletStore";
+import { satsToBtc } from "@/services/mempoolService";
 
 export default function WalletScreen() {
   const { navigateToSend, navigateToReceive, navigateToTransactionDetail } =
     useNavigationStore();
   const { theme } = useThemeStore();
+  const { balance, unconfirmedBalance, isBalanceLoading, fetchBalance } = useWalletStore();
+  const [refreshing, setRefreshing] = useState(false);
 
-  const balance = getWalletBalance();
+  const balanceInBtc = satsToBtc(balance);
+  const unconfirmedInBtc = satsToBtc(unconfirmedBalance);
   const transactions = getTransactions();
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchBalance();
+    setRefreshing(false);
+  }, [fetchBalance]);
 
   const handleSend = () => {
     navigateToSend();
@@ -29,10 +41,19 @@ export default function WalletScreen() {
   return (
     <SafeAreaView className="flex-1 bg-theme-background" edges={[]}>
       <StatusBar style="dark" />
-      <View className="flex-1">
+      <ScrollView
+        className="flex-1"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <View style={{ backgroundColor: theme.primary.main }} className="pb-6">
           <Navbar />
-          <BalanceCard balance={balance} />
+          <BalanceCard
+            balance={balanceInBtc}
+            unconfirmedBalance={unconfirmedInBtc}
+            isLoading={isBalanceLoading}
+          />
           <View className="flex-row px-4 mb-4">
             <ActionButton
               label="Send"
@@ -55,7 +76,7 @@ export default function WalletScreen() {
           transactions={transactions}
           onTransactionPress={navigateToTransactionDetail}
         />
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

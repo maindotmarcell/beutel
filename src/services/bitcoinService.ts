@@ -8,13 +8,14 @@ import { NetworkType } from '@/types/wallet';
 // Bitcoin network configurations
 const NETWORKS = {
   mainnet: btc.NETWORK,
-  testnet: btc.TEST_NETWORK,
+  testnet4: btc.TEST_NETWORK,
+  signet: btc.TEST_NETWORK,
 } as const;
 
 /**
  * BIP86 derivation paths for Taproot
  * m/86'/coin'/account'/change/index
- * coin: 0 for mainnet, 1 for testnet
+ * coin: 0 for mainnet, 1 for testnet/testnet4/signet
  */
 function getDerivationPath(network: NetworkType, accountIndex: number = 0, addressIndex: number = 0): string {
   const coinType = network === 'mainnet' ? 0 : 1;
