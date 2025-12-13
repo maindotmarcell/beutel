@@ -1,10 +1,11 @@
-import { NetworkType } from '@/types/wallet';
+import { NetworkType } from "@/types/wallet";
 
 // Mempool.space API base URLs
 const API_BASE_URLS: Record<NetworkType, string> = {
-  mainnet: 'https://mempool.space/api',
-  testnet4: 'https://mempool.space/testnet4/api',
-  signet: 'https://mempool.space/signet/api',
+  mainnet: "https://mempool.space/api",
+  testnet3: "https://mempool.space/testnet/api",
+  testnet4: "https://mempool.space/testnet4/api",
+  signet: "https://mempool.space/signet/api",
 };
 
 // API response types
@@ -40,16 +41,20 @@ export async function getAddressBalance(
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch balance: ${response.status} ${response.statusText}`);
+    throw new Error(
+      `Failed to fetch balance: ${response.status} ${response.statusText}`
+    );
   }
 
   const data: AddressResponse = await response.json();
 
   // Calculate confirmed balance from chain stats
-  const confirmed = data.chain_stats.funded_txo_sum - data.chain_stats.spent_txo_sum;
+  const confirmed =
+    data.chain_stats.funded_txo_sum - data.chain_stats.spent_txo_sum;
 
   // Calculate unconfirmed balance from mempool stats
-  const unconfirmed = data.mempool_stats.funded_txo_sum - data.mempool_stats.spent_txo_sum;
+  const unconfirmed =
+    data.mempool_stats.funded_txo_sum - data.mempool_stats.spent_txo_sum;
 
   return {
     confirmed,
@@ -71,4 +76,3 @@ export function satsToBtc(sats: number): number {
 export function btcToSats(btc: number): number {
   return Math.round(btc * 100_000_000);
 }
-

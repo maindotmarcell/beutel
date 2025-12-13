@@ -1,10 +1,10 @@
-export type NetworkType = 'mainnet' | 'testnet4' | 'signet';
+export type NetworkType = "mainnet" | "testnet3" | "testnet4" | "signet";
 
-export type TransactionType = 'send' | 'receive';
+export type TransactionType = "send" | "receive";
 
-export type TransactionStatus = 'pending' | 'confirmed' | 'failed';
+export type TransactionStatus = "pending" | "confirmed" | "failed";
 
-export type TransactionNetworkType = 'on-chain' | 'lightning';
+export type TransactionNetworkType = "on-chain" | "lightning";
 
 export interface Transaction {
   id: string;
@@ -21,4 +21,3 @@ export interface WalletData {
   balance: number; // in BTC
   transactions: Transaction[];
 }
-
