@@ -50,7 +50,7 @@ export default function ReceiveScreen() {
                 Receive Bitcoin
               </Text>
               <Text className="text-xs text-theme-text-muted uppercase mt-1">
-                {network === "testnet" ? "⚠️ Testnet" : "Mainnet"}
+                {network !== "mainnet" ? "⚠️ Testnet" : "Mainnet"}
               </Text>
             </View>
             <TouchableOpacity

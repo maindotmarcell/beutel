@@ -32,6 +32,10 @@ export {
   signMessage,
   getWalletInfo,
   isValidAddress,
+  estimateTxVbytes,
+  selectUtxos,
+  prepareTransactionPreview,
+  buildAndSignTransaction,
 } from './bitcoinService';
 
 // Mempool API service
@@ -39,5 +43,8 @@ export {
   getAddressBalance,
   satsToBtc,
   btcToSats,
+  getAddressUtxos,
+  getRecommendedFees,
+  broadcastTransaction,
 } from './mempoolService';
 

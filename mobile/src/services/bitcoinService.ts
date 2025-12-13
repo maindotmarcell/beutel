@@ -3,7 +3,7 @@ import { mnemonicToSeedSync } from "@scure/bip39";
 import * as btc from "@scure/btc-signer";
 import { signSchnorr } from "@scure/btc-signer/utils.js";
 import { hex } from "@scure/base";
-import { NetworkType } from "@/types/wallet";
+import { NetworkType, UTXO, TransactionPreview } from "@/types/wallet";
 
 // Bitcoin network configurations
 const NETWORKS = {
@@ -36,6 +36,32 @@ function getMasterKey(mnemonic: string): HDKey {
 }
 
 /**
+ * Derive key pair (private key and x-only public key) at a specific BIP86 path for Taproot
+ */
+function deriveKeyPair(
+  mnemonic: string,
+  network: NetworkType,
+  accountIndex: number = 0,
+  addressIndex: number = 0
+): { privateKey: Uint8Array; xOnlyPubKey: Uint8Array } {
+  const masterKey = getMasterKey(mnemonic);
+  const path = getDerivationPath(network, accountIndex, addressIndex);
+  const child = masterKey.derive(path);
+
+  if (!child.privateKey || !child.publicKey) {
+    throw new Error("Failed to derive key pair");
+  }
+
+  // Get x-only public key (32 bytes) by removing the prefix from compressed public key (33 bytes)
+  const xOnlyPubKey = child.publicKey.slice(1);
+
+  return {
+    privateKey: child.privateKey,
+    xOnlyPubKey,
+  };
+}
+
+/**
  * Derive a private key at a specific BIP86 path for Taproot
  */
 export function derivePrivateKey(
@@ -44,24 +70,21 @@ export function derivePrivateKey(
   accountIndex: number = 0,
   addressIndex: number = 0
 ): Uint8Array {
-  const masterKey = getMasterKey(mnemonic);
-  const path = getDerivationPath(network, accountIndex, addressIndex);
-  const child = masterKey.derive(path);
-
-  if (!child.privateKey) {
-    throw new Error("Failed to derive private key");
-  }
-
-  return child.privateKey;
+  return deriveKeyPair(mnemonic, network, accountIndex, addressIndex)
+    .privateKey;
 }
 
 /**
- * Get the public key from a private key
+ * Get the x-only public key from a mnemonic for Taproot
  */
-export function getPublicKey(privateKey: Uint8Array): Uint8Array {
-  const p2tr = btc.p2tr(privateKey, undefined, NETWORKS.mainnet);
-  // For Taproot, we use the x-only public key (32 bytes)
-  return p2tr.tweakedPubkey;
+export function getPublicKey(
+  mnemonic: string,
+  network: NetworkType,
+  accountIndex: number = 0,
+  addressIndex: number = 0
+): Uint8Array {
+  return deriveKeyPair(mnemonic, network, accountIndex, addressIndex)
+    .xOnlyPubKey;
 }
 
 /**
@@ -73,7 +96,7 @@ export function getAddress(
   accountIndex: number = 0,
   addressIndex: number = 0
 ): string {
-  const privateKey = derivePrivateKey(
+  const { xOnlyPubKey } = deriveKeyPair(
     mnemonic,
     network,
     accountIndex,
@@ -81,8 +104,8 @@ export function getAddress(
   );
   const networkConfig = NETWORKS[network];
 
-  // Create P2TR (Taproot) output
-  const p2tr = btc.p2tr(privateKey, undefined, networkConfig);
+  // Create P2TR (Taproot) output using the x-only public key
+  const p2tr = btc.p2tr(xOnlyPubKey, undefined, networkConfig);
 
   if (!p2tr.address) {
     throw new Error("Failed to generate address");
@@ -100,14 +123,14 @@ export function getPublicKeyHex(
   accountIndex: number = 0,
   addressIndex: number = 0
 ): string {
-  const privateKey = derivePrivateKey(
+  const { xOnlyPubKey } = deriveKeyPair(
     mnemonic,
     network,
     accountIndex,
     addressIndex
   );
   const networkConfig = NETWORKS[network];
-  const p2tr = btc.p2tr(privateKey, undefined, networkConfig);
+  const p2tr = btc.p2tr(xOnlyPubKey, undefined, networkConfig);
 
   return hex.encode(p2tr.tweakedPubkey);
 }
@@ -150,4 +173,152 @@ export function isValidAddress(address: string, network: NetworkType): boolean {
   } catch {
     return false;
   }
+}
+
+// Taproot transaction size estimation (vbytes)
+const P2TR_INPUT_VBYTES = 58; // P2TR key-path spend input
+const P2TR_OUTPUT_VBYTES = 43; // P2TR output
+const TX_OVERHEAD_VBYTES = 10.5; // Transaction overhead
+
+/**
+ * Estimate transaction size in virtual bytes for fee calculation
+ */
+export function estimateTxVbytes(
+  inputCount: number,
+  outputCount: number
+): number {
+  return Math.ceil(
+    TX_OVERHEAD_VBYTES +
+      inputCount * P2TR_INPUT_VBYTES +
+      outputCount * P2TR_OUTPUT_VBYTES
+  );
+}
+
+/**
+ * Select UTXOs using largest-first strategy
+ * Returns selected UTXOs and total value
+ */
+export function selectUtxos(
+  utxos: UTXO[],
+  targetAmount: number,
+  feeRate: number
+): { selected: UTXO[]; totalValue: number; fee: number } {
+  // Sort UTXOs by value (largest first)
+  const sorted = [...utxos].sort((a, b) => b.value - a.value);
+
+  const selected: UTXO[] = [];
+  let totalValue = 0;
+
+  for (const utxo of sorted) {
+    selected.push(utxo);
+    totalValue += utxo.value;
+
+    // Calculate fee with current input count (2 outputs: recipient + change)
+    const estimatedVbytes = estimateTxVbytes(selected.length, 2);
+    const estimatedFee = Math.ceil(estimatedVbytes * feeRate);
+
+    // Check if we have enough to cover amount + fee
+    if (totalValue >= targetAmount + estimatedFee) {
+      return { selected, totalValue, fee: estimatedFee };
+    }
+  }
+
+  // Not enough funds
+  const finalVbytes = estimateTxVbytes(selected.length, 2);
+  const finalFee = Math.ceil(finalVbytes * feeRate);
+  return { selected, totalValue, fee: finalFee };
+}
+
+/**
+ * Prepare a transaction preview (for confirmation screen)
+ */
+export function prepareTransactionPreview(
+  utxos: UTXO[],
+  recipientAddress: string,
+  amountSats: number,
+  feeRate: number
+): TransactionPreview {
+  const { selected, totalValue, fee } = selectUtxos(utxos, amountSats, feeRate);
+
+  const changeAmount = totalValue - amountSats - fee;
+
+  return {
+    recipientAddress,
+    amountSats,
+    feeSats: fee,
+    totalSats: amountSats + fee,
+    feeRate,
+    inputCount: selected.length,
+    changeAmount: changeAmount > 0 ? changeAmount : 0,
+  };
+}
+
+/**
+ * Build and sign a Taproot transaction
+ * @returns The signed transaction hex
+ */
+export function buildAndSignTransaction(
+  mnemonic: string,
+  network: NetworkType,
+  utxos: UTXO[],
+  recipientAddress: string,
+  amountSats: number,
+  feeRate: number,
+  senderAddress: string
+): string {
+  const networkConfig = NETWORKS[network];
+
+  // Get both private key and x-only public key
+  const { privateKey, xOnlyPubKey } = deriveKeyPair(mnemonic, network);
+
+  // Create P2TR spend info using the x-only public key
+  const p2tr = btc.p2tr(xOnlyPubKey, undefined, networkConfig);
+
+  // Select UTXOs
+  const { selected, totalValue, fee } = selectUtxos(utxos, amountSats, feeRate);
+
+  // Verify we have enough funds
+  if (totalValue < amountSats + fee) {
+    throw new Error(
+      `Insufficient funds. Need ${
+        amountSats + fee
+      } sats, have ${totalValue} sats`
+    );
+  }
+
+  // Calculate change
+  const changeAmount = totalValue - amountSats - fee;
+
+  // Build the transaction
+  const tx = new btc.Transaction();
+
+  // Add inputs with proper Taproot key-path spend data
+  for (const utxo of selected) {
+    tx.addInput({
+      txid: utxo.txid,
+      index: utxo.vout,
+      witnessUtxo: {
+        script: p2tr.script,
+        amount: BigInt(utxo.value),
+      },
+      tapInternalKey: xOnlyPubKey,
+    });
+  }
+
+  // Add recipient output
+  tx.addOutputAddress(recipientAddress, BigInt(amountSats), networkConfig);
+
+  // Add change output if there's change (dust threshold ~546 sats for P2TR)
+  if (changeAmount > 546) {
+    tx.addOutputAddress(senderAddress, BigInt(changeAmount), networkConfig);
+  }
+
+  // Sign all inputs with the private key
+  tx.sign(privateKey);
+
+  // Finalize the transaction
+  tx.finalize();
+
+  // Return the hex
+  return hex.encode(tx.extract());
 }
