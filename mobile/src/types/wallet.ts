@@ -1,3 +1,5 @@
+export type NetworkType = 'mainnet' | 'testnet';
+
 export type TransactionType = 'send' | 'receive';
 
 export type TransactionStatus = 'pending' | 'confirmed' | 'failed';

@@ -1,3 +1,6 @@
+// Crypto polyfill - MUST be imported before any other code
+import 'react-native-get-random-values';
+
 import { registerRootComponent } from 'expo';
 
 import App from './src/App';
