@@ -1,4 +1,4 @@
-export type NetworkType = 'mainnet' | 'testnet';
+export type NetworkType = 'mainnet' | 'testnet4' | 'signet';
 
 export type TransactionType = 'send' | 'receive';
 

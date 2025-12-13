@@ -34,3 +34,10 @@ export {
   isValidAddress,
 } from './bitcoinService';
 
+// Mempool API service
+export {
+  getAddressBalance,
+  satsToBtc,
+  btcToSats,
+} from './mempoolService';
+
