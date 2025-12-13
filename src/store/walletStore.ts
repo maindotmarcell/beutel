@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { NetworkType } from "@/types/wallet";
+import { NetworkType, TransactionPreview, UTXO } from "@/types/wallet";
 import * as keyService from "@/services/keyService";
 import * as bitcoinService from "@/services/bitcoinService";
 import * as mempoolService from "@/services/mempoolService";
@@ -22,6 +22,13 @@ interface WalletState {
   unconfirmedBalance: number;
   isBalanceLoading: boolean;
 
+  // Send transaction state
+  isSending: boolean;
+  sendError: string | null;
+  lastTxId: string | null;
+  transactionPreview: TransactionPreview | null;
+  utxos: UTXO[];
+
   // Actions
   setNetwork: (network: NetworkType) => void;
   initializeWallet: () => Promise<void>;
@@ -30,6 +37,14 @@ interface WalletState {
   deleteWallet: () => Promise<void>;
   refreshAddress: () => Promise<void>;
   fetchBalance: () => Promise<void>;
+
+  // Send transaction actions
+  prepareSendTransaction: (
+    recipientAddress: string,
+    amountSats: number
+  ) => Promise<TransactionPreview>;
+  confirmSendTransaction: () => Promise<string>; // Returns txid
+  clearSendState: () => void;
 }
 
 export const useWalletStore = create<WalletState>((set, get) => ({
@@ -37,12 +52,19 @@ export const useWalletStore = create<WalletState>((set, get) => ({
   isInitialized: false,
   isLoading: false,
   error: null,
-  network: "testnet3", // Default to testnet4 for safety
+  network: "testnet3", // Default to testnet3 for safety
   address: null,
   publicKey: null,
   balance: 0,
   unconfirmedBalance: 0,
   isBalanceLoading: false,
+
+  // Send transaction state
+  isSending: false,
+  sendError: null,
+  lastTxId: null,
+  transactionPreview: null,
+  utxos: [],
 
   setNetwork: (network: NetworkType) => {
     set({ network, balance: 0, unconfirmedBalance: 0 });
@@ -221,5 +243,140 @@ export const useWalletStore = create<WalletState>((set, get) => ({
           error instanceof Error ? error.message : "Failed to fetch balance",
       });
     }
+  },
+
+  prepareSendTransaction: async (
+    recipientAddress: string,
+    amountSats: number
+  ) => {
+    const { address, network, balance } = get();
+
+    set({ isSending: true, sendError: null, transactionPreview: null });
+
+    try {
+      // Validate recipient address
+      if (!bitcoinService.isValidAddress(recipientAddress, network)) {
+        throw new Error("Invalid recipient address");
+      }
+
+      // Validate amount
+      if (amountSats <= 0) {
+        throw new Error("Amount must be greater than 0");
+      }
+
+      if (!address) {
+        throw new Error("Wallet not initialized");
+      }
+
+      // Fetch UTXOs
+      const utxos = await mempoolService.getAddressUtxos(address, network);
+
+      if (utxos.length === 0) {
+        throw new Error("No UTXOs available");
+      }
+
+      // Get recommended fees (use fastestFee)
+      const feeRates = await mempoolService.getRecommendedFees(network);
+      const feeRate = feeRates.fastestFee;
+
+      // Prepare transaction preview
+      const preview = bitcoinService.prepareTransactionPreview(
+        utxos,
+        recipientAddress,
+        amountSats,
+        feeRate
+      );
+
+      // Check if we have enough funds
+      if (preview.totalSats > balance) {
+        throw new Error(
+          `Insufficient funds. Need ${preview.totalSats} sats, have ${balance} sats`
+        );
+      }
+
+      set({
+        isSending: false,
+        transactionPreview: preview,
+        utxos,
+      });
+
+      return preview;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to prepare transaction";
+      set({
+        isSending: false,
+        sendError: errorMessage,
+      });
+      throw error;
+    }
+  },
+
+  confirmSendTransaction: async () => {
+    const { address, network, transactionPreview, utxos } = get();
+
+    if (!transactionPreview) {
+      throw new Error("No transaction prepared");
+    }
+
+    if (!address) {
+      throw new Error("Wallet not initialized");
+    }
+
+    set({ isSending: true, sendError: null });
+
+    try {
+      // Get mnemonic for signing
+      const mnemonic = await keyService.getMnemonic();
+      if (!mnemonic) {
+        throw new Error("Wallet not found");
+      }
+
+      // Build and sign the transaction
+      const txHex = bitcoinService.buildAndSignTransaction(
+        mnemonic,
+        network,
+        utxos,
+        transactionPreview.recipientAddress,
+        transactionPreview.amountSats,
+        transactionPreview.feeRate,
+        address
+      );
+
+      // Broadcast the transaction
+      const txid = await mempoolService.broadcastTransaction(txHex, network);
+
+      set({
+        isSending: false,
+        lastTxId: txid,
+        transactionPreview: null,
+        utxos: [],
+      });
+
+      // Refresh balance after sending
+      get().fetchBalance();
+
+      return txid;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to send transaction";
+      set({
+        isSending: false,
+        sendError: errorMessage,
+      });
+      throw error;
+    }
+  },
+
+  clearSendState: () => {
+    set({
+      isSending: false,
+      sendError: null,
+      lastTxId: null,
+      transactionPreview: null,
+      utxos: [],
+    });
   },
 }));

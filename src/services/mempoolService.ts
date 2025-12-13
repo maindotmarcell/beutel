@@ -1,4 +1,4 @@
-import { NetworkType } from "@/types/wallet";
+import { NetworkType, UTXO, FeeRates } from "@/types/wallet";
 
 // Mempool.space API base URLs
 const API_BASE_URLS: Record<NetworkType, string> = {
@@ -75,4 +75,78 @@ export function satsToBtc(sats: number): number {
  */
 export function btcToSats(btc: number): number {
   return Math.round(btc * 100_000_000);
+}
+
+/**
+ * Fetch UTXOs (unspent transaction outputs) for an address
+ */
+export async function getAddressUtxos(
+  address: string,
+  network: NetworkType
+): Promise<UTXO[]> {
+  const baseUrl = API_BASE_URLS[network];
+  const url = `${baseUrl}/address/${address}/utxo`;
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch UTXOs: ${response.status} ${response.statusText}`
+    );
+  }
+
+  const utxos: UTXO[] = await response.json();
+  return utxos;
+}
+
+/**
+ * Fetch recommended fee rates from mempool.space
+ * Returns fee rates in sat/vB for different confirmation targets
+ */
+export async function getRecommendedFees(
+  network: NetworkType
+): Promise<FeeRates> {
+  const baseUrl = API_BASE_URLS[network];
+  const url = `${baseUrl}/v1/fees/recommended`;
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch fee rates: ${response.status} ${response.statusText}`
+    );
+  }
+
+  const feeRates: FeeRates = await response.json();
+  return feeRates;
+}
+
+/**
+ * Broadcast a signed transaction to the network
+ * @param txHex - The signed transaction in hex format
+ * @returns The transaction ID (txid) if successful
+ */
+export async function broadcastTransaction(
+  txHex: string,
+  network: NetworkType
+): Promise<string> {
+  const baseUrl = API_BASE_URLS[network];
+  const url = `${baseUrl}/tx`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain",
+    },
+    body: txHex,
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Failed to broadcast transaction: ${errorText}`);
+  }
+
+  // The response is the txid as plain text
+  const txid = await response.text();
+  return txid;
 }
