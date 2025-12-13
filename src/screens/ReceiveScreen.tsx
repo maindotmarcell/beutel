@@ -10,20 +10,24 @@ import * as Clipboard from "expo-clipboard";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Text from "@/components/Text";
 import { useNavigationStore } from "@/store/navigationStore";
-import { getReceiveAddress } from "@/services";
+import { useWalletStore } from "@/store/walletStore";
 
 export default function ReceiveScreen() {
   const { closeReceive } = useNavigationStore();
+  const { address, network } = useWalletStore();
   const insets = useSafeAreaInsets();
-  const receiveAddress = getReceiveAddress();
   const [copied, setCopied] = useState(false);
 
+  const receiveAddress = address ?? "No wallet created";
+
   const handleCopy = async () => {
-    await Clipboard.setStringAsync(receiveAddress);
-    setCopied(true);
-    setTimeout(() => {
-      setCopied(false);
-    }, 2000);
+    if (address) {
+      await Clipboard.setStringAsync(address);
+      setCopied(true);
+      setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    }
   };
 
   return (
@@ -41,9 +45,14 @@ export default function ReceiveScreen() {
         >
           {/* Header */}
           <View className="flex-row items-center justify-between px-6 py-4 border-b border-theme-border">
-            <Text className="text-2xl font-bold text-theme-text-primary">
-              Receive Bitcoin
-            </Text>
+            <View>
+              <Text className="text-2xl font-bold text-theme-text-primary">
+                Receive Bitcoin
+              </Text>
+              <Text className="text-xs text-theme-text-muted uppercase mt-1">
+                {network === "testnet" ? "⚠️ Testnet" : "Mainnet"}
+              </Text>
+            </View>
             <TouchableOpacity
               onPress={closeReceive}
               className="p-2"
@@ -80,6 +89,7 @@ export default function ReceiveScreen() {
                 />
                 <TouchableOpacity
                   onPress={handleCopy}
+                  disabled={!address}
                   className="bg-theme-background border border-theme-border rounded-xl px-4 py-3 items-center justify-center min-w-[60px]"
                   activeOpacity={0.7}
                 >
