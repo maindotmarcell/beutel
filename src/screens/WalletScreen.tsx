@@ -7,7 +7,6 @@ import BalanceCard from "@/components/BalanceCard";
 import TransactionList from "@/components/TransactionList";
 import ActionButton from "@/components/ActionButton";
 import Text from "@/components/Text";
-import { getTransactions } from "@/services";
 import { useNavigationStore } from "@/store/navigationStore";
 import { useThemeStore } from "@/store/themeStore";
 import { useWalletStore } from "@/store/walletStore";
@@ -17,18 +16,25 @@ export default function WalletScreen() {
   const { navigateToSend, navigateToReceive, navigateToTransactionDetail } =
     useNavigationStore();
   const { theme } = useThemeStore();
-  const { balance, unconfirmedBalance, isBalanceLoading, fetchBalance } = useWalletStore();
+  const {
+    balance,
+    unconfirmedBalance,
+    isBalanceLoading,
+    fetchBalance,
+    transactions,
+    isTransactionsLoading,
+    fetchTransactions,
+  } = useWalletStore();
   const [refreshing, setRefreshing] = useState(false);
 
   const balanceInBtc = satsToBtc(balance);
   const unconfirmedInBtc = satsToBtc(unconfirmedBalance);
-  const transactions = getTransactions();
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await fetchBalance();
+    await Promise.all([fetchBalance(), fetchTransactions()]);
     setRefreshing(false);
-  }, [fetchBalance]);
+  }, [fetchBalance, fetchTransactions]);
 
   const handleSend = () => {
     navigateToSend();

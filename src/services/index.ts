@@ -46,5 +46,6 @@ export {
   getAddressUtxos,
   getRecommendedFees,
   broadcastTransaction,
+  getAddressTransactions,
 } from './mempoolService';
 
