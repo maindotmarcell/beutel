@@ -14,12 +14,7 @@ export default function SeedPhraseModal({ seedPhrase, onDismiss }: SeedPhraseMod
   const words = seedPhrase.split(" ");
 
   return (
-    <Modal
-      visible={true}
-      animationType="fade"
-      transparent={true}
-      onRequestClose={onDismiss}
-    >
+    <Modal visible={true} animationType="fade" transparent={true} onRequestClose={onDismiss}>
       <View
         style={{
           flex: 1,

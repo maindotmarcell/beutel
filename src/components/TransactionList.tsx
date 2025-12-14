@@ -1,7 +1,7 @@
-import { ScrollView, View } from 'react-native';
-import { Transaction } from '@/types/wallet';
-import TransactionItem from '@/components/TransactionItem';
-import Text from '@/components/Text';
+import { ScrollView, View } from "react-native";
+import { Transaction } from "@/types/wallet";
+import TransactionItem from "@/components/TransactionItem";
+import Text from "@/components/Text";
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -27,15 +27,10 @@ export default function TransactionList({
           <TransactionItem
             key={transaction.id}
             transaction={transaction}
-            onPress={
-              onTransactionPress
-                ? () => onTransactionPress(transaction)
-                : undefined
-            }
+            onPress={onTransactionPress ? () => onTransactionPress(transaction) : undefined}
           />
         ))}
       </View>
     </ScrollView>
   );
 }
-

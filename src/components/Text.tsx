@@ -21,11 +21,6 @@ export default function Text({ className = "", style, ...props }: CustomTextProp
   }
 
   return (
-    <RNText
-      className={className}
-      style={[{ fontFamily }, StyleSheet.flatten(style)]}
-      {...props}
-    />
+    <RNText className={className} style={[{ fontFamily }, StyleSheet.flatten(style)]} {...props} />
   );
 }
-

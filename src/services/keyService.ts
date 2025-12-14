@@ -1,8 +1,11 @@
-import * as SecureStore from 'expo-secure-store';
-import { generateMnemonic as generateBip39Mnemonic, validateMnemonic as validateBip39Mnemonic } from '@scure/bip39';
-import { wordlist } from '@scure/bip39/wordlists/english.js';
+import * as SecureStore from "expo-secure-store";
+import {
+  generateMnemonic as generateBip39Mnemonic,
+  validateMnemonic as validateBip39Mnemonic,
+} from "@scure/bip39";
+import { wordlist } from "@scure/bip39/wordlists/english.js";
 
-const MNEMONIC_KEY = 'beutel_wallet_mnemonic';
+const MNEMONIC_KEY = "beutel_wallet_mnemonic";
 
 /**
  * Generate a new 12-word BIP39 mnemonic seed phrase
@@ -31,9 +34,9 @@ export function validateMnemonic(mnemonic: string): boolean {
  */
 export async function storeMnemonic(mnemonic: string): Promise<void> {
   if (!validateMnemonic(mnemonic)) {
-    throw new Error('Invalid mnemonic phrase');
+    throw new Error("Invalid mnemonic phrase");
   }
-  
+
   await SecureStore.setItemAsync(MNEMONIC_KEY, mnemonic, {
     keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
   });

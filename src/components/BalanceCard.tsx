@@ -21,9 +21,7 @@ export default function BalanceCard({
       style={{ backgroundColor: "rgba(255, 255, 255, 0.1)" }}
     >
       <View className="flex-row items-center mb-2">
-        <Text className="text-white opacity-80 text-sm font-medium">
-          Total Balance
-        </Text>
+        <Text className="text-white opacity-80 text-sm font-medium">Total Balance</Text>
         {isLoading && (
           <ActivityIndicator
             size="small"
@@ -32,9 +30,7 @@ export default function BalanceCard({
           />
         )}
       </View>
-      <Text className="text-white text-4xl font-bold mb-1">
-        {balance.toFixed(8)} BTC
-      </Text>
+      <Text className="text-white text-4xl font-bold mb-1">{balance.toFixed(8)} BTC</Text>
       <Text className="text-white opacity-80 text-lg font-medium">
         $
         {usdValue.toLocaleString("en-US", {

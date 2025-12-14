@@ -1,10 +1,5 @@
-import {
-  UserProfile,
-  SecuritySettings,
-  NotificationSettings,
-  AppInfo,
-} from '@/types/settings';
-import { mockSettingsData } from '@/data/mockSettingsData';
+import { UserProfile, SecuritySettings, NotificationSettings, AppInfo } from "@/types/settings";
+import { mockSettingsData } from "@/data/mockSettingsData";
 
 export function getUserProfile(): UserProfile {
   return mockSettingsData.profile;
@@ -25,4 +20,3 @@ export function getAppInfo(): AppInfo {
 export function getReceiveAddress(): string {
   return mockSettingsData.profile.walletAddress;
 }
-

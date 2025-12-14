@@ -21,8 +21,7 @@ export default function App() {
     Inter_700Bold,
   });
 
-  const { isReady, seedPhraseToBackup, handleDismissSeedPhrase } =
-    useWalletInitialization();
+  const { isReady, seedPhraseToBackup, handleDismissSeedPhrase } = useWalletInitialization();
 
   // Show loading while fonts load or wallet initializes
   if (!fontsLoaded || !isReady) {
@@ -44,10 +43,7 @@ export default function App() {
     <SafeAreaProvider>
       <ViewWrapper />
       {seedPhraseToBackup && (
-        <SeedPhraseModal
-          seedPhrase={seedPhraseToBackup}
-          onDismiss={handleDismissSeedPhrase}
-        />
+        <SeedPhraseModal seedPhrase={seedPhraseToBackup} onDismiss={handleDismissSeedPhrase} />
       )}
     </SafeAreaProvider>
   );

@@ -4,9 +4,7 @@ import { useWalletStore } from "@/store/walletStore";
 export function useWalletInitialization() {
   const { initializeWallet, createWallet } = useWalletStore();
   const [isReady, setIsReady] = useState(false);
-  const [seedPhraseToBackup, setSeedPhraseToBackup] = useState<string | null>(
-    null
-  );
+  const [seedPhraseToBackup, setSeedPhraseToBackup] = useState<string | null>(null);
 
   useEffect(() => {
     const init = async () => {

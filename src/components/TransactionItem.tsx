@@ -7,10 +7,7 @@ interface TransactionItemProps {
   onPress?: () => void;
 }
 
-export default function TransactionItem({
-  transaction,
-  onPress,
-}: TransactionItemProps) {
+export default function TransactionItem({ transaction, onPress }: TransactionItemProps) {
   const formatAddress = (address: string) => {
     if (address.length <= 16) return address;
     return `${address.slice(0, 8)}...${address.slice(-8)}`;
@@ -81,9 +78,7 @@ export default function TransactionItem({
 
   const isSend = transaction.type === "send";
   // For send transactions, use black. For receive, use status-based colors
-  const amountColor = isSend
-    ? "text-theme-text-primary"
-    : getStatusTextColor(transaction.status);
+  const amountColor = isSend ? "text-theme-text-primary" : getStatusTextColor(transaction.status);
   const amountPrefix = isSend ? "-" : "+";
 
   // Icon colors: for failed transactions, always use red. For send transactions, use black/neutral. For receive, use status-based colors
@@ -91,14 +86,14 @@ export default function TransactionItem({
     transaction.status === "failed"
       ? getStatusIconBg(transaction.status)
       : isSend
-      ? "bg-theme-border-light"
-      : getStatusIconBg(transaction.status);
+        ? "bg-theme-border-light"
+        : getStatusIconBg(transaction.status);
   const iconTextColor =
     transaction.status === "failed"
       ? getStatusTextColor(transaction.status)
       : isSend
-      ? "text-theme-text-primary"
-      : getStatusTextColor(transaction.status);
+        ? "text-theme-text-primary"
+        : getStatusTextColor(transaction.status);
 
   // Icon: X for failed, arrow for others
   const icon = transaction.status === "failed" ? "✕" : isSend ? "↑" : "↓";
@@ -116,26 +111,16 @@ export default function TransactionItem({
             <Text className={`text-base font-semibold ${amountColor} mr-2`}>
               {amountPrefix} {transaction.amount.toFixed(8)} BTC
             </Text>
-            <View
-              className={`px-2 py-1 rounded-full ${getStatusColor(
-                transaction.status
-              )}`}
-            >
-              <Text className="text-xs font-medium capitalize">
-                {transaction.status}
-              </Text>
+            <View className={`px-2 py-1 rounded-full ${getStatusColor(transaction.status)}`}>
+              <Text className="text-xs font-medium capitalize">{transaction.status}</Text>
             </View>
           </View>
           <Text className="text-theme-text-secondary text-sm font-mono mb-1">
             {formatAddress(transaction.address)}
           </Text>
-          <Text className="text-theme-text-muted text-xs">
-            {formatDate(transaction.timestamp)}
-          </Text>
+          <Text className="text-theme-text-muted text-xs">{formatDate(transaction.timestamp)}</Text>
         </View>
-        <View
-          className={`w-12 h-12 rounded-full items-center justify-center ${iconBg}`}
-        >
+        <View className={`w-12 h-12 rounded-full items-center justify-center ${iconBg}`}>
           <Text className={`text-xl font-bold ${iconTextColor}`}>{icon}</Text>
         </View>
       </View>

@@ -18,12 +18,10 @@ export async function getAddressBalance(
   const data = await mempoolApi.getAddressData(address, network);
 
   // Calculate confirmed balance from chain stats
-  const confirmed =
-    data.chain_stats.funded_txo_sum - data.chain_stats.spent_txo_sum;
+  const confirmed = data.chain_stats.funded_txo_sum - data.chain_stats.spent_txo_sum;
 
   // Calculate unconfirmed balance from mempool stats
-  const unconfirmed =
-    data.mempool_stats.funded_txo_sum - data.mempool_stats.spent_txo_sum;
+  const unconfirmed = data.mempool_stats.funded_txo_sum - data.mempool_stats.spent_txo_sum;
 
   return {
     confirmed,
@@ -35,10 +33,7 @@ export async function getAddressBalance(
 /**
  * Fetch UTXOs (unspent transaction outputs) for an address
  */
-export async function getAddressUtxos(
-  address: string,
-  network: NetworkType
-): Promise<UTXO[]> {
+export async function getAddressUtxos(address: string, network: NetworkType): Promise<UTXO[]> {
   return mempoolApi.getAddressUtxos(address, network);
 }
 
@@ -46,9 +41,7 @@ export async function getAddressUtxos(
  * Fetch recommended fee rates
  * Returns fee rates in sat/vB for different confirmation targets
  */
-export async function getRecommendedFees(
-  network: NetworkType
-): Promise<FeeRates> {
+export async function getRecommendedFees(network: NetworkType): Promise<FeeRates> {
   return mempoolApi.getRecommendedFees(network);
 }
 
@@ -57,10 +50,7 @@ export async function getRecommendedFees(
  * @param txHex - The signed transaction in hex format
  * @returns The transaction ID (txid) if successful
  */
-export async function broadcastTransaction(
-  txHex: string,
-  network: NetworkType
-): Promise<string> {
+export async function broadcastTransaction(txHex: string, network: NetworkType): Promise<string> {
   return mempoolApi.broadcastTransaction(txHex, network);
 }
 
@@ -79,12 +69,8 @@ export async function getAddressTransactions(
   // Transform API response to our Transaction type
   const transactions: Transaction[] = data.map((tx) => {
     // Check if address appears in inputs (send) or outputs (receive)
-    const isInInputs = tx.vin.some(
-      (input) => input.prevout?.scriptpubkey_address === address
-    );
-    const isInOutputs = tx.vout.some(
-      (output) => output.scriptpubkey_address === address
-    );
+    const isInInputs = tx.vin.some((input) => input.prevout?.scriptpubkey_address === address);
+    const isInOutputs = tx.vout.some((output) => output.scriptpubkey_address === address);
 
     // Determine transaction type
     // If address is in both inputs and outputs, it's a send (self-send)
@@ -114,14 +100,10 @@ export async function getAddressTransactions(
     // For receives: get the sender address (first input that's not us)
     let otherAddress = "";
     if (type === "send") {
-      const recipientOutput = tx.vout.find(
-        (output) => output.scriptpubkey_address !== address
-      );
+      const recipientOutput = tx.vout.find((output) => output.scriptpubkey_address !== address);
       otherAddress = recipientOutput?.scriptpubkey_address || "";
     } else {
-      const senderInput = tx.vin.find(
-        (input) => input.prevout?.scriptpubkey_address !== address
-      );
+      const senderInput = tx.vin.find((input) => input.prevout?.scriptpubkey_address !== address);
       otherAddress = senderInput?.prevout?.scriptpubkey_address || "";
     }
 
@@ -140,9 +122,7 @@ export async function getAddressTransactions(
       : "pending";
 
     // Convert timestamp
-    const timestamp = tx.status.block_time
-      ? new Date(tx.status.block_time * 1000)
-      : new Date();
+    const timestamp = tx.status.block_time ? new Date(tx.status.block_time * 1000) : new Date();
 
     // Convert amounts from satoshis to BTC
     const amountBtc = satsToBtc(amountSats);
@@ -165,4 +145,3 @@ export async function getAddressTransactions(
 
   return transactions;
 }
-

@@ -1,10 +1,5 @@
 import { create } from "zustand";
-import {
-  NetworkType,
-  TransactionPreview,
-  UTXO,
-  Transaction,
-} from "@/types/wallet";
+import { NetworkType, TransactionPreview, UTXO, Transaction } from "@/types/wallet";
 import * as keyService from "@/services/keyService";
 import * as bitcoinService from "@/services/bitcoinService";
 import * as chainService from "@/services/chainService";
@@ -116,10 +111,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
     } catch (error) {
       set({
         isLoading: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to initialize wallet",
+        error: error instanceof Error ? error.message : "Failed to initialize wallet",
       });
     }
   },
@@ -154,8 +146,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
     } catch (error) {
       set({
         isLoading: false,
-        error:
-          error instanceof Error ? error.message : "Failed to create wallet",
+        error: error instanceof Error ? error.message : "Failed to create wallet",
       });
       throw error;
     }
@@ -190,8 +181,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
     } catch (error) {
       set({
         isLoading: false,
-        error:
-          error instanceof Error ? error.message : "Failed to import wallet",
+        error: error instanceof Error ? error.message : "Failed to import wallet",
       });
       throw error;
     }
@@ -216,8 +206,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
     } catch (error) {
       set({
         isLoading: false,
-        error:
-          error instanceof Error ? error.message : "Failed to delete wallet",
+        error: error instanceof Error ? error.message : "Failed to delete wallet",
       });
       throw error;
     }
@@ -236,8 +225,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
       }
     } catch (error) {
       set({
-        error:
-          error instanceof Error ? error.message : "Failed to refresh address",
+        error: error instanceof Error ? error.message : "Failed to refresh address",
       });
     }
   },
@@ -261,8 +249,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
     } catch (error) {
       set({
         isBalanceLoading: false,
-        error:
-          error instanceof Error ? error.message : "Failed to fetch balance",
+        error: error instanceof Error ? error.message : "Failed to fetch balance",
       });
     }
   },
@@ -277,10 +264,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
     set({ isTransactionsLoading: true, transactionsError: null });
 
     try {
-      const transactions = await chainService.getAddressTransactions(
-        address,
-        network
-      );
+      const transactions = await chainService.getAddressTransactions(address, network);
       set({
         transactions,
         isTransactionsLoading: false,
@@ -289,18 +273,12 @@ export const useWalletStore = create<WalletState>((set, get) => ({
     } catch (error) {
       set({
         isTransactionsLoading: false,
-        transactionsError:
-          error instanceof Error
-            ? error.message
-            : "Failed to fetch transactions",
+        transactionsError: error instanceof Error ? error.message : "Failed to fetch transactions",
       });
     }
   },
 
-  prepareSendTransaction: async (
-    recipientAddress: string,
-    amountSats: number
-  ) => {
+  prepareSendTransaction: async (recipientAddress: string, amountSats: number) => {
     const { address, network, balance } = get();
 
     set({ isSending: true, sendError: null, transactionPreview: null });
@@ -341,9 +319,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
 
       // Check if we have enough funds
       if (preview.totalSats > balance) {
-        throw new Error(
-          `Insufficient funds. Need ${preview.totalSats} sats, have ${balance} sats`
-        );
+        throw new Error(`Insufficient funds. Need ${preview.totalSats} sats, have ${balance} sats`);
       }
 
       set({
@@ -354,10 +330,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
 
       return preview;
     } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Failed to prepare transaction";
+      const errorMessage = error instanceof Error ? error.message : "Failed to prepare transaction";
       set({
         isSending: false,
         sendError: errorMessage,
@@ -413,8 +386,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
 
       return txid;
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to send transaction";
+      const errorMessage = error instanceof Error ? error.message : "Failed to send transaction";
       set({
         isSending: false,
         sendError: errorMessage,

@@ -8,17 +8,10 @@ interface NavbarProps {
   showCloseButton?: boolean;
 }
 
-export default function Navbar({
-  title,
-  showCloseButton = false,
-}: NavbarProps) {
+export default function Navbar({ title, showCloseButton = false }: NavbarProps) {
   const insets = useSafeAreaInsets();
-  const {
-    navigateToSettings,
-    navigateToWallet,
-    closeTransactionDetail,
-    currentScreen,
-  } = useNavigationStore();
+  const { navigateToSettings, navigateToWallet, closeTransactionDetail, currentScreen } =
+    useNavigationStore();
 
   const handleSettings = () => {
     navigateToSettings();
@@ -54,14 +47,8 @@ export default function Navbar({
         {hasBackAction ? (
           showCloseButton ? (
             <>
-              <Text className={`text-2xl font-bold ${textColor}`}>
-                {title || "Transaction"}
-              </Text>
-              <TouchableOpacity
-                onPress={handleBack}
-                className="p-2"
-                activeOpacity={0.7}
-              >
+              <Text className={`text-2xl font-bold ${textColor}`}>{title || "Transaction"}</Text>
+              <TouchableOpacity onPress={handleBack} className="p-2" activeOpacity={0.7}>
                 <Text className={`text-2xl ${textColor}`}>✕</Text>
               </TouchableOpacity>
             </>
@@ -72,9 +59,7 @@ export default function Navbar({
               activeOpacity={0.7}
             >
               <Text className={`text-xl ${textColor} mr-2`}>←</Text>
-              <Text className={`text-lg font-semibold ${textColor}`}>
-                {title || "Back"}
-              </Text>
+              <Text className={`text-lg font-semibold ${textColor}`}>{title || "Back"}</Text>
             </TouchableOpacity>
           )
         ) : (
@@ -83,11 +68,7 @@ export default function Navbar({
 
         {/* Action Buttons - Only show when not on settings screen and not showing close button */}
         {!hasBackAction && (
-          <TouchableOpacity
-            onPress={handleSettings}
-            className="p-2"
-            activeOpacity={0.7}
-          >
+          <TouchableOpacity onPress={handleSettings} className="p-2" activeOpacity={0.7}>
             <Text className={`text-3xl ${textColor}`}>☰</Text>
           </TouchableOpacity>
         )}

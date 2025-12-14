@@ -30,4 +30,3 @@ export interface SettingsData {
   notifications: NotificationSettings;
   appInfo: AppInfo;
 }
-
