@@ -64,9 +64,7 @@ export default function ViewWrapper() {
             opacity: transactionDetailOpacity,
             transform: [{ translateY: transactionDetailTranslateY }],
           }}
-          pointerEvents={
-            currentScreen === "transactionDetail" ? "auto" : "none"
-          }
+          pointerEvents={currentScreen === "transactionDetail" ? "auto" : "none"}
         >
           <TransactionDetailScreen />
         </Animated.View>

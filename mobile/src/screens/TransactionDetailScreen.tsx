@@ -64,23 +64,21 @@ export default function TransactionDetailScreen() {
   };
 
   const isSend = transaction.type === "send";
-  const amountColor = isSend
-    ? "text-theme-text-primary"
-    : getStatusTextColor(transaction.status);
+  const amountColor = isSend ? "text-theme-text-primary" : getStatusTextColor(transaction.status);
   const amountPrefix = isSend ? "-" : "+";
 
   const iconBg =
     transaction.status === "failed"
       ? getStatusIconBg(transaction.status)
       : isSend
-      ? "bg-theme-border-light"
-      : getStatusIconBg(transaction.status);
+        ? "bg-theme-border-light"
+        : getStatusIconBg(transaction.status);
   const iconTextColor =
     transaction.status === "failed"
       ? getStatusTextColor(transaction.status)
       : isSend
-      ? "text-theme-text-primary"
-      : getStatusTextColor(transaction.status);
+        ? "text-theme-text-primary"
+        : getStatusTextColor(transaction.status);
 
   const icon = transaction.status === "failed" ? "✕" : isSend ? "↑" : "↓";
 
@@ -113,46 +111,30 @@ export default function TransactionDetailScreen() {
           {/* Transaction Header */}
           <View className="px-4 py-6">
             <View className="items-center mb-6">
-              <View
-                className={`w-20 h-20 rounded-full items-center justify-center ${iconBg} mb-4`}
-              >
-                <Text className={`text-4xl font-bold ${iconTextColor}`}>
-                  {icon}
-                </Text>
+              <View className={`w-20 h-20 rounded-full items-center justify-center ${iconBg} mb-4`}>
+                <Text className={`text-4xl font-bold ${iconTextColor}`}>{icon}</Text>
               </View>
               <Text className={`text-3xl font-bold ${amountColor} mb-2`}>
                 {amountPrefix} {transaction.amount.toFixed(8)} BTC
               </Text>
-              <View
-                className={`px-3 py-1.5 rounded-full ${getStatusColor(
-                  transaction.status
-                )}`}
-              >
-                <Text className="text-sm font-medium capitalize">
-                  {transaction.status}
-                </Text>
+              <View className={`px-3 py-1.5 rounded-full ${getStatusColor(transaction.status)}`}>
+                <Text className="text-sm font-medium capitalize">{transaction.status}</Text>
               </View>
             </View>
 
             {/* Transaction Details Card */}
             <View className="bg-theme-surface rounded-xl border border-theme-border overflow-hidden">
               <View className="px-4 py-4 border-b border-theme-border">
-                <Text className="text-xs text-theme-text-muted mb-1">
-                  Direction
-                </Text>
+                <Text className="text-xs text-theme-text-muted mb-1">Direction</Text>
                 <Text className="text-base text-theme-text-primary font-medium">
                   {transaction.type === "send" ? "Outgoing" : "Incoming"}
                 </Text>
               </View>
 
               <View className="px-4 py-4 border-b border-theme-border">
-                <Text className="text-xs text-theme-text-muted mb-1">
-                  Transaction Type
-                </Text>
+                <Text className="text-xs text-theme-text-muted mb-1">Transaction Type</Text>
                 <Text className="text-base text-theme-text-primary font-medium">
-                  {transaction.transactionType === "on-chain"
-                    ? "On-chain"
-                    : "Lightning"}
+                  {transaction.transactionType === "on-chain" ? "On-chain" : "Lightning"}
                 </Text>
               </View>
 
@@ -164,9 +146,7 @@ export default function TransactionDetailScreen() {
               </View>
 
               <View className="px-4 py-4 border-b border-theme-border">
-                <Text className="text-xs text-theme-text-muted mb-1">
-                  Date & Time
-                </Text>
+                <Text className="text-xs text-theme-text-muted mb-1">Date & Time</Text>
                 <Text className="text-base text-theme-text-primary font-medium">
                   {formatDate(transaction.timestamp)}
                 </Text>
@@ -175,13 +155,8 @@ export default function TransactionDetailScreen() {
               <View className="px-4 py-4 border-b border-theme-border">
                 <View className="flex-row items-center justify-between mb-1">
                   <Text className="text-xs text-theme-text-muted">Address</Text>
-                  <TouchableOpacity
-                    onPress={handleCopyAddress}
-                    activeOpacity={0.7}
-                  >
-                    <Text className="text-xs text-theme-primary-main font-medium">
-                      Copy
-                    </Text>
+                  <TouchableOpacity onPress={handleCopyAddress} activeOpacity={0.7}>
+                    <Text className="text-xs text-theme-primary-main font-medium">Copy</Text>
                   </TouchableOpacity>
                 </View>
                 <Text className="text-base text-theme-text-primary font-mono">
@@ -191,13 +166,9 @@ export default function TransactionDetailScreen() {
 
               <View className="px-4 py-4">
                 <View className="flex-row items-center justify-between mb-1">
-                  <Text className="text-xs text-theme-text-muted">
-                    Transaction ID
-                  </Text>
+                  <Text className="text-xs text-theme-text-muted">Transaction ID</Text>
                   <TouchableOpacity onPress={handleCopyId} activeOpacity={0.7}>
-                    <Text className="text-xs text-theme-primary-main font-medium">
-                      Copy
-                    </Text>
+                    <Text className="text-xs text-theme-primary-main font-medium">Copy</Text>
                   </TouchableOpacity>
                 </View>
                 <Text className="text-base text-theme-text-primary font-mono">

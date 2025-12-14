@@ -13,8 +13,7 @@ import { useWalletStore } from "@/store/walletStore";
 import { satsToBtc } from "@/utils/bitcoinUtils";
 
 export default function WalletScreen() {
-  const { navigateToSend, navigateToReceive, navigateToTransactionDetail } =
-    useNavigationStore();
+  const { navigateToSend, navigateToReceive, navigateToTransactionDetail } = useNavigationStore();
   const { theme } = useThemeStore();
   const {
     balance,
@@ -49,9 +48,7 @@ export default function WalletScreen() {
       <StatusBar style="dark" />
       <ScrollView
         className="flex-1"
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
         <View style={{ backgroundColor: theme.primary.main }} className="pb-6">
           <Navbar />
@@ -61,18 +58,8 @@ export default function WalletScreen() {
             isLoading={isBalanceLoading}
           />
           <View className="flex-row px-4 mb-4">
-            <ActionButton
-              label="Send"
-              icon="↑"
-              onPress={handleSend}
-              variant="primary"
-            />
-            <ActionButton
-              label="Receive"
-              icon="↓"
-              onPress={handleReceive}
-              variant="secondary"
-            />
+            <ActionButton label="Send" icon="↑" onPress={handleSend} variant="primary" />
+            <ActionButton label="Receive" icon="↓" onPress={handleReceive} variant="secondary" />
           </View>
         </View>
 
@@ -90,9 +77,7 @@ export default function WalletScreen() {
 function TransactionListHeader() {
   return (
     <View className="px-4 mb-2 mt-6">
-      <Text className="text-lg font-semibold text-theme-text-primary">
-        Recent Transactions
-      </Text>
+      <Text className="text-lg font-semibold text-theme-text-primary">Recent Transactions</Text>
     </View>
   );
 }

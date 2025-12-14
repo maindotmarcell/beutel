@@ -70,8 +70,7 @@ export function derivePrivateKey(
   accountIndex: number = 0,
   addressIndex: number = 0
 ): Uint8Array {
-  return deriveKeyPair(mnemonic, network, accountIndex, addressIndex)
-    .privateKey;
+  return deriveKeyPair(mnemonic, network, accountIndex, addressIndex).privateKey;
 }
 
 /**
@@ -83,8 +82,7 @@ export function getPublicKey(
   accountIndex: number = 0,
   addressIndex: number = 0
 ): Uint8Array {
-  return deriveKeyPair(mnemonic, network, accountIndex, addressIndex)
-    .xOnlyPubKey;
+  return deriveKeyPair(mnemonic, network, accountIndex, addressIndex).xOnlyPubKey;
 }
 
 /**
@@ -96,12 +94,7 @@ export function getAddress(
   accountIndex: number = 0,
   addressIndex: number = 0
 ): string {
-  const { xOnlyPubKey } = deriveKeyPair(
-    mnemonic,
-    network,
-    accountIndex,
-    addressIndex
-  );
+  const { xOnlyPubKey } = deriveKeyPair(mnemonic, network, accountIndex, addressIndex);
   const networkConfig = NETWORKS[network];
 
   // Create P2TR (Taproot) output using the x-only public key
@@ -123,12 +116,7 @@ export function getPublicKeyHex(
   accountIndex: number = 0,
   addressIndex: number = 0
 ): string {
-  const { xOnlyPubKey } = deriveKeyPair(
-    mnemonic,
-    network,
-    accountIndex,
-    addressIndex
-  );
+  const { xOnlyPubKey } = deriveKeyPair(mnemonic, network, accountIndex, addressIndex);
   const networkConfig = NETWORKS[network];
   const p2tr = btc.p2tr(xOnlyPubKey, undefined, networkConfig);
 
@@ -138,10 +126,7 @@ export function getPublicKeyHex(
 /**
  * Sign a message using Schnorr signature (BIP340) for Taproot
  */
-export function signMessage(
-  message: Uint8Array,
-  privateKey: Uint8Array
-): Uint8Array {
+export function signMessage(message: Uint8Array, privateKey: Uint8Array): Uint8Array {
   // Use schnorr signature for Taproot
   return signSchnorr(message, privateKey);
 }
@@ -183,14 +168,9 @@ const TX_OVERHEAD_VBYTES = 10.5; // Transaction overhead
 /**
  * Estimate transaction size in virtual bytes for fee calculation
  */
-export function estimateTxVbytes(
-  inputCount: number,
-  outputCount: number
-): number {
+export function estimateTxVbytes(inputCount: number, outputCount: number): number {
   return Math.ceil(
-    TX_OVERHEAD_VBYTES +
-      inputCount * P2TR_INPUT_VBYTES +
-      outputCount * P2TR_OUTPUT_VBYTES
+    TX_OVERHEAD_VBYTES + inputCount * P2TR_INPUT_VBYTES + outputCount * P2TR_OUTPUT_VBYTES
   );
 }
 
@@ -279,11 +259,7 @@ export function buildAndSignTransaction(
 
   // Verify we have enough funds
   if (totalValue < amountSats + fee) {
-    throw new Error(
-      `Insufficient funds. Need ${
-        amountSats + fee
-      } sats, have ${totalValue} sats`
-    );
+    throw new Error(`Insufficient funds. Need ${amountSats + fee} sats, have ${totalValue} sats`);
   }
 
   // Calculate change

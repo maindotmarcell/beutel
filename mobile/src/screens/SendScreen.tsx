@@ -124,9 +124,7 @@ export default function SendScreen() {
     <>
       {/* Recipient Address Input */}
       <View className="mb-6">
-        <Text className="text-sm text-theme-text-muted mb-2">
-          Recipient Address
-        </Text>
+        <Text className="text-sm text-theme-text-muted mb-2">Recipient Address</Text>
         <TextInput
           className="bg-theme-background border border-theme-border rounded-xl px-4 py-3 text-theme-text-primary font-mono"
           placeholder="Enter Bitcoin address"
@@ -156,8 +154,7 @@ export default function SendScreen() {
       {/* Available Balance */}
       <View className="mb-6">
         <Text className="text-xs text-theme-text-muted">
-          Available: {satsToBtc(balance).toFixed(8)} BTC ({formatSats(balance)}{" "}
-          sats)
+          Available: {satsToBtc(balance).toFixed(8)} BTC ({formatSats(balance)} sats)
         </Text>
       </View>
 
@@ -174,9 +171,7 @@ export default function SendScreen() {
         onPress={handlePreview}
         className="bg-theme-primary-light rounded-xl py-4 items-center"
       >
-        <Text className="text-white font-semibold text-base">
-          Review Transaction
-        </Text>
+        <Text className="text-white font-semibold text-base">Review Transaction</Text>
       </TouchableOpacity>
     </>
   );
@@ -186,9 +181,7 @@ export default function SendScreen() {
       return (
         <View className="items-center py-8">
           <ActivityIndicator size="large" color="#f7931a" />
-          <Text className="text-theme-text-muted mt-4">
-            Preparing transaction...
-          </Text>
+          <Text className="text-theme-text-muted mt-4">Preparing transaction...</Text>
         </View>
       );
     }
@@ -232,9 +225,7 @@ export default function SendScreen() {
 
           <View className="flex-row justify-between mb-3">
             <Text className="text-theme-text-muted">Fee Rate</Text>
-            <Text className="text-theme-text-primary">
-              {transactionPreview.feeRate} sat/vB
-            </Text>
+            <Text className="text-theme-text-primary">{transactionPreview.feeRate} sat/vB</Text>
           </View>
 
           <View className="border-t border-theme-border my-2" />
@@ -254,9 +245,7 @@ export default function SendScreen() {
             onPress={handleBackToInput}
             className="flex-1 bg-theme-background border border-theme-border rounded-xl py-4 items-center"
           >
-            <Text className="text-theme-text-primary font-semibold text-base">
-              Back
-            </Text>
+            <Text className="text-theme-text-primary font-semibold text-base">Back</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -264,9 +253,7 @@ export default function SendScreen() {
             onPress={handleConfirmSend}
             className="flex-1 bg-theme-primary-light rounded-xl py-4 items-center"
           >
-            <Text className="text-white font-semibold text-base">
-              Confirm Send
-            </Text>
+            <Text className="text-white font-semibold text-base">Confirm Send</Text>
           </TouchableOpacity>
         </View>
       </>
@@ -290,22 +277,15 @@ export default function SendScreen() {
       <View className="w-16 h-16 rounded-full bg-green-500/20 items-center justify-center mb-4">
         <Text className="text-4xl">✓</Text>
       </View>
-      <Text className="text-theme-text-primary text-xl font-semibold mb-2">
-        Transaction Sent!
-      </Text>
+      <Text className="text-theme-text-primary text-xl font-semibold mb-2">Transaction Sent!</Text>
       <Text className="text-theme-text-muted text-center mb-4">
         Your transaction has been broadcast to the network.
       </Text>
 
       {lastTxId && (
         <View className="bg-theme-background rounded-xl p-4 w-full mb-6">
-          <Text className="text-theme-text-muted text-xs mb-1">
-            Transaction ID
-          </Text>
-          <Text
-            className="text-theme-text-primary font-mono text-xs"
-            numberOfLines={2}
-          >
+          <Text className="text-theme-text-muted text-xs mb-1">Transaction ID</Text>
+          <Text className="text-theme-text-primary font-mono text-xs" numberOfLines={2}>
             {lastTxId}
           </Text>
         </View>
@@ -326,9 +306,7 @@ export default function SendScreen() {
       <View className="w-16 h-16 rounded-full bg-red-500/20 items-center justify-center mb-4">
         <Text className="text-4xl">✕</Text>
       </View>
-      <Text className="text-theme-text-primary text-xl font-semibold mb-2">
-        Transaction Failed
-      </Text>
+      <Text className="text-theme-text-primary text-xl font-semibold mb-2">Transaction Failed</Text>
       <Text className="text-theme-text-muted text-center mb-4">
         {sendError || "Something went wrong. Please try again."}
       </Text>
@@ -339,9 +317,7 @@ export default function SendScreen() {
           onPress={handleClose}
           className="flex-1 bg-theme-background border border-theme-border rounded-xl py-4 items-center"
         >
-          <Text className="text-theme-text-primary font-semibold text-base">
-            Close
-          </Text>
+          <Text className="text-theme-text-primary font-semibold text-base">Close</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -405,15 +381,9 @@ export default function SendScreen() {
           >
             {/* Header */}
             <View className="flex-row items-center justify-between px-6 py-4 border-b border-theme-border">
-              <Text className="text-2xl font-bold text-theme-text-primary">
-                {getHeaderTitle()}
-              </Text>
+              <Text className="text-2xl font-bold text-theme-text-primary">{getHeaderTitle()}</Text>
               {step !== "sending" && (
-                <TouchableOpacity
-                  onPress={handleClose}
-                  className="p-2"
-                  activeOpacity={0.7}
-                >
+                <TouchableOpacity onPress={handleClose} className="p-2" activeOpacity={0.7}>
                   <Text className="text-2xl text-theme-text-primary">✕</Text>
                 </TouchableOpacity>
               )}

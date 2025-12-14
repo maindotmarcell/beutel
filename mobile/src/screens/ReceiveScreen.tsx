@@ -1,10 +1,4 @@
-import {
-  View,
-  TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
-  TextInput,
-} from "react-native";
+import { View, TouchableOpacity, KeyboardAvoidingView, Platform, TextInput } from "react-native";
 import { useState } from "react";
 import * as Clipboard from "expo-clipboard";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -47,18 +41,12 @@ export default function ReceiveScreen() {
           {/* Header */}
           <View className="flex-row items-center justify-between px-6 py-4 border-b border-theme-border">
             <View>
-              <Text className="text-2xl font-bold text-theme-text-primary">
-                Receive Bitcoin
-              </Text>
+              <Text className="text-2xl font-bold text-theme-text-primary">Receive Bitcoin</Text>
               <Text className="text-xs text-theme-text-muted uppercase mt-1">
                 {network !== "mainnet" ? "⚠️ Testnet" : "Mainnet"}
               </Text>
             </View>
-            <TouchableOpacity
-              onPress={closeReceive}
-              className="p-2"
-              activeOpacity={0.7}
-            >
+            <TouchableOpacity onPress={closeReceive} className="p-2" activeOpacity={0.7}>
               <Text className="text-2xl text-theme-text-primary">✕</Text>
             </TouchableOpacity>
           </View>
@@ -77,18 +65,14 @@ export default function ReceiveScreen() {
                     quietZone={8}
                   />
                 ) : (
-                  <Text className="text-theme-text-muted text-sm">
-                    QR Code Placeholder
-                  </Text>
+                  <Text className="text-theme-text-muted text-sm">QR Code Placeholder</Text>
                 )}
               </View>
             </View>
 
             {/* Receive Address */}
             <View className="mb-6">
-              <Text className="text-sm text-theme-text-muted mb-2">
-                Your Receive Address
-              </Text>
+              <Text className="text-sm text-theme-text-muted mb-2">Your Receive Address</Text>
               <View className="flex-row items-center gap-2">
                 <TextInput
                   className="flex-1 bg-theme-background border border-theme-border rounded-xl px-4 py-3 text-theme-text-primary font-mono"
@@ -104,15 +88,11 @@ export default function ReceiveScreen() {
                   className="bg-theme-background border border-theme-border rounded-xl px-4 py-3 items-center justify-center min-w-[60px]"
                   activeOpacity={0.7}
                 >
-                  <Text className="text-theme-text-primary text-lg">
-                    {copied ? "✓" : "📋"}
-                  </Text>
+                  <Text className="text-theme-text-primary text-lg">{copied ? "✓" : "📋"}</Text>
                 </TouchableOpacity>
               </View>
               {copied && (
-                <Text className="text-sm text-theme-text-muted mt-2 text-center">
-                  Copied!
-                </Text>
+                <Text className="text-sm text-theme-text-muted mt-2 text-center">Copied!</Text>
               )}
             </View>
           </View>

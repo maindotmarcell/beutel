@@ -11,4 +11,3 @@ export function satsToBtc(sats: number): number {
 export function btcToSats(btc: number): number {
   return Math.round(btc * 100_000_000);
 }
-

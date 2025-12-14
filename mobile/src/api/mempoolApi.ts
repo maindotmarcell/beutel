@@ -60,9 +60,7 @@ export async function getAddressData(
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error(
-      `Failed to fetch address data: ${response.status} ${response.statusText}`
-    );
+    throw new Error(`Failed to fetch address data: ${response.status} ${response.statusText}`);
   }
 
   const data: AddressResponse = await response.json();
@@ -72,19 +70,14 @@ export async function getAddressData(
 /**
  * Fetch UTXOs (unspent transaction outputs) for an address
  */
-export async function getAddressUtxos(
-  address: string,
-  network: NetworkType
-): Promise<UTXO[]> {
+export async function getAddressUtxos(address: string, network: NetworkType): Promise<UTXO[]> {
   const baseUrl = API_BASE_URLS[network];
   const url = `${baseUrl}/address/${address}/utxo`;
 
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error(
-      `Failed to fetch UTXOs: ${response.status} ${response.statusText}`
-    );
+    throw new Error(`Failed to fetch UTXOs: ${response.status} ${response.statusText}`);
   }
 
   const utxos: UTXO[] = await response.json();
@@ -95,18 +88,14 @@ export async function getAddressUtxos(
  * Fetch recommended fee rates from mempool.space
  * Returns fee rates in sat/vB for different confirmation targets
  */
-export async function getRecommendedFees(
-  network: NetworkType
-): Promise<FeeRates> {
+export async function getRecommendedFees(network: NetworkType): Promise<FeeRates> {
   const baseUrl = API_BASE_URLS[network];
   const url = `${baseUrl}/v1/fees/recommended`;
 
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error(
-      `Failed to fetch fee rates: ${response.status} ${response.statusText}`
-    );
+    throw new Error(`Failed to fetch fee rates: ${response.status} ${response.statusText}`);
   }
 
   const feeRates: FeeRates = await response.json();
@@ -118,10 +107,7 @@ export async function getRecommendedFees(
  * @param txHex - The signed transaction in hex format
  * @returns The transaction ID (txid) if successful
  */
-export async function broadcastTransaction(
-  txHex: string,
-  network: NetworkType
-): Promise<string> {
+export async function broadcastTransaction(txHex: string, network: NetworkType): Promise<string> {
   const baseUrl = API_BASE_URLS[network];
   const url = `${baseUrl}/tx`;
 
@@ -159,12 +145,9 @@ export async function getAddressTransactions(
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error(
-      `Failed to fetch transactions: ${response.status} ${response.statusText}`
-    );
+    throw new Error(`Failed to fetch transactions: ${response.status} ${response.statusText}`);
   }
 
   const data: TransactionResponse[] = await response.json();
   return data;
 }
-

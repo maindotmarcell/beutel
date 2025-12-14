@@ -1,8 +1,4 @@
-export {
-  getWalletBalance,
-  getTransactions,
-  getTransactionById,
-} from './walletService';
+export { getWalletBalance, getTransactions, getTransactionById } from "./walletService";
 
 export {
   getUserProfile,
@@ -10,7 +6,7 @@ export {
   getNotificationSettings,
   getAppInfo,
   getReceiveAddress,
-} from './settingsService';
+} from "./settingsService";
 
 // Key management service
 export {
@@ -21,7 +17,7 @@ export {
   getMnemonic,
   deleteMnemonic,
   hasMnemonic,
-} from './keyService';
+} from "./keyService";
 
 // Bitcoin service
 export {
@@ -36,7 +32,7 @@ export {
   selectUtxos,
   prepareTransactionPreview,
   buildAndSignTransaction,
-} from './bitcoinService';
+} from "./bitcoinService";
 
 // Chain service (business logic for blockchain operations)
 export {
@@ -45,5 +41,4 @@ export {
   getRecommendedFees,
   broadcastTransaction,
   getAddressTransactions,
-} from './chainService';
-
+} from "./chainService";

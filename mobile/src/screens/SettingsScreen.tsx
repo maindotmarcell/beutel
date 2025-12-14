@@ -42,10 +42,7 @@ export default function SettingsScreen() {
     setImportSuccess(false);
 
     // Clean up the seed phrase - trim whitespace and normalize spaces
-    const cleanedPhrase = seedPhraseInput
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, " ");
+    const cleanedPhrase = seedPhraseInput.trim().toLowerCase().replace(/\s+/g, " ");
 
     // Basic validation
     const words = cleanedPhrase.split(" ");
@@ -66,9 +63,7 @@ export default function SettingsScreen() {
         setImportSuccess(false);
       }, 1500);
     } catch (error) {
-      setImportError(
-        error instanceof Error ? error.message : "Failed to import wallet"
-      );
+      setImportError(error instanceof Error ? error.message : "Failed to import wallet");
     } finally {
       setIsImporting(false);
     }
@@ -104,9 +99,7 @@ export default function SettingsScreen() {
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {/* Profile Section */}
           <View className="px-4 py-6">
-            <Text className="text-lg font-semibold text-theme-text-primary mb-4">
-              Account
-            </Text>
+            <Text className="text-lg font-semibold text-theme-text-primary mb-4">Account</Text>
             <View className="bg-theme-surface rounded-xl border border-theme-border overflow-hidden">
               <View className="px-4 py-4 border-b border-theme-border">
                 <Text className="text-xs text-theme-text-muted mb-1">Name</Text>
@@ -115,17 +108,13 @@ export default function SettingsScreen() {
                 </Text>
               </View>
               <View className="px-4 py-4 border-b border-theme-border">
-                <Text className="text-xs text-theme-text-muted mb-1">
-                  Email
-                </Text>
+                <Text className="text-xs text-theme-text-muted mb-1">Email</Text>
                 <Text className="text-base text-theme-text-primary font-medium">
                   {profile.email}
                 </Text>
               </View>
               <View className="px-4 py-4">
-                <Text className="text-xs text-theme-text-muted mb-1">
-                  Wallet Address
-                </Text>
+                <Text className="text-xs text-theme-text-muted mb-1">Wallet Address</Text>
                 <Text className="text-base text-theme-text-primary font-mono">
                   {formatAddress(profile.walletAddress)}
                 </Text>
@@ -135,9 +124,7 @@ export default function SettingsScreen() {
 
           {/* Security Section */}
           <View className="px-4 pb-6">
-            <Text className="text-lg font-semibold text-theme-text-primary mb-4">
-              Security
-            </Text>
+            <Text className="text-lg font-semibold text-theme-text-primary mb-4">Security</Text>
             <View className="bg-theme-surface rounded-xl border border-theme-border overflow-hidden">
               <View className="px-4 py-4 border-b border-theme-border flex-row items-center justify-between">
                 <View className="flex-1">
@@ -145,20 +132,14 @@ export default function SettingsScreen() {
                     Two-Factor Authentication
                   </Text>
                   <Text className="text-sm text-theme-text-secondary">
-                    {security.twoFactorAuth
-                      ? "Enabled"
-                      : "Disabled"}
+                    {security.twoFactorAuth ? "Enabled" : "Disabled"}
                   </Text>
                 </View>
                 <Switch
                   value={security.twoFactorAuth}
                   disabled
                   trackColor={{ false: "#e5e7eb", true: "#4169E1" }}
-                  thumbColor={
-                    security.twoFactorAuth
-                      ? "#ffffff"
-                      : "#f4f3f4"
-                  }
+                  thumbColor={security.twoFactorAuth ? "#ffffff" : "#f4f3f4"}
                 />
               </View>
               <View className="px-4 py-4 border-b border-theme-border flex-row items-center justify-between">
@@ -167,20 +148,14 @@ export default function SettingsScreen() {
                     Biometric Authentication
                   </Text>
                   <Text className="text-sm text-theme-text-secondary">
-                    {security.biometricAuth
-                      ? "Enabled"
-                      : "Disabled"}
+                    {security.biometricAuth ? "Enabled" : "Disabled"}
                   </Text>
                 </View>
                 <Switch
                   value={security.biometricAuth}
                   disabled
                   trackColor={{ false: "#e5e7eb", true: "#4169E1" }}
-                  thumbColor={
-                    security.biometricAuth
-                      ? "#ffffff"
-                      : "#f4f3f4"
-                  }
+                  thumbColor={security.biometricAuth ? "#ffffff" : "#f4f3f4"}
                 />
               </View>
               <View className="px-4 py-4 border-b border-theme-border flex-row items-center justify-between">
@@ -198,9 +173,7 @@ export default function SettingsScreen() {
                   value={security.autoLock}
                   disabled
                   trackColor={{ false: "#e5e7eb", true: "#4169E1" }}
-                  thumbColor={
-                    security.autoLock ? "#ffffff" : "#f4f3f4"
-                  }
+                  thumbColor={security.autoLock ? "#ffffff" : "#f4f3f4"}
                 />
               </View>
             </View>
@@ -225,11 +198,7 @@ export default function SettingsScreen() {
                   value={notifications.transactionAlerts}
                   disabled
                   trackColor={{ false: "#e5e7eb", true: "#4169E1" }}
-                  thumbColor={
-                    notifications.transactionAlerts
-                      ? "#ffffff"
-                      : "#f4f3f4"
-                  }
+                  thumbColor={notifications.transactionAlerts ? "#ffffff" : "#f4f3f4"}
                 />
               </View>
               <View className="px-4 py-4 border-b border-theme-border flex-row items-center justify-between">
@@ -245,11 +214,7 @@ export default function SettingsScreen() {
                   value={notifications.priceAlerts}
                   disabled
                   trackColor={{ false: "#e5e7eb", true: "#4169E1" }}
-                  thumbColor={
-                    notifications.priceAlerts
-                      ? "#ffffff"
-                      : "#f4f3f4"
-                  }
+                  thumbColor={notifications.priceAlerts ? "#ffffff" : "#f4f3f4"}
                 />
               </View>
               <View className="px-4 py-4 border-b border-theme-border flex-row items-center justify-between">
@@ -265,11 +230,7 @@ export default function SettingsScreen() {
                   value={notifications.securityAlerts}
                   disabled
                   trackColor={{ false: "#e5e7eb", true: "#4169E1" }}
-                  thumbColor={
-                    notifications.securityAlerts
-                      ? "#ffffff"
-                      : "#f4f3f4"
-                  }
+                  thumbColor={notifications.securityAlerts ? "#ffffff" : "#f4f3f4"}
                 />
               </View>
               <View className="px-4 py-4 flex-row items-center justify-between">
@@ -285,11 +246,7 @@ export default function SettingsScreen() {
                   value={notifications.marketingEmails}
                   disabled
                   trackColor={{ false: "#e5e7eb", true: "#4169E1" }}
-                  thumbColor={
-                    notifications.marketingEmails
-                      ? "#ffffff"
-                      : "#f4f3f4"
-                  }
+                  thumbColor={notifications.marketingEmails ? "#ffffff" : "#f4f3f4"}
                 />
               </View>
             </View>
@@ -297,15 +254,11 @@ export default function SettingsScreen() {
 
           {/* Wallet Section */}
           <View className="px-4 pb-6">
-            <Text className="text-lg font-semibold text-theme-text-primary mb-4">
-              Wallet
-            </Text>
+            <Text className="text-lg font-semibold text-theme-text-primary mb-4">Wallet</Text>
             <View className="bg-theme-surface rounded-xl border border-theme-border overflow-hidden">
               {address && (
                 <View className="px-4 py-4 border-b border-theme-border">
-                  <Text className="text-xs text-theme-text-muted mb-1">
-                    Current Address
-                  </Text>
+                  <Text className="text-xs text-theme-text-muted mb-1">Current Address</Text>
                   <Text className="text-sm text-theme-text-primary font-mono">
                     {formatAddress(address)}
                   </Text>
@@ -328,22 +281,16 @@ export default function SettingsScreen() {
 
           {/* About Section */}
           <View className="px-4 pb-6">
-            <Text className="text-lg font-semibold text-theme-text-primary mb-4">
-              About
-            </Text>
+            <Text className="text-lg font-semibold text-theme-text-primary mb-4">About</Text>
             <View className="bg-theme-surface rounded-xl border border-theme-border overflow-hidden">
               <View className="px-4 py-4 border-b border-theme-border">
-                <Text className="text-xs text-theme-text-muted mb-1">
-                  Version
-                </Text>
+                <Text className="text-xs text-theme-text-muted mb-1">Version</Text>
                 <Text className="text-base text-theme-text-primary font-medium">
                   {appInfo.version} ({appInfo.buildNumber})
                 </Text>
               </View>
               <View className="px-4 py-4">
-                <Text className="text-xs text-theme-text-muted mb-1">
-                  Last Updated
-                </Text>
+                <Text className="text-xs text-theme-text-muted mb-1">Last Updated</Text>
                 <Text className="text-base text-theme-text-primary font-medium">
                   {formatDate(appInfo.lastUpdated)}
                 </Text>
@@ -395,8 +342,8 @@ export default function SettingsScreen() {
                 ) : (
                   <>
                     <Text className="text-sm text-theme-text-muted mb-4">
-                      Enter your 12 or 24 word seed phrase, separated by spaces.
-                      This will replace your current wallet.
+                      Enter your 12 or 24 word seed phrase, separated by spaces. This will replace
+                      your current wallet.
                     </Text>
 
                     <TextInput
@@ -421,8 +368,8 @@ export default function SettingsScreen() {
 
                     <View className="mt-4 p-3 bg-yellow-500/10 rounded-xl">
                       <Text className="text-yellow-600 text-sm">
-                        ⚠️ Warning: This will replace your current wallet. Make sure
-                        you have backed up your current seed phrase if needed.
+                        ⚠️ Warning: This will replace your current wallet. Make sure you have backed
+                        up your current seed phrase if needed.
                       </Text>
                     </View>
 
@@ -439,9 +386,7 @@ export default function SettingsScreen() {
                       {isImporting ? (
                         <ActivityIndicator color="#ffffff" />
                       ) : (
-                        <Text className="text-white font-semibold text-base">
-                          Import Wallet
-                        </Text>
+                        <Text className="text-white font-semibold text-base">Import Wallet</Text>
                       )}
                     </TouchableOpacity>
                   </>
