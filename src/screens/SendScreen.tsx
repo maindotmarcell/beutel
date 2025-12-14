@@ -13,7 +13,7 @@ import Text from "@/components/Text";
 import { useNavigationStore } from "@/store/navigationStore";
 import { useWalletStore } from "@/store/walletStore";
 import * as bitcoinService from "@/services/bitcoinService";
-import { satsToBtc, btcToSats } from "@/services/mempoolService";
+import { satsToBtc, btcToSats } from "@/utils/bitcoinUtils";
 
 type SendStep = "input" | "preview" | "sending" | "success" | "error";
 

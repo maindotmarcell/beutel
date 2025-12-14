@@ -7,7 +7,7 @@ import {
 } from "@/types/wallet";
 import * as keyService from "@/services/keyService";
 import * as bitcoinService from "@/services/bitcoinService";
-import * as mempoolService from "@/services/mempoolService";
+import * as chainService from "@/services/chainService";
 
 interface WalletState {
   // Wallet state
@@ -252,7 +252,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
     set({ isBalanceLoading: true });
 
     try {
-      const result = await mempoolService.getAddressBalance(address, network);
+      const result = await chainService.getAddressBalance(address, network);
       set({
         balance: result.confirmed,
         unconfirmedBalance: result.unconfirmed,
@@ -277,7 +277,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
     set({ isTransactionsLoading: true, transactionsError: null });
 
     try {
-      const transactions = await mempoolService.getAddressTransactions(
+      const transactions = await chainService.getAddressTransactions(
         address,
         network
       );
@@ -321,14 +321,14 @@ export const useWalletStore = create<WalletState>((set, get) => ({
       }
 
       // Fetch UTXOs
-      const utxos = await mempoolService.getAddressUtxos(address, network);
+      const utxos = await chainService.getAddressUtxos(address, network);
 
       if (utxos.length === 0) {
         throw new Error("No UTXOs available");
       }
 
       // Get recommended fees (use fastestFee)
-      const feeRates = await mempoolService.getRecommendedFees(network);
+      const feeRates = await chainService.getRecommendedFees(network);
       const feeRate = feeRates.fastestFee;
 
       // Prepare transaction preview
@@ -398,7 +398,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
       );
 
       // Broadcast the transaction
-      const txid = await mempoolService.broadcastTransaction(txHex, network);
+      const txid = await chainService.broadcastTransaction(txHex, network);
 
       set({
         isSending: false,
