@@ -11,7 +11,7 @@ import {
 import "../global.css";
 import ViewWrapper from "@/components/ViewWrapper";
 import SeedPhraseModal from "@/components/SeedPhraseModal";
-import { useWalletStore } from "@/store/walletStore";
+import { useWalletInitialization } from "./hooks/useWalletInitialization";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -21,42 +21,20 @@ export default function App() {
     Inter_700Bold,
   });
 
-  const { initializeWallet, createWallet, isInitialized, isLoading } = useWalletStore();
-  const [isReady, setIsReady] = useState(false);
-  const [seedPhraseToBackup, setSeedPhraseToBackup] = useState<string | null>(null);
-
-  useEffect(() => {
-    const init = async () => {
-      try {
-        // Check if wallet exists
-        await initializeWallet();
-        
-        // Get the current state after initialization
-        const hasWallet = useWalletStore.getState().isInitialized;
-        
-        if (!hasWallet) {
-          // No wallet exists, create one
-          const mnemonic = await createWallet();
-          setSeedPhraseToBackup(mnemonic);
-        }
-      } catch (error) {
-        console.error("Failed to initialize wallet:", error);
-      } finally {
-        setIsReady(true);
-      }
-    };
-    
-    init();
-  }, []);
-
-  const handleDismissSeedPhrase = () => {
-    setSeedPhraseToBackup(null);
-  };
+  const { isReady, seedPhraseToBackup, handleDismissSeedPhrase } =
+    useWalletInitialization();
 
   // Show loading while fonts load or wallet initializes
   if (!fontsLoaded || !isReady) {
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#F5F5F5" }}>
+      <View
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#F5F5F5",
+        }}
+      >
         <ActivityIndicator size="large" color="#4169E1" />
       </View>
     );

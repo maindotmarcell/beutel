@@ -38,14 +38,12 @@ export {
   buildAndSignTransaction,
 } from './bitcoinService';
 
-// Mempool API service
+// Chain service (business logic for blockchain operations)
 export {
   getAddressBalance,
-  satsToBtc,
-  btcToSats,
   getAddressUtxos,
   getRecommendedFees,
   broadcastTransaction,
   getAddressTransactions,
-} from './mempoolService';
+} from './chainService';
 

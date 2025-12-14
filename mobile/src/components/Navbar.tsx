@@ -13,8 +13,12 @@ export default function Navbar({
   showCloseButton = false,
 }: NavbarProps) {
   const insets = useSafeAreaInsets();
-  const { navigateToSettings, navigateToWallet, closeTransactionDetail, currentScreen } =
-    useNavigationStore();
+  const {
+    navigateToSettings,
+    navigateToWallet,
+    closeTransactionDetail,
+    currentScreen,
+  } = useNavigationStore();
 
   const handleSettings = () => {
     navigateToSettings();
@@ -36,9 +40,9 @@ export default function Navbar({
   const hasBackAction = showCloseButton || title;
 
   const isOnGradient = !hasBackAction;
-  const bgClass = isOnGradient ? '' : 'bg-theme-surface';
-  const borderClass = isOnGradient ? '' : 'border-b border-theme-border';
-  const textColor = isOnGradient ? 'text-white' : 'text-theme-text-primary';
+  const bgClass = isOnGradient ? "" : "bg-theme-surface";
+  const borderClass = isOnGradient ? "" : "border-b border-theme-border";
+  const textColor = isOnGradient ? "text-white" : "text-theme-text-primary";
 
   return (
     <View
@@ -74,9 +78,7 @@ export default function Navbar({
             </TouchableOpacity>
           )
         ) : (
-          <Text className={`text-2xl font-bold ${textColor}`}>
-            beutel
-          </Text>
+          <Text className={`text-2xl font-bold ${textColor}`}>beutel</Text>
         )}
 
         {/* Action Buttons - Only show when not on settings screen and not showing close button */}

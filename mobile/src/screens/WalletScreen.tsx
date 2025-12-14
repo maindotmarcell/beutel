@@ -10,7 +10,7 @@ import Text from "@/components/Text";
 import { useNavigationStore } from "@/store/navigationStore";
 import { useThemeStore } from "@/store/themeStore";
 import { useWalletStore } from "@/store/walletStore";
-import { satsToBtc } from "@/services/mempoolService";
+import { satsToBtc } from "@/utils/bitcoinUtils";
 
 export default function WalletScreen() {
   const { navigateToSend, navigateToReceive, navigateToTransactionDetail } =
