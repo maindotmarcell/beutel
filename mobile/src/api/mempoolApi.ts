@@ -1,105 +1,87 @@
-import { NetworkType, UTXO, FeeRates } from "@/types/wallet";
+import { UTXO, FeeRates } from "@/types/wallet";
+import { BalanceResponse, TransactionResponse, UTXOResponse } from "@/types/api";
 
-// Mempool.space API base URLs
-const API_BASE_URLS: Record<NetworkType, string> = {
-  mainnet: "https://mempool.space/api",
-  testnet3: "https://mempool.space/testnet/api",
-  testnet4: "https://mempool.space/testnet4/api",
-  signet: "https://mempool.space/signet/api",
-};
+// Backend API configuration
+// TODO: Make this configurable per environment (dev vs prod)
+const BACKEND_URL = "http://localhost:3000";
 
-// Raw API response types
-export interface AddressStats {
-  funded_txo_count: number;
-  funded_txo_sum: number;
-  spent_txo_count: number;
-  spent_txo_sum: number;
-}
-
-export interface AddressResponse {
-  address: string;
-  chain_stats: AddressStats;
-  mempool_stats: AddressStats;
-}
-
-export interface TransactionInput {
-  prevout?: {
-    scriptpubkey_address?: string;
-    value?: number;
-  };
-}
-
-export interface TransactionOutput {
-  scriptpubkey_address?: string;
-  value: number; // in satoshis
-}
-
-export interface TransactionResponse {
-  txid: string;
-  status: {
-    confirmed: boolean;
-    block_height?: number;
-    block_hash?: string;
-    block_time?: number;
-  };
-  vin: TransactionInput[];
-  vout: TransactionOutput[];
-  fee: number; // in satoshis
-}
+// Re-export types for convenience
+export type { BalanceResponse, TransactionResponse, UTXOResponse };
 
 /**
- * Fetch raw address data from Mempool.space API
+ * Fetch the balance for a Bitcoin address
  */
-export async function getAddressData(
-  address: string,
-  network: NetworkType
-): Promise<AddressResponse> {
-  const baseUrl = API_BASE_URLS[network];
-  const url = `${baseUrl}/address/${address}`;
+export async function getAddressBalance(address: string): Promise<BalanceResponse> {
+  const url = `${BACKEND_URL}/v1/address/${address}/balance`;
 
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch address data: ${response.status} ${response.statusText}`);
+    const error = await response.json().catch(() => ({ error: response.statusText }));
+    throw new Error(`Failed to fetch balance: ${error.error || response.statusText}`);
   }
 
-  const data: AddressResponse = await response.json();
-  return data;
+  return response.json();
 }
 
 /**
  * Fetch UTXOs (unspent transaction outputs) for an address
  */
-export async function getAddressUtxos(address: string, network: NetworkType): Promise<UTXO[]> {
-  const baseUrl = API_BASE_URLS[network];
-  const url = `${baseUrl}/address/${address}/utxo`;
+export async function getAddressUtxos(address: string): Promise<UTXO[]> {
+  const url = `${BACKEND_URL}/v1/address/${address}/utxos`;
 
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch UTXOs: ${response.status} ${response.statusText}`);
+    const error = await response.json().catch(() => ({ error: response.statusText }));
+    throw new Error(`Failed to fetch UTXOs: ${error.error || response.statusText}`);
   }
 
-  const utxos: UTXO[] = await response.json();
-  return utxos;
+  // Transform backend response to match UTXO type expected by mobile
+  const utxos: UTXOResponse[] = await response.json();
+  return utxos.map((u) => ({
+    txid: u.txid,
+    vout: u.vout,
+    value: u.value,
+    status: {
+      confirmed: u.confirmed,
+      block_height: u.blockHeight,
+    },
+  }));
 }
 
 /**
- * Fetch recommended fee rates from mempool.space
- * Returns fee rates in sat/vB for different confirmation targets
+ * Fetch transaction history for an address
+ * Backend returns enriched transactions with send/receive already calculated
  */
-export async function getRecommendedFees(network: NetworkType): Promise<FeeRates> {
-  const baseUrl = API_BASE_URLS[network];
-  const url = `${baseUrl}/v1/fees/recommended`;
+export async function getAddressTransactions(address: string): Promise<TransactionResponse[]> {
+  const url = `${BACKEND_URL}/v1/address/${address}/transactions`;
 
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch fee rates: ${response.status} ${response.statusText}`);
+    const error = await response.json().catch(() => ({ error: response.statusText }));
+    throw new Error(`Failed to fetch transactions: ${error.error || response.statusText}`);
   }
 
-  const feeRates: FeeRates = await response.json();
-  return feeRates;
+  return response.json();
+}
+
+/**
+ * Fetch recommended fee rates
+ * Returns fee rates in sat/vB for different confirmation targets
+ */
+export async function getRecommendedFees(): Promise<FeeRates> {
+  const url = `${BACKEND_URL}/v1/fees`;
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: response.statusText }));
+    throw new Error(`Failed to fetch fee rates: ${error.error || response.statusText}`);
+  }
+
+  return response.json();
 }
 
 /**
@@ -107,47 +89,22 @@ export async function getRecommendedFees(network: NetworkType): Promise<FeeRates
  * @param txHex - The signed transaction in hex format
  * @returns The transaction ID (txid) if successful
  */
-export async function broadcastTransaction(txHex: string, network: NetworkType): Promise<string> {
-  const baseUrl = API_BASE_URLS[network];
-  const url = `${baseUrl}/tx`;
+export async function broadcastTransaction(txHex: string): Promise<string> {
+  const url = `${BACKEND_URL}/v1/tx/broadcast`;
 
   const response = await fetch(url, {
     method: "POST",
     headers: {
-      "Content-Type": "text/plain",
+      "Content-Type": "application/json",
     },
-    body: txHex,
+    body: JSON.stringify({ txHex }),
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Failed to broadcast transaction: ${errorText}`);
+    const error = await response.json().catch(() => ({ error: response.statusText }));
+    throw new Error(`Failed to broadcast transaction: ${error.error || response.statusText}`);
   }
 
-  // The response is the txid as plain text
-  const txid = await response.text();
-  return txid;
-}
-
-/**
- * Fetch raw transaction history for a Bitcoin address from Mempool.space API
- * @param address - The Bitcoin address to fetch transactions for
- * @param network - The network to query (mainnet, testnet3, etc.)
- * @returns Array of raw transaction responses
- */
-export async function getAddressTransactions(
-  address: string,
-  network: NetworkType
-): Promise<TransactionResponse[]> {
-  const baseUrl = API_BASE_URLS[network];
-  const url = `${baseUrl}/address/${address}/txs`;
-
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch transactions: ${response.status} ${response.statusText}`);
-  }
-
-  const data: TransactionResponse[] = await response.json();
-  return data;
+  const data = await response.json();
+  return data.txid;
 }
