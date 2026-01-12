@@ -3,6 +3,9 @@
     "name": "beutel-app",
     "slug": "beutel-app",
     "version": "1.0.0",
+    "extra": {
+      "backendUrl": "https://beutel-backend-production.up.railway.app"
+    },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
