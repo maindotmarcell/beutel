@@ -1,9 +1,13 @@
 import { UTXO, FeeRates } from "@/types/wallet";
 import { BalanceResponse, TransactionResponse, UTXOResponse } from "@/types/api";
+import Constants from "expo-constants";
 
-// Backend API configuration
-// TODO: Make this configurable per environment (dev vs prod)
-const BACKEND_URL = "http://localhost:3000";
+// Backend API configuration from app.json extra field
+const BACKEND_URL =
+  Constants.expoConfig?.extra?.backendUrl ?? "https://beutel-backend-production.up.railway.app";
+
+// TODO: clean this up, kept here for now for easy iteration,
+// const BACKEND_URL = "http://localhost:3000";
 
 // Re-export types for convenience
 export type { BalanceResponse, TransactionResponse, UTXOResponse };
