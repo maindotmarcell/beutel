@@ -10,7 +10,9 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Text from "@/components/Text";
+import GlassCard from "@/components/GlassCard";
 import { useNavigationStore } from "@/store/navigationStore";
+import { useThemeStore } from "@/store/themeStore";
 import { useWalletStore } from "@/store/walletStore";
 import * as bitcoinService from "@/services/bitcoinService";
 import { satsToBtc, btcToSats } from "@/utils/bitcoinUtils";
@@ -19,6 +21,7 @@ type SendStep = "input" | "preview" | "sending" | "success" | "error";
 
 export default function SendScreen() {
   const { closeSend } = useNavigationStore();
+  const { theme } = useThemeStore();
   const insets = useSafeAreaInsets();
 
   const {
@@ -38,18 +41,15 @@ export default function SendScreen() {
   const [amountBtc, setAmountBtc] = useState("");
   const [validationError, setValidationError] = useState<string | null>(null);
 
-  // Clean up on unmount
   useEffect(() => {
     return () => {
       clearSendState();
     };
   }, [clearSendState]);
 
-  // Validate inputs
   const validateInputs = (): boolean => {
     setValidationError(null);
 
-    // Validate address
     if (!recipientAddress.trim()) {
       setValidationError("Please enter a recipient address");
       return false;
@@ -60,7 +60,6 @@ export default function SendScreen() {
       return false;
     }
 
-    // Validate amount
     const amount = parseFloat(amountBtc);
     if (isNaN(amount) || amount <= 0) {
       setValidationError("Please enter a valid amount");
@@ -73,7 +72,6 @@ export default function SendScreen() {
       return false;
     }
 
-    // Minimum amount check (dust threshold)
     if (amountSats < 546) {
       setValidationError("Amount too small (minimum 546 sats)");
       return false;
@@ -124,12 +122,23 @@ export default function SendScreen() {
     <>
       {/* Recipient Address Input */}
       <View className="mb-6">
-        <Text className="text-sm text-theme-text-muted mb-2">Recipient Address</Text>
+        <Text className="text-sm mb-2" style={{ color: theme.text.muted }}>
+          Recipient Address
+        </Text>
         <TextInput
-          className="bg-theme-background border border-theme-border rounded-xl px-4 py-3 text-theme-text-primary font-mono"
+          style={{
+            backgroundColor: theme.background.main,
+            borderWidth: 1,
+            borderColor: theme.border.main,
+            borderRadius: 12,
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            color: theme.text.primary,
+            fontFamily: "monospace",
+            fontSize: 14,
+          }}
           placeholder="Enter Bitcoin address"
-          placeholderTextColor="#9ca3af"
-          style={{ fontSize: 14 }}
+          placeholderTextColor={theme.text.muted}
           autoCapitalize="none"
           autoCorrect={false}
           value={recipientAddress}
@@ -139,13 +148,23 @@ export default function SendScreen() {
 
       {/* Amount Input */}
       <View className="mb-4">
-        <Text className="text-sm text-theme-text-muted mb-2">Amount (BTC)</Text>
+        <Text className="text-sm mb-2" style={{ color: theme.text.muted }}>
+          Amount (BTC)
+        </Text>
         <TextInput
-          className="bg-theme-background border border-theme-border rounded-xl px-4 py-3 text-theme-text-primary"
+          style={{
+            backgroundColor: theme.background.main,
+            borderWidth: 1,
+            borderColor: theme.border.main,
+            borderRadius: 12,
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            color: theme.text.primary,
+            fontSize: 16,
+          }}
           placeholder="0.00000000"
-          placeholderTextColor="#9ca3af"
+          placeholderTextColor={theme.text.muted}
           keyboardType="decimal-pad"
-          style={{ fontSize: 16 }}
           value={amountBtc}
           onChangeText={setAmountBtc}
         />
@@ -153,15 +172,20 @@ export default function SendScreen() {
 
       {/* Available Balance */}
       <View className="mb-6">
-        <Text className="text-xs text-theme-text-muted">
+        <Text className="text-xs" style={{ color: theme.text.muted }}>
           Available: {satsToBtc(balance).toFixed(8)} BTC ({formatSats(balance)} sats)
         </Text>
       </View>
 
       {/* Validation Error */}
       {validationError && (
-        <View className="mb-4 p-3 bg-red-500/10 rounded-xl">
-          <Text className="text-red-500 text-sm">{validationError}</Text>
+        <View
+          className="mb-4 p-3 rounded-xl"
+          style={{ backgroundColor: theme.status.error.light }}
+        >
+          <Text className="text-sm" style={{ color: theme.status.error.main }}>
+            {validationError}
+          </Text>
         </View>
       )}
 
@@ -169,9 +193,21 @@ export default function SendScreen() {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={handlePreview}
-        className="bg-theme-primary-light rounded-xl py-4 items-center"
+        style={{
+          backgroundColor: theme.primary.main,
+          borderRadius: 12,
+          paddingVertical: 16,
+          alignItems: "center",
+          shadowColor: theme.primary.main,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.3,
+          shadowRadius: 12,
+          elevation: 6,
+        }}
       >
-        <Text className="text-white font-semibold text-base">Review Transaction</Text>
+        <Text className="font-semibold text-base" style={{ color: "#FFFFFF" }}>
+          Review Transaction
+        </Text>
       </TouchableOpacity>
     </>
   );
@@ -180,8 +216,10 @@ export default function SendScreen() {
     if (isSending && !transactionPreview) {
       return (
         <View className="items-center py-8">
-          <ActivityIndicator size="large" color="#f7931a" />
-          <Text className="text-theme-text-muted mt-4">Preparing transaction...</Text>
+          <ActivityIndicator size="large" color={theme.primary.light} />
+          <Text className="mt-4" style={{ color: theme.text.muted }}>
+            Preparing transaction...
+          </Text>
         </View>
       );
     }
@@ -192,47 +230,62 @@ export default function SendScreen() {
 
     return (
       <>
-        <Text className="text-lg font-semibold text-theme-text-primary mb-4">
+        <Text
+          className="text-lg font-semibold mb-4"
+          style={{ color: theme.text.primary }}
+        >
           Confirm Transaction
         </Text>
 
         {/* Transaction Details */}
-        <View className="bg-theme-background rounded-xl p-4 mb-4">
+        <View
+          className="rounded-xl p-4 mb-4"
+          style={{
+            backgroundColor: theme.background.main,
+            borderWidth: 1,
+            borderColor: theme.border.main,
+          }}
+        >
           <View className="flex-row justify-between mb-3">
-            <Text className="text-theme-text-muted">To</Text>
+            <Text style={{ color: theme.text.muted }}>To</Text>
             <Text
-              className="text-theme-text-primary font-mono text-xs flex-1 ml-4 text-right"
+              className="font-mono text-xs flex-1 ml-4 text-right"
               numberOfLines={1}
               ellipsizeMode="middle"
+              style={{ color: theme.text.primary }}
             >
               {transactionPreview.recipientAddress}
             </Text>
           </View>
 
           <View className="flex-row justify-between mb-3">
-            <Text className="text-theme-text-muted">Amount</Text>
-            <Text className="text-theme-text-primary">
+            <Text style={{ color: theme.text.muted }}>Amount</Text>
+            <Text style={{ color: theme.text.primary }}>
               {satsToBtc(transactionPreview.amountSats).toFixed(8)} BTC
             </Text>
           </View>
 
           <View className="flex-row justify-between mb-3">
-            <Text className="text-theme-text-muted">Network Fee</Text>
-            <Text className="text-theme-text-primary">
+            <Text style={{ color: theme.text.muted }}>Network Fee</Text>
+            <Text style={{ color: theme.text.primary }}>
               {formatSats(transactionPreview.feeSats)} sats
             </Text>
           </View>
 
           <View className="flex-row justify-between mb-3">
-            <Text className="text-theme-text-muted">Fee Rate</Text>
-            <Text className="text-theme-text-primary">{transactionPreview.feeRate} sat/vB</Text>
+            <Text style={{ color: theme.text.muted }}>Fee Rate</Text>
+            <Text style={{ color: theme.text.primary }}>
+              {transactionPreview.feeRate} sat/vB
+            </Text>
           </View>
 
-          <View className="border-t border-theme-border my-2" />
+          <View style={{ borderTopWidth: 1, borderTopColor: theme.border.main, marginVertical: 8 }} />
 
           <View className="flex-row justify-between">
-            <Text className="text-theme-text-primary font-semibold">Total</Text>
-            <Text className="text-theme-text-primary font-semibold">
+            <Text className="font-semibold" style={{ color: theme.text.primary }}>
+              Total
+            </Text>
+            <Text className="font-semibold" style={{ color: theme.text.primary }}>
               {satsToBtc(transactionPreview.totalSats).toFixed(8)} BTC
             </Text>
           </View>
@@ -243,17 +296,38 @@ export default function SendScreen() {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={handleBackToInput}
-            className="flex-1 bg-theme-background border border-theme-border rounded-xl py-4 items-center"
+            className="flex-1 items-center"
+            style={{
+              backgroundColor: theme.background.main,
+              borderWidth: 1,
+              borderColor: theme.border.main,
+              borderRadius: 12,
+              paddingVertical: 16,
+            }}
           >
-            <Text className="text-theme-text-primary font-semibold text-base">Back</Text>
+            <Text className="font-semibold text-base" style={{ color: theme.text.primary }}>
+              Back
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={handleConfirmSend}
-            className="flex-1 bg-theme-primary-light rounded-xl py-4 items-center"
+            className="flex-1 items-center"
+            style={{
+              backgroundColor: theme.primary.main,
+              borderRadius: 12,
+              paddingVertical: 16,
+              shadowColor: theme.primary.main,
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 12,
+              elevation: 6,
+            }}
           >
-            <Text className="text-white font-semibold text-base">Confirm Send</Text>
+            <Text className="font-semibold text-base" style={{ color: "#FFFFFF" }}>
+              Confirm Send
+            </Text>
           </TouchableOpacity>
         </View>
       </>
@@ -262,11 +336,14 @@ export default function SendScreen() {
 
   const renderSendingStep = () => (
     <View className="items-center py-8">
-      <ActivityIndicator size="large" color="#f7931a" />
-      <Text className="text-theme-text-primary text-lg font-semibold mt-4">
+      <ActivityIndicator size="large" color={theme.primary.light} />
+      <Text
+        className="text-lg font-semibold mt-4"
+        style={{ color: theme.text.primary }}
+      >
         Sending Transaction...
       </Text>
-      <Text className="text-theme-text-muted mt-2 text-center">
+      <Text className="mt-2 text-center" style={{ color: theme.text.muted }}>
         Please wait while your transaction is being broadcast to the network.
       </Text>
     </View>
@@ -274,18 +351,41 @@ export default function SendScreen() {
 
   const renderSuccessStep = () => (
     <View className="items-center py-6">
-      <View className="w-16 h-16 rounded-full bg-green-500/20 items-center justify-center mb-4">
-        <Text className="text-4xl">✓</Text>
+      <View
+        className="w-16 h-16 rounded-full items-center justify-center mb-4"
+        style={{ backgroundColor: theme.status.success.light }}
+      >
+        <Text className="text-4xl" style={{ color: theme.status.success.main }}>
+          ✓
+        </Text>
       </View>
-      <Text className="text-theme-text-primary text-xl font-semibold mb-2">Transaction Sent!</Text>
-      <Text className="text-theme-text-muted text-center mb-4">
+      <Text
+        className="text-xl font-semibold mb-2"
+        style={{ color: theme.text.primary }}
+      >
+        Transaction Sent!
+      </Text>
+      <Text className="text-center mb-4" style={{ color: theme.text.muted }}>
         Your transaction has been broadcast to the network.
       </Text>
 
       {lastTxId && (
-        <View className="bg-theme-background rounded-xl p-4 w-full mb-6">
-          <Text className="text-theme-text-muted text-xs mb-1">Transaction ID</Text>
-          <Text className="text-theme-text-primary font-mono text-xs" numberOfLines={2}>
+        <View
+          className="rounded-xl p-4 w-full mb-6"
+          style={{
+            backgroundColor: theme.background.main,
+            borderWidth: 1,
+            borderColor: theme.border.main,
+          }}
+        >
+          <Text className="text-xs mb-1" style={{ color: theme.text.muted }}>
+            Transaction ID
+          </Text>
+          <Text
+            className="font-mono text-xs"
+            numberOfLines={2}
+            style={{ color: theme.text.primary }}
+          >
             {lastTxId}
           </Text>
         </View>
@@ -294,20 +394,43 @@ export default function SendScreen() {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={handleClose}
-        className="bg-theme-primary-light rounded-xl py-4 px-8 items-center w-full"
+        className="items-center w-full"
+        style={{
+          backgroundColor: theme.primary.main,
+          borderRadius: 12,
+          paddingVertical: 16,
+          paddingHorizontal: 32,
+          shadowColor: theme.primary.main,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.3,
+          shadowRadius: 12,
+          elevation: 6,
+        }}
       >
-        <Text className="text-white font-semibold text-base">Done</Text>
+        <Text className="font-semibold text-base" style={{ color: "#FFFFFF" }}>
+          Done
+        </Text>
       </TouchableOpacity>
     </View>
   );
 
   const renderErrorStep = () => (
     <View className="items-center py-6">
-      <View className="w-16 h-16 rounded-full bg-red-500/20 items-center justify-center mb-4">
-        <Text className="text-4xl">✕</Text>
+      <View
+        className="w-16 h-16 rounded-full items-center justify-center mb-4"
+        style={{ backgroundColor: theme.status.error.light }}
+      >
+        <Text className="text-4xl" style={{ color: theme.status.error.main }}>
+          ✕
+        </Text>
       </View>
-      <Text className="text-theme-text-primary text-xl font-semibold mb-2">Transaction Failed</Text>
-      <Text className="text-theme-text-muted text-center mb-4">
+      <Text
+        className="text-xl font-semibold mb-2"
+        style={{ color: theme.text.primary }}
+      >
+        Transaction Failed
+      </Text>
+      <Text className="text-center mb-4" style={{ color: theme.text.muted }}>
         {sendError || "Something went wrong. Please try again."}
       </Text>
 
@@ -315,17 +438,38 @@ export default function SendScreen() {
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={handleClose}
-          className="flex-1 bg-theme-background border border-theme-border rounded-xl py-4 items-center"
+          className="flex-1 items-center"
+          style={{
+            backgroundColor: theme.background.main,
+            borderWidth: 1,
+            borderColor: theme.border.main,
+            borderRadius: 12,
+            paddingVertical: 16,
+          }}
         >
-          <Text className="text-theme-text-primary font-semibold text-base">Close</Text>
+          <Text className="font-semibold text-base" style={{ color: theme.text.primary }}>
+            Close
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={handleBackToInput}
-          className="flex-1 bg-theme-primary-light rounded-xl py-4 items-center"
+          className="flex-1 items-center"
+          style={{
+            backgroundColor: theme.primary.main,
+            borderRadius: 12,
+            paddingVertical: 16,
+            shadowColor: theme.primary.main,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 12,
+            elevation: 6,
+          }}
         >
-          <Text className="text-white font-semibold text-base">Try Again</Text>
+          <Text className="font-semibold text-base" style={{ color: "#FFFFFF" }}>
+            Try Again
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -372,26 +516,34 @@ export default function SendScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View className="flex-1 justify-center px-4">
-          <View
-            className="bg-theme-surface rounded-3xl border border-theme-border overflow-hidden"
+          <GlassCard
+            borderRadius={24}
+            intensity={50}
             style={{
               marginTop: insets.top + 20,
               marginBottom: insets.bottom + 20,
             }}
           >
             {/* Header */}
-            <View className="flex-row items-center justify-between px-6 py-4 border-b border-theme-border">
-              <Text className="text-2xl font-bold text-theme-text-primary">{getHeaderTitle()}</Text>
+            <View
+              className="flex-row items-center justify-between px-6 py-4"
+              style={{ borderBottomWidth: 1, borderBottomColor: theme.border.main }}
+            >
+              <Text className="text-2xl font-bold" style={{ color: theme.text.primary }}>
+                {getHeaderTitle()}
+              </Text>
               {step !== "sending" && (
                 <TouchableOpacity onPress={handleClose} className="p-2" activeOpacity={0.7}>
-                  <Text className="text-2xl text-theme-text-primary">✕</Text>
+                  <Text className="text-2xl" style={{ color: theme.text.muted }}>
+                    ✕
+                  </Text>
                 </TouchableOpacity>
               )}
             </View>
 
             {/* Content */}
             <View className="px-6 py-6">{renderContent()}</View>
-          </View>
+          </GlassCard>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

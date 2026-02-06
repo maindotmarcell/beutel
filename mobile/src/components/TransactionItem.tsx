@@ -1,6 +1,7 @@
 import { View, TouchableOpacity } from "react-native";
 import { Transaction } from "@/types/wallet";
 import Text from "@/components/Text";
+import { useThemeStore } from "@/store/themeStore";
 
 interface TransactionItemProps {
   transaction: Transaction;
@@ -8,6 +9,8 @@ interface TransactionItemProps {
 }
 
 export default function TransactionItem({ transaction, onPress }: TransactionItemProps) {
+  const { theme } = useThemeStore();
+
   const formatAddress = (address: string) => {
     if (address.length <= 16) return address;
     return `${address.slice(0, 8)}...${address.slice(-8)}`;
@@ -37,70 +40,51 @@ export default function TransactionItem({ transaction, onPress }: TransactionIte
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColors = (status: string) => {
     switch (status) {
       case "confirmed":
-        return "text-theme-status-success bg-theme-status-success-light";
+        return { text: theme.status.success.main, bg: theme.status.success.light };
       case "pending":
-        return "text-theme-status-warning bg-theme-status-warning-light";
+        return { text: theme.status.warning.main, bg: theme.status.warning.light };
       case "failed":
-        return "text-theme-status-error bg-theme-status-error-light";
+        return { text: theme.status.error.main, bg: theme.status.error.light };
       default:
-        return "text-theme-text-secondary bg-theme-border-light";
-    }
-  };
-
-  const getStatusTextColor = (status: string) => {
-    switch (status) {
-      case "confirmed":
-        return "text-theme-status-success";
-      case "pending":
-        return "text-theme-status-warning";
-      case "failed":
-        return "text-theme-status-error";
-      default:
-        return "text-theme-text-primary";
-    }
-  };
-
-  const getStatusIconBg = (status: string) => {
-    switch (status) {
-      case "confirmed":
-        return "bg-theme-status-success-light";
-      case "pending":
-        return "bg-theme-status-warning-light";
-      case "failed":
-        return "bg-theme-status-error-light";
-      default:
-        return "bg-theme-border-light";
+        return { text: theme.text.secondary, bg: theme.border.light };
     }
   };
 
   const isSend = transaction.type === "send";
-  // For send transactions, use black. For receive, use status-based colors
-  const amountColor = isSend ? "text-theme-text-primary" : getStatusTextColor(transaction.status);
-  const amountPrefix = isSend ? "-" : "+";
+  const statusColors = getStatusColors(transaction.status);
 
-  // Icon colors: for failed transactions, always use red. For send transactions, use black/neutral. For receive, use status-based colors
+  // Amount color: white for sends, status color for receives
+  const amountColor = isSend ? theme.text.primary : statusColors.text;
+  const amountPrefix = isSend ? "" : "+";
+
+  // Icon styling
   const iconBg =
     transaction.status === "failed"
-      ? getStatusIconBg(transaction.status)
+      ? statusColors.bg
       : isSend
-        ? "bg-theme-border-light"
-        : getStatusIconBg(transaction.status);
+        ? theme.background.elevated
+        : statusColors.bg;
   const iconTextColor =
     transaction.status === "failed"
-      ? getStatusTextColor(transaction.status)
+      ? statusColors.text
       : isSend
-        ? "text-theme-text-primary"
-        : getStatusTextColor(transaction.status);
+        ? theme.text.primary
+        : statusColors.text;
 
-  // Icon: X for failed, arrow for others
   const icon = transaction.status === "failed" ? "✕" : isSend ? "↑" : "↓";
 
   return (
     <TouchableOpacity
-      className="bg-theme-surface-soft border-b border-theme-border px-4 py-4"
+      style={{
+        backgroundColor: theme.background.surface,
+        borderBottomWidth: 1,
+        borderBottomColor: theme.border.light,
+        paddingHorizontal: 16,
+        paddingVertical: 16,
+      }}
       onPress={onPress}
       activeOpacity={0.7}
       disabled={!onPress}
@@ -108,20 +92,41 @@ export default function TransactionItem({ transaction, onPress }: TransactionIte
       <View className="flex-row items-center justify-between">
         <View className="flex-1">
           <View className="flex-row items-center mb-1">
-            <Text className={`text-base font-semibold ${amountColor} mr-2`}>
+            <Text
+              className="text-base font-semibold mr-2"
+              style={{ color: amountColor }}
+            >
               {amountPrefix} {transaction.amount.toFixed(8)} BTC
             </Text>
-            <View className={`px-2 py-1 rounded-full ${getStatusColor(transaction.status)}`}>
-              <Text className="text-xs font-medium capitalize">{transaction.status}</Text>
+            <View
+              className="px-2 py-1 rounded-full"
+              style={{ backgroundColor: statusColors.bg }}
+            >
+              <Text
+                className="text-xs font-medium capitalize"
+                style={{ color: statusColors.text }}
+              >
+                {transaction.status}
+              </Text>
             </View>
           </View>
-          <Text className="text-theme-text-secondary text-sm font-mono mb-1">
+          <Text
+            className="text-sm font-mono mb-1"
+            style={{ color: theme.text.secondary }}
+          >
             {formatAddress(transaction.address)}
           </Text>
-          <Text className="text-theme-text-muted text-xs">{formatDate(transaction.timestamp)}</Text>
+          <Text className="text-xs" style={{ color: theme.text.muted }}>
+            {formatDate(transaction.timestamp)}
+          </Text>
         </View>
-        <View className={`w-12 h-12 rounded-full items-center justify-center ${iconBg}`}>
-          <Text className={`text-xl font-bold ${iconTextColor}`}>{icon}</Text>
+        <View
+          className="w-12 h-12 rounded-full items-center justify-center"
+          style={{ backgroundColor: iconBg }}
+        >
+          <Text className="text-xl font-bold" style={{ color: iconTextColor }}>
+            {icon}
+          </Text>
         </View>
       </View>
     </TouchableOpacity>

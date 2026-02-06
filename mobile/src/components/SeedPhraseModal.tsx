@@ -18,7 +18,7 @@ export default function SeedPhraseModal({ seedPhrase, onDismiss }: SeedPhraseMod
       <View
         style={{
           flex: 1,
-          backgroundColor: "rgba(0, 0, 0, 0.8)",
+          backgroundColor: "rgba(7, 6, 14, 0.9)",
           justifyContent: "center",
           paddingHorizontal: 20,
           paddingTop: insets.top,
@@ -31,6 +31,8 @@ export default function SeedPhraseModal({ seedPhrase, onDismiss }: SeedPhraseMod
             borderRadius: 24,
             padding: 24,
             maxHeight: "90%",
+            borderWidth: 1,
+            borderColor: theme.glass.border,
           }}
         >
           <ScrollView showsVerticalScrollIndicator={false}>
@@ -60,18 +62,24 @@ export default function SeedPhraseModal({ seedPhrase, onDismiss }: SeedPhraseMod
             {/* Warning */}
             <View
               style={{
-                backgroundColor: "#FEE2E2",
+                backgroundColor: theme.status.error.light,
                 borderRadius: 12,
                 padding: 12,
                 marginBottom: 20,
                 borderWidth: 1,
-                borderColor: "#FECACA",
+                borderColor: "rgba(248, 113, 113, 0.3)",
               }}
             >
-              <Text style={{ color: "#DC2626", fontWeight: "600", marginBottom: 4 }}>
+              <Text
+                style={{
+                  color: theme.status.error.main,
+                  fontWeight: "600",
+                  marginBottom: 4,
+                }}
+              >
                 ⚠️ Important
               </Text>
-              <Text style={{ color: "#991B1B", fontSize: 13 }}>
+              <Text style={{ color: theme.status.error.main, fontSize: 13, opacity: 0.85 }}>
                 Never share your recovery phrase. Anyone with these words can access your Bitcoin.
               </Text>
             </View>
@@ -97,7 +105,7 @@ export default function SeedPhraseModal({ seedPhrase, onDismiss }: SeedPhraseMod
                   >
                     <View
                       style={{
-                        backgroundColor: theme.background.surface,
+                        backgroundColor: theme.background.elevated,
                         borderRadius: 8,
                         paddingVertical: 10,
                         paddingHorizontal: 12,
@@ -139,6 +147,11 @@ export default function SeedPhraseModal({ seedPhrase, onDismiss }: SeedPhraseMod
                 borderRadius: 16,
                 paddingVertical: 16,
                 alignItems: "center",
+                shadowColor: theme.primary.main,
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 12,
+                elevation: 6,
               }}
               activeOpacity={0.8}
             >

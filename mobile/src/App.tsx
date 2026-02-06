@@ -12,6 +12,7 @@ import "../global.css";
 import ViewWrapper from "@/components/ViewWrapper";
 import SeedPhraseModal from "@/components/SeedPhraseModal";
 import { useWalletInitialization } from "./hooks/useWalletInitialization";
+import { defaultTheme } from "@/theme/colors";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -31,16 +32,16 @@ export default function App() {
           flex: 1,
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "#F5F5F5",
+          backgroundColor: defaultTheme.background.main,
         }}
       >
-        <ActivityIndicator size="large" color="#4169E1" />
+        <ActivityIndicator size="large" color={defaultTheme.primary.light} />
       </View>
     );
   }
 
   return (
-    <SafeAreaProvider>
+    <SafeAreaProvider style={{ flex: 1, backgroundColor: defaultTheme.background.main }}>
       <ViewWrapper />
       {seedPhraseToBackup && (
         <SeedPhraseModal seedPhrase={seedPhraseToBackup} onDismiss={handleDismissSeedPhrase} />
