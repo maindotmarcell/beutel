@@ -1,5 +1,5 @@
 import { NetworkType, UTXO, FeeRates, Transaction } from "@/types/wallet";
-import * as mempoolApi from "@/api/mempoolApi";
+import * as mempoolApi from "@/api/chainApi";
 import { satsToBtc } from "@/utils/bitcoinUtils";
 
 export interface BalanceResult {
