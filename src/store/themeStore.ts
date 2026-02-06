@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Theme, lightTheme } from "@/theme/colors";
+import { Theme, darkTheme } from "@/theme/colors";
 
 interface ThemeStore {
   // State
@@ -10,8 +10,8 @@ interface ThemeStore {
 }
 
 export const useThemeStore = create<ThemeStore>((set) => ({
-  // Initial state
-  theme: lightTheme,
+  // Initial state — liquid glass dark theme
+  theme: darkTheme,
 
   // Actions
   setTheme: (theme: Theme) => {

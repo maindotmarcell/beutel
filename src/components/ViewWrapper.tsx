@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { Animated } from "react-native";
+import { Animated, View } from "react-native";
 import { BlurView } from "expo-blur";
 import WalletScreen from "@/screens/WalletScreen";
 import SettingsScreen from "@/screens/SettingsScreen";
@@ -7,6 +7,7 @@ import TransactionDetailScreen from "@/screens/TransactionDetailScreen";
 import SendScreen from "@/screens/SendScreen";
 import ReceiveScreen from "@/screens/ReceiveScreen";
 import { useNavigationStore } from "@/store/navigationStore";
+import { useThemeStore } from "@/store/themeStore";
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
@@ -26,9 +27,10 @@ export default function ViewWrapper() {
     receiveOpacity,
     blurIntensity,
   } = useNavigationStore();
+  const { theme } = useThemeStore();
 
   return (
-    <>
+    <View style={{ flex: 1, backgroundColor: theme.background.main }}>
       <Animated.View
         style={{
           position: "absolute",
@@ -72,6 +74,7 @@ export default function ViewWrapper() {
 
       <AnimatedBlurView
         intensity={blurIntensity}
+        tint="dark"
         style={{
           position: "absolute",
           width: "100%",
@@ -106,7 +109,7 @@ export default function ViewWrapper() {
         <ReceiveScreen />
       </Animated.View>
 
-      <StatusBar style="auto" />
-    </>
+      <StatusBar style="light" />
+    </View>
   );
 }

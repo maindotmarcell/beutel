@@ -21,6 +21,7 @@ import {
   getAppInfo,
 } from "@/services";
 import { useNavigationStore } from "@/store/navigationStore";
+import { useThemeStore } from "@/store/themeStore";
 import { useWalletStore } from "@/store/walletStore";
 
 export default function SettingsScreen() {
@@ -28,8 +29,9 @@ export default function SettingsScreen() {
   const security = getSecuritySettings();
   const notifications = getNotificationSettings();
   const appInfo = getAppInfo();
+  const { theme } = useThemeStore();
 
-  const { importWallet, address, isLoading } = useWalletStore();
+  const { importWallet, address } = useWalletStore();
 
   const [showImportModal, setShowImportModal] = useState(false);
   const [seedPhraseInput, setSeedPhraseInput] = useState("");
@@ -41,10 +43,7 @@ export default function SettingsScreen() {
     setImportError(null);
     setImportSuccess(false);
 
-    // Clean up the seed phrase - trim whitespace and normalize spaces
     const cleanedPhrase = seedPhraseInput.trim().toLowerCase().replace(/\s+/g, " ");
-
-    // Basic validation
     const words = cleanedPhrase.split(" ");
     if (words.length !== 12 && words.length !== 24) {
       setImportError("Seed phrase must be 12 or 24 words");
@@ -57,7 +56,6 @@ export default function SettingsScreen() {
       await importWallet(cleanedPhrase);
       setImportSuccess(true);
       setSeedPhraseInput("");
-      // Close modal after a short delay to show success
       setTimeout(() => {
         setShowImportModal(false);
         setImportSuccess(false);
@@ -76,9 +74,9 @@ export default function SettingsScreen() {
     setImportSuccess(false);
   };
 
-  const formatAddress = (address: string) => {
-    if (address.length <= 16) return address;
-    return `${address.slice(0, 8)}...${address.slice(-8)}`;
+  const formatAddress = (addr: string) => {
+    if (addr.length <= 16) return addr;
+    return `${addr.slice(0, 8)}...${addr.slice(-8)}`;
   };
 
   const formatDate = (date: Date) => {
@@ -89,213 +87,229 @@ export default function SettingsScreen() {
     });
   };
 
+  // Reusable section card wrapper
+  const SectionCard = ({ children }: { children: React.ReactNode }) => (
+    <View
+      style={{
+        backgroundColor: theme.background.surface,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: theme.border.main,
+        overflow: "hidden",
+      }}
+    >
+      {children}
+    </View>
+  );
+
+  // Reusable row
+  const SettingRow = ({
+    children,
+    showBorder = true,
+  }: {
+    children: React.ReactNode;
+    showBorder?: boolean;
+  }) => (
+    <View
+      style={{
+        paddingHorizontal: 16,
+        paddingVertical: 16,
+        borderBottomWidth: showBorder ? 1 : 0,
+        borderBottomColor: theme.border.light,
+      }}
+    >
+      {children}
+    </View>
+  );
+
+  // Reusable switch row
+  const SwitchRow = ({
+    title,
+    subtitle,
+    value,
+    showBorder = true,
+  }: {
+    title: string;
+    subtitle: string;
+    value: boolean;
+    showBorder?: boolean;
+  }) => (
+    <SettingRow showBorder={showBorder}>
+      <View className="flex-row items-center justify-between">
+        <View className="flex-1">
+          <Text className="text-base font-medium mb-1" style={{ color: theme.text.primary }}>
+            {title}
+          </Text>
+          <Text className="text-sm" style={{ color: theme.text.secondary }}>
+            {subtitle}
+          </Text>
+        </View>
+        <Switch
+          value={value}
+          disabled
+          trackColor={{ false: theme.border.main, true: theme.primary.main }}
+          thumbColor={value ? "#ffffff" : theme.text.muted}
+        />
+      </View>
+    </SettingRow>
+  );
+
   return (
-    <SafeAreaView className="flex-1 bg-theme-background" edges={[]}>
-      <StatusBar style="dark" />
+    <SafeAreaView className="flex-1" style={{ backgroundColor: theme.background.main }} edges={[]}>
+      <StatusBar style="light" />
       <View className="flex-1">
-        {/* Navbar */}
         <Navbar title="Settings" showCloseButton={true} />
 
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {/* Profile Section */}
           <View className="px-4 py-6">
-            <Text className="text-lg font-semibold text-theme-text-primary mb-4">Account</Text>
-            <View className="bg-theme-surface rounded-xl border border-theme-border overflow-hidden">
-              <View className="px-4 py-4 border-b border-theme-border">
-                <Text className="text-xs text-theme-text-muted mb-1">Name</Text>
-                <Text className="text-base text-theme-text-primary font-medium">
+            <Text className="text-lg font-semibold mb-4" style={{ color: theme.text.primary }}>
+              Account
+            </Text>
+            <SectionCard>
+              <SettingRow>
+                <Text className="text-xs mb-1" style={{ color: theme.text.muted }}>
+                  Name
+                </Text>
+                <Text className="text-base font-medium" style={{ color: theme.text.primary }}>
                   {profile.name}
                 </Text>
-              </View>
-              <View className="px-4 py-4 border-b border-theme-border">
-                <Text className="text-xs text-theme-text-muted mb-1">Email</Text>
-                <Text className="text-base text-theme-text-primary font-medium">
+              </SettingRow>
+              <SettingRow>
+                <Text className="text-xs mb-1" style={{ color: theme.text.muted }}>
+                  Email
+                </Text>
+                <Text className="text-base font-medium" style={{ color: theme.text.primary }}>
                   {profile.email}
                 </Text>
-              </View>
-              <View className="px-4 py-4">
-                <Text className="text-xs text-theme-text-muted mb-1">Wallet Address</Text>
-                <Text className="text-base text-theme-text-primary font-mono">
+              </SettingRow>
+              <SettingRow showBorder={false}>
+                <Text className="text-xs mb-1" style={{ color: theme.text.muted }}>
+                  Wallet Address
+                </Text>
+                <Text className="text-base font-mono" style={{ color: theme.text.primary }}>
                   {formatAddress(profile.walletAddress)}
                 </Text>
-              </View>
-            </View>
+              </SettingRow>
+            </SectionCard>
           </View>
 
           {/* Security Section */}
           <View className="px-4 pb-6">
-            <Text className="text-lg font-semibold text-theme-text-primary mb-4">Security</Text>
-            <View className="bg-theme-surface rounded-xl border border-theme-border overflow-hidden">
-              <View className="px-4 py-4 border-b border-theme-border flex-row items-center justify-between">
-                <View className="flex-1">
-                  <Text className="text-base text-theme-text-primary font-medium mb-1">
-                    Two-Factor Authentication
-                  </Text>
-                  <Text className="text-sm text-theme-text-secondary">
-                    {security.twoFactorAuth ? "Enabled" : "Disabled"}
-                  </Text>
-                </View>
-                <Switch
-                  value={security.twoFactorAuth}
-                  disabled
-                  trackColor={{ false: "#e5e7eb", true: "#4169E1" }}
-                  thumbColor={security.twoFactorAuth ? "#ffffff" : "#f4f3f4"}
-                />
-              </View>
-              <View className="px-4 py-4 border-b border-theme-border flex-row items-center justify-between">
-                <View className="flex-1">
-                  <Text className="text-base text-theme-text-primary font-medium mb-1">
-                    Biometric Authentication
-                  </Text>
-                  <Text className="text-sm text-theme-text-secondary">
-                    {security.biometricAuth ? "Enabled" : "Disabled"}
-                  </Text>
-                </View>
-                <Switch
-                  value={security.biometricAuth}
-                  disabled
-                  trackColor={{ false: "#e5e7eb", true: "#4169E1" }}
-                  thumbColor={security.biometricAuth ? "#ffffff" : "#f4f3f4"}
-                />
-              </View>
-              <View className="px-4 py-4 border-b border-theme-border flex-row items-center justify-between">
-                <View className="flex-1">
-                  <Text className="text-base text-theme-text-primary font-medium mb-1">
-                    Auto Lock
-                  </Text>
-                  <Text className="text-sm text-theme-text-secondary">
-                    {security.autoLock
-                      ? `Lock after ${security.autoLockTimeout} minutes`
-                      : "Disabled"}
-                  </Text>
-                </View>
-                <Switch
-                  value={security.autoLock}
-                  disabled
-                  trackColor={{ false: "#e5e7eb", true: "#4169E1" }}
-                  thumbColor={security.autoLock ? "#ffffff" : "#f4f3f4"}
-                />
-              </View>
-            </View>
+            <Text className="text-lg font-semibold mb-4" style={{ color: theme.text.primary }}>
+              Security
+            </Text>
+            <SectionCard>
+              <SwitchRow
+                title="Two-Factor Authentication"
+                subtitle={security.twoFactorAuth ? "Enabled" : "Disabled"}
+                value={security.twoFactorAuth}
+              />
+              <SwitchRow
+                title="Biometric Authentication"
+                subtitle={security.biometricAuth ? "Enabled" : "Disabled"}
+                value={security.biometricAuth}
+              />
+              <SwitchRow
+                title="Auto Lock"
+                subtitle={
+                  security.autoLock
+                    ? `Lock after ${security.autoLockTimeout} minutes`
+                    : "Disabled"
+                }
+                value={security.autoLock}
+                showBorder={false}
+              />
+            </SectionCard>
           </View>
 
           {/* Notifications Section */}
           <View className="px-4 pb-6">
-            <Text className="text-lg font-semibold text-theme-text-primary mb-4">
+            <Text className="text-lg font-semibold mb-4" style={{ color: theme.text.primary }}>
               Notifications
             </Text>
-            <View className="bg-theme-surface rounded-xl border border-theme-border overflow-hidden">
-              <View className="px-4 py-4 border-b border-theme-border flex-row items-center justify-between">
-                <View className="flex-1">
-                  <Text className="text-base text-theme-text-primary font-medium mb-1">
-                    Transaction Alerts
-                  </Text>
-                  <Text className="text-sm text-theme-text-secondary">
-                    Get notified about transactions
-                  </Text>
-                </View>
-                <Switch
-                  value={notifications.transactionAlerts}
-                  disabled
-                  trackColor={{ false: "#e5e7eb", true: "#4169E1" }}
-                  thumbColor={notifications.transactionAlerts ? "#ffffff" : "#f4f3f4"}
-                />
-              </View>
-              <View className="px-4 py-4 border-b border-theme-border flex-row items-center justify-between">
-                <View className="flex-1">
-                  <Text className="text-base text-theme-text-primary font-medium mb-1">
-                    Price Alerts
-                  </Text>
-                  <Text className="text-sm text-theme-text-secondary">
-                    Get notified about price changes
-                  </Text>
-                </View>
-                <Switch
-                  value={notifications.priceAlerts}
-                  disabled
-                  trackColor={{ false: "#e5e7eb", true: "#4169E1" }}
-                  thumbColor={notifications.priceAlerts ? "#ffffff" : "#f4f3f4"}
-                />
-              </View>
-              <View className="px-4 py-4 border-b border-theme-border flex-row items-center justify-between">
-                <View className="flex-1">
-                  <Text className="text-base text-theme-text-primary font-medium mb-1">
-                    Security Alerts
-                  </Text>
-                  <Text className="text-sm text-theme-text-secondary">
-                    Get notified about security events
-                  </Text>
-                </View>
-                <Switch
-                  value={notifications.securityAlerts}
-                  disabled
-                  trackColor={{ false: "#e5e7eb", true: "#4169E1" }}
-                  thumbColor={notifications.securityAlerts ? "#ffffff" : "#f4f3f4"}
-                />
-              </View>
-              <View className="px-4 py-4 flex-row items-center justify-between">
-                <View className="flex-1">
-                  <Text className="text-base text-theme-text-primary font-medium mb-1">
-                    Marketing Emails
-                  </Text>
-                  <Text className="text-sm text-theme-text-secondary">
-                    Receive promotional content
-                  </Text>
-                </View>
-                <Switch
-                  value={notifications.marketingEmails}
-                  disabled
-                  trackColor={{ false: "#e5e7eb", true: "#4169E1" }}
-                  thumbColor={notifications.marketingEmails ? "#ffffff" : "#f4f3f4"}
-                />
-              </View>
-            </View>
+            <SectionCard>
+              <SwitchRow
+                title="Transaction Alerts"
+                subtitle="Get notified about transactions"
+                value={notifications.transactionAlerts}
+              />
+              <SwitchRow
+                title="Price Alerts"
+                subtitle="Get notified about price changes"
+                value={notifications.priceAlerts}
+              />
+              <SwitchRow
+                title="Security Alerts"
+                subtitle="Get notified about security events"
+                value={notifications.securityAlerts}
+              />
+              <SwitchRow
+                title="Marketing Emails"
+                subtitle="Receive promotional content"
+                value={notifications.marketingEmails}
+                showBorder={false}
+              />
+            </SectionCard>
           </View>
 
           {/* Wallet Section */}
           <View className="px-4 pb-6">
-            <Text className="text-lg font-semibold text-theme-text-primary mb-4">Wallet</Text>
-            <View className="bg-theme-surface rounded-xl border border-theme-border overflow-hidden">
+            <Text className="text-lg font-semibold mb-4" style={{ color: theme.text.primary }}>
+              Wallet
+            </Text>
+            <SectionCard>
               {address && (
-                <View className="px-4 py-4 border-b border-theme-border">
-                  <Text className="text-xs text-theme-text-muted mb-1">Current Address</Text>
-                  <Text className="text-sm text-theme-text-primary font-mono">
+                <SettingRow>
+                  <Text className="text-xs mb-1" style={{ color: theme.text.muted }}>
+                    Current Address
+                  </Text>
+                  <Text className="text-sm font-mono" style={{ color: theme.text.primary }}>
                     {formatAddress(address)}
                   </Text>
-                </View>
+                </SettingRow>
               )}
               <TouchableOpacity
-                className="px-4 py-4"
+                style={{
+                  paddingHorizontal: 16,
+                  paddingVertical: 16,
+                }}
                 onPress={() => setShowImportModal(true)}
                 activeOpacity={0.7}
               >
-                <Text className="text-base text-theme-primary-light font-medium">
+                <Text className="text-base font-medium" style={{ color: theme.primary.light }}>
                   Import Seed Phrase
                 </Text>
-                <Text className="text-sm text-theme-text-secondary mt-1">
+                <Text className="text-sm mt-1" style={{ color: theme.text.secondary }}>
                   Replace current wallet with a new seed phrase
                 </Text>
               </TouchableOpacity>
-            </View>
+            </SectionCard>
           </View>
 
           {/* About Section */}
           <View className="px-4 pb-6">
-            <Text className="text-lg font-semibold text-theme-text-primary mb-4">About</Text>
-            <View className="bg-theme-surface rounded-xl border border-theme-border overflow-hidden">
-              <View className="px-4 py-4 border-b border-theme-border">
-                <Text className="text-xs text-theme-text-muted mb-1">Version</Text>
-                <Text className="text-base text-theme-text-primary font-medium">
+            <Text className="text-lg font-semibold mb-4" style={{ color: theme.text.primary }}>
+              About
+            </Text>
+            <SectionCard>
+              <SettingRow>
+                <Text className="text-xs mb-1" style={{ color: theme.text.muted }}>
+                  Version
+                </Text>
+                <Text className="text-base font-medium" style={{ color: theme.text.primary }}>
                   {appInfo.version} ({appInfo.buildNumber})
                 </Text>
-              </View>
-              <View className="px-4 py-4">
-                <Text className="text-xs text-theme-text-muted mb-1">Last Updated</Text>
-                <Text className="text-base text-theme-text-primary font-medium">
+              </SettingRow>
+              <SettingRow showBorder={false}>
+                <Text className="text-xs mb-1" style={{ color: theme.text.muted }}>
+                  Last Updated
+                </Text>
+                <Text className="text-base font-medium" style={{ color: theme.text.primary }}>
                   {formatDate(appInfo.lastUpdated)}
                 </Text>
-              </View>
-            </View>
+              </SettingRow>
+            </SectionCard>
           </View>
         </ScrollView>
       </View>
@@ -311,11 +325,25 @@ export default function SettingsScreen() {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           className="flex-1"
         >
-          <View className="flex-1 justify-center px-4 bg-black/50">
-            <View className="bg-theme-surface rounded-3xl border border-theme-border overflow-hidden">
+          <View
+            className="flex-1 justify-center px-4"
+            style={{ backgroundColor: "rgba(7, 6, 14, 0.85)" }}
+          >
+            <View
+              style={{
+                backgroundColor: theme.background.surface,
+                borderRadius: 24,
+                borderWidth: 1,
+                borderColor: theme.glass.border,
+                overflow: "hidden",
+              }}
+            >
               {/* Modal Header */}
-              <View className="flex-row items-center justify-between px-6 py-4 border-b border-theme-border">
-                <Text className="text-xl font-bold text-theme-text-primary">
+              <View
+                className="flex-row items-center justify-between px-6 py-4"
+                style={{ borderBottomWidth: 1, borderBottomColor: theme.border.main }}
+              >
+                <Text className="text-xl font-bold" style={{ color: theme.text.primary }}>
                   Import Seed Phrase
                 </Text>
                 <TouchableOpacity
@@ -324,7 +352,9 @@ export default function SettingsScreen() {
                   activeOpacity={0.7}
                   disabled={isImporting}
                 >
-                  <Text className="text-2xl text-theme-text-primary">✕</Text>
+                  <Text className="text-2xl" style={{ color: theme.text.muted }}>
+                    ✕
+                  </Text>
                 </TouchableOpacity>
               </View>
 
@@ -332,25 +362,40 @@ export default function SettingsScreen() {
               <View className="px-6 py-6">
                 {importSuccess ? (
                   <View className="items-center py-8">
-                    <View className="w-16 h-16 rounded-full bg-green-500/20 items-center justify-center mb-4">
-                      <Text className="text-4xl">✓</Text>
+                    <View
+                      className="w-16 h-16 rounded-full items-center justify-center mb-4"
+                      style={{ backgroundColor: theme.status.success.light }}
+                    >
+                      <Text className="text-4xl" style={{ color: theme.status.success.main }}>
+                        ✓
+                      </Text>
                     </View>
-                    <Text className="text-theme-text-primary text-lg font-semibold">
+                    <Text className="text-lg font-semibold" style={{ color: theme.text.primary }}>
                       Wallet Imported!
                     </Text>
                   </View>
                 ) : (
                   <>
-                    <Text className="text-sm text-theme-text-muted mb-4">
+                    <Text className="text-sm mb-4" style={{ color: theme.text.muted }}>
                       Enter your 12 or 24 word seed phrase, separated by spaces. This will replace
                       your current wallet.
                     </Text>
 
                     <TextInput
-                      className="bg-theme-background border border-theme-border rounded-xl px-4 py-4 text-theme-text-primary min-h-[120px]"
+                      style={{
+                        backgroundColor: theme.background.main,
+                        borderWidth: 1,
+                        borderColor: theme.border.main,
+                        borderRadius: 12,
+                        paddingHorizontal: 16,
+                        paddingVertical: 16,
+                        color: theme.text.primary,
+                        fontSize: 14,
+                        minHeight: 120,
+                        textAlignVertical: "top",
+                      }}
                       placeholder="word1 word2 word3 word4 ..."
-                      placeholderTextColor="#9ca3af"
-                      style={{ fontSize: 14, textAlignVertical: "top" }}
+                      placeholderTextColor={theme.text.muted}
                       multiline
                       numberOfLines={4}
                       autoCapitalize="none"
@@ -361,13 +406,21 @@ export default function SettingsScreen() {
                     />
 
                     {importError && (
-                      <View className="mt-4 p-3 bg-red-500/10 rounded-xl">
-                        <Text className="text-red-500 text-sm">{importError}</Text>
+                      <View
+                        className="mt-4 p-3 rounded-xl"
+                        style={{ backgroundColor: theme.status.error.light }}
+                      >
+                        <Text className="text-sm" style={{ color: theme.status.error.main }}>
+                          {importError}
+                        </Text>
                       </View>
                     )}
 
-                    <View className="mt-4 p-3 bg-yellow-500/10 rounded-xl">
-                      <Text className="text-yellow-600 text-sm">
+                    <View
+                      className="mt-4 p-3 rounded-xl"
+                      style={{ backgroundColor: theme.status.warning.light }}
+                    >
+                      <Text className="text-sm" style={{ color: theme.status.warning.main }}>
                         ⚠️ Warning: This will replace your current wallet. Make sure you have backed
                         up your current seed phrase if needed.
                       </Text>
@@ -377,16 +430,29 @@ export default function SettingsScreen() {
                       activeOpacity={0.8}
                       onPress={handleImportSeedPhrase}
                       disabled={isImporting || !seedPhraseInput.trim()}
-                      className={`mt-6 rounded-xl py-4 items-center ${
-                        isImporting || !seedPhraseInput.trim()
-                          ? "bg-theme-primary-light/50"
-                          : "bg-theme-primary-light"
-                      }`}
+                      style={{
+                        marginTop: 24,
+                        borderRadius: 12,
+                        paddingVertical: 16,
+                        alignItems: "center",
+                        backgroundColor:
+                          isImporting || !seedPhraseInput.trim()
+                            ? theme.background.elevated
+                            : theme.primary.main,
+                        shadowColor: theme.primary.main,
+                        shadowOffset: { width: 0, height: 4 },
+                        shadowOpacity:
+                          isImporting || !seedPhraseInput.trim() ? 0 : 0.3,
+                        shadowRadius: 12,
+                        elevation: isImporting || !seedPhraseInput.trim() ? 0 : 6,
+                      }}
                     >
                       {isImporting ? (
                         <ActivityIndicator color="#ffffff" />
                       ) : (
-                        <Text className="text-white font-semibold text-base">Import Wallet</Text>
+                        <Text className="font-semibold text-base" style={{ color: "#ffffff" }}>
+                          Import Wallet
+                        </Text>
                       )}
                     </TouchableOpacity>
                   </>

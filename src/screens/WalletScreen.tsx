@@ -1,6 +1,7 @@
 import { View, RefreshControl, ScrollView } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
 import { useCallback, useState } from "react";
 import Navbar from "@/components/Navbar";
 import BalanceCard from "@/components/BalanceCard";
@@ -44,13 +45,28 @@ export default function WalletScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-theme-background" edges={[]}>
-      <StatusBar style="dark" />
+    <SafeAreaView
+      className="flex-1"
+      style={{ backgroundColor: theme.background.main }}
+      edges={[]}
+    >
+      <StatusBar style="light" />
       <ScrollView
         className="flex-1"
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={theme.primary.light}
+          />
+        }
       >
-        <View style={{ backgroundColor: theme.primary.main }} className="pb-6">
+        {/* Hero gradient — deep purple nebula fading into the void */}
+        <LinearGradient
+          colors={["#1A0938", "#110F1D", theme.background.main]}
+          locations={[0, 0.55, 1]}
+          className="pb-6"
+        >
           <Navbar />
           <BalanceCard
             balance={balanceInBtc}
@@ -61,7 +77,7 @@ export default function WalletScreen() {
             <ActionButton label="Send" icon="↑" onPress={handleSend} variant="primary" />
             <ActionButton label="Receive" icon="↓" onPress={handleReceive} variant="secondary" />
           </View>
-        </View>
+        </LinearGradient>
 
         <TransactionListHeader />
 
@@ -75,9 +91,13 @@ export default function WalletScreen() {
 }
 
 function TransactionListHeader() {
+  const { theme } = useThemeStore();
+
   return (
     <View className="px-4 mb-2 mt-6">
-      <Text className="text-lg font-semibold text-theme-text-primary">Recent Transactions</Text>
+      <Text className="text-lg font-semibold" style={{ color: theme.text.primary }}>
+        Recent Transactions
+      </Text>
     </View>
   );
 }

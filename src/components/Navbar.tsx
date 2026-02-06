@@ -1,7 +1,8 @@
-import { View, TouchableOpacity, Alert } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Text from "@/components/Text";
 import { useNavigationStore } from "@/store/navigationStore";
+import { useThemeStore } from "@/store/themeStore";
 
 interface NavbarProps {
   title?: string;
@@ -12,6 +13,7 @@ export default function Navbar({ title, showCloseButton = false }: NavbarProps) 
   const insets = useSafeAreaInsets();
   const { navigateToSettings, navigateToWallet, closeTransactionDetail, currentScreen } =
     useNavigationStore();
+  const { theme } = useThemeStore();
 
   const handleSettings = () => {
     navigateToSettings();
@@ -19,7 +21,6 @@ export default function Navbar({ title, showCloseButton = false }: NavbarProps) 
 
   const handleBack = () => {
     if (showCloseButton) {
-      // If on settings screen, navigate back to wallet; otherwise close transaction detail
       if (currentScreen === "settings") {
         navigateToWallet();
       } else {
@@ -32,24 +33,34 @@ export default function Navbar({ title, showCloseButton = false }: NavbarProps) 
 
   const hasBackAction = showCloseButton || title;
 
+  // Always dark — transparent on wallet gradient, surface with bottom border elsewhere
   const isOnGradient = !hasBackAction;
-  const bgClass = isOnGradient ? "" : "bg-theme-surface";
-  const borderClass = isOnGradient ? "" : "border-b border-theme-border";
-  const textColor = isOnGradient ? "text-white" : "text-theme-text-primary";
 
   return (
     <View
-      className={`${bgClass} px-4 ${borderClass}`}
-      style={{ paddingTop: insets.top + 8, paddingBottom: 12 }}
+      style={{
+        paddingTop: insets.top + 8,
+        paddingBottom: 12,
+        paddingHorizontal: 16,
+        backgroundColor: isOnGradient ? "transparent" : theme.background.surface,
+        borderBottomWidth: isOnGradient ? 0 : 1,
+        borderBottomColor: isOnGradient ? "transparent" : theme.border.main,
+      }}
     >
       <View className="flex-row items-center justify-between">
-        {/* Back Button, Close Button, or App Name */}
         {hasBackAction ? (
           showCloseButton ? (
             <>
-              <Text className={`text-2xl font-bold ${textColor}`}>{title || "Transaction"}</Text>
+              <Text
+                className="text-2xl font-bold"
+                style={{ color: theme.text.primary }}
+              >
+                {title || "Transaction"}
+              </Text>
               <TouchableOpacity onPress={handleBack} className="p-2" activeOpacity={0.7}>
-                <Text className={`text-2xl ${textColor}`}>✕</Text>
+                <Text className="text-2xl" style={{ color: theme.text.muted }}>
+                  ✕
+                </Text>
               </TouchableOpacity>
             </>
           ) : (
@@ -58,18 +69,25 @@ export default function Navbar({ title, showCloseButton = false }: NavbarProps) 
               className="flex-row items-center"
               activeOpacity={0.7}
             >
-              <Text className={`text-xl ${textColor} mr-2`}>←</Text>
-              <Text className={`text-lg font-semibold ${textColor}`}>{title || "Back"}</Text>
+              <Text className="text-xl mr-2" style={{ color: theme.text.primary }}>
+                ←
+              </Text>
+              <Text className="text-lg font-semibold" style={{ color: theme.text.primary }}>
+                {title || "Back"}
+              </Text>
             </TouchableOpacity>
           )
         ) : (
-          <Text className={`text-2xl font-bold ${textColor}`}>beutel</Text>
+          <Text className="text-2xl font-bold" style={{ color: theme.text.primary }}>
+            beutel
+          </Text>
         )}
 
-        {/* Action Buttons - Only show when not on settings screen and not showing close button */}
         {!hasBackAction && (
           <TouchableOpacity onPress={handleSettings} className="p-2" activeOpacity={0.7}>
-            <Text className={`text-3xl ${textColor}`}>☰</Text>
+            <Text className="text-3xl" style={{ color: theme.text.secondary }}>
+              ☰
+            </Text>
           </TouchableOpacity>
         )}
       </View>
