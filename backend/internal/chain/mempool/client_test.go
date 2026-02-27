@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/maindotmarcell/beutel-backend/internal/chain"
 	"github.com/maindotmarcell/beutel-backend/internal/logging"
@@ -286,6 +287,47 @@ func TestGetTransactions(t *testing.T) {
 			assert.Len(t, txs, tt.wantLen)
 		})
 	}
+
+	t.Run("success_field_mapping", func(t *testing.T) {
+		receiveTxBody := `[{"txid":"rx1","status":{"confirmed":true,"block_height":810000,"block_time":1710000000},"vin":[{"prevout":{"scriptpubkey_address":"SENDER","value":5000}}],"vout":[{"scriptpubkey_address":"SELF","value":4500}],"fee":500}]`
+		handler := func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			io.WriteString(w, receiveTxBody)
+		}
+		c := newTestClient(t, http.HandlerFunc(handler))
+		txs, err := c.GetTransactions(logging.NewLogContext(), "SELF")
+		require.NoError(t, err)
+		require.Len(t, txs, 1)
+		tx := txs[0]
+		assert.Equal(t, "rx1", tx.Txid)
+		assert.Equal(t, "receive", tx.Type)
+		assert.Equal(t, int64(4500), tx.AmountSats)
+		assert.Equal(t, "SENDER", tx.OtherAddr)
+		assert.True(t, tx.Confirmed)
+		assert.Equal(t, int64(810000), tx.BlockHeight)
+		assert.Equal(t, int64(1710000000), tx.BlockTime)
+		assert.Equal(t, int64(500), tx.FeeSats)
+	})
+}
+
+// ─── TestGetBalance_Timeout ────────────────────────────────────────────────
+
+func TestGetBalance_Timeout(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(200 * time.Millisecond)
+		w.WriteHeader(http.StatusOK)
+		io.WriteString(w, `{"chain_stats":{"funded_txo_sum":0,"spent_txo_sum":0},"mempool_stats":{"funded_txo_sum":0,"spent_txo_sum":0}}`)
+	}))
+	t.Cleanup(ts.Close)
+
+	c := &Client{
+		httpClient: &http.Client{Timeout: 50 * time.Millisecond},
+		network:    chain.Mainnet,
+		baseURL:    ts.URL,
+	}
+	bal, err := c.GetBalance(logging.NewLogContext(), "addr1")
+	require.Error(t, err)
+	assert.Nil(t, bal)
 }
 
 // ─── TestGetFeeRates ───────────────────────────────────────────────────────
@@ -456,6 +498,38 @@ func TestEnrichTransaction(t *testing.T) {
 			vout:          []mempoolTxOutput{out(SELF, 1_000)},
 			wantType:      "receive",
 			wantAmount:    1_000,
+			wantOtherAddr: "",
+		},
+		{
+			name:          "send_multiple_inputs_same_address",
+			vin:           []mempoolTxInput{inp(SELF, 50_000), inp(SELF, 50_000)},
+			vout:          []mempoolTxOutput{out("OTHER", 95_000)},
+			wantType:      "send",
+			wantAmount:    95_000,
+			wantOtherAddr: "OTHER",
+		},
+		{
+			name:          "send_multiple_outputs_same_recipient",
+			vin:           []mempoolTxInput{inp(SELF, 100_000)},
+			vout:          []mempoolTxOutput{out("DEST", 40_000), out("DEST", 50_000), out(SELF, 5_000)},
+			wantType:      "send",
+			wantAmount:    90_000,
+			wantOtherAddr: "DEST",
+		},
+		{
+			name:          "receive_zero_value_output",
+			vin:           []mempoolTxInput{inp("OTHER", 1_000)},
+			vout:          []mempoolTxOutput{out(SELF, 0)},
+			wantType:      "receive",
+			wantAmount:    0,
+			wantOtherAddr: "OTHER",
+		},
+		{
+			name:          "send_empty_vout",
+			vin:           []mempoolTxInput{inp(SELF, 100_000)},
+			vout:          []mempoolTxOutput{},
+			wantType:      "send",
+			wantAmount:    0,
 			wantOtherAddr: "",
 		},
 	}

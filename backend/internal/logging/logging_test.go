@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/maindotmarcell/beutel-backend/internal/logging"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -53,6 +54,17 @@ func TestFields_ReturnsCopy(t *testing.T) {
 func TestNewLogContext_Empty(t *testing.T) {
 	lc := logging.NewLogContext()
 	assert.Empty(t, lc.Fields())
+}
+
+func TestNewLogger_ReturnsUsableLogger(t *testing.T) {
+	logger := logging.NewLogger()
+	// Verify it returns a non-nil, usable zerolog.Logger
+	assert.IsType(t, zerolog.Logger{}, logger)
+
+	// Verify the logger can produce output without panicking
+	assert.NotPanics(t, func() {
+		logger.Info().Msg("test")
+	})
 }
 
 func TestConcurrentSafety(t *testing.T) {

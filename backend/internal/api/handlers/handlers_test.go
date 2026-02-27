@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http/httptest"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/maindotmarcell/beutel-backend/pkg/types"
@@ -222,5 +223,49 @@ func TestBroadcastTx(t *testing.T) {
 			body, _ := io.ReadAll(resp.Body)
 			assert.Contains(t, string(body), tt.wantBody)
 		})
+	}
+
+	t.Run("success_json_format", func(t *testing.T) {
+		mock := &mockProvider{txid: "abc123"}
+		app := newTestApp(mock)
+		req := httptest.NewRequest("POST", "/v1/tx/broadcast", strings.NewReader(`{"txHex":"deadbeef"}`))
+		req.Header.Set("Content-Type", "application/json")
+		resp, err := app.Test(req, -1)
+		require.NoError(t, err)
+		assert.Equal(t, 200, resp.StatusCode)
+
+		var result map[string]string
+		require.NoError(t, json.NewDecoder(resp.Body).Decode(&result))
+		assert.Equal(t, "abc123", result["txid"])
+	})
+}
+
+// ─── TestConcurrentRequests ───────────────────────────────────────────────
+
+func TestConcurrentRequests(t *testing.T) {
+	mock := &mockProvider{balance: &types.Balance{Confirmed: 1000, Unconfirmed: 200, Total: 1200}}
+	app := newTestApp(mock)
+
+	var wg sync.WaitGroup
+	results := make([]int, 50)
+	errs := make([]error, 50)
+
+	for i := 0; i < 50; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			req := httptest.NewRequest("GET", "/v1/address/addr1/balance", nil)
+			resp, err := app.Test(req, -1)
+			errs[i] = err
+			if resp != nil {
+				results[i] = resp.StatusCode
+			}
+		}(i)
+	}
+	wg.Wait()
+
+	for i := 0; i < 50; i++ {
+		assert.NoError(t, errs[i], "request %d should not error", i)
+		assert.Equal(t, 200, results[i], "request %d should return 200", i)
 	}
 }

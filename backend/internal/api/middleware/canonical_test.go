@@ -125,3 +125,52 @@ func TestGetLogContext_Fallback(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotNil(t, gotCtx)
 }
+
+func TestLogOutputJSON_Structure(t *testing.T) {
+	var buf bytes.Buffer
+	app := newMiddlewareApp(&buf)
+
+	req := httptest.NewRequest("GET", "/test", nil)
+	_, err := app.Test(req, -1)
+	require.NoError(t, err)
+
+	entry := parseLog(t, &buf)
+	assert.Equal(t, "GET", entry["method"])
+	assert.Equal(t, "/test", entry["path"])
+	assert.Equal(t, float64(200), entry["status"])
+	assert.Equal(t, "request", entry["message"])
+}
+
+func TestLogOutput_ResponseBytes(t *testing.T) {
+	var buf bytes.Buffer
+	app := newMiddlewareApp(&buf)
+
+	req := httptest.NewRequest("GET", "/test", nil)
+	_, err := app.Test(req, -1)
+	require.NoError(t, err)
+
+	entry := parseLog(t, &buf)
+	rb, ok := entry["response_bytes"]
+	assert.True(t, ok, "response_bytes should be present in log")
+	_, isNum := rb.(float64) // JSON numbers decode as float64
+	assert.True(t, isNum, "response_bytes should be numeric")
+}
+
+func TestMiddleware_PassesThroughHandlerError(t *testing.T) {
+	var buf bytes.Buffer
+	app := fiber.New(fiber.Config{DisableStartupMessage: true})
+	app.Use(middleware.CanonicalLog(zerolog.New(&buf)))
+	app.Get("/fail", func(c *fiber.Ctx) error {
+		return fiber.NewError(fiber.StatusInternalServerError, "boom")
+	})
+
+	req := httptest.NewRequest("GET", "/fail", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	assert.Equal(t, 500, resp.StatusCode)
+
+	// Middleware should still have logged
+	assert.True(t, buf.Len() > 0, "middleware should emit a log line even on error")
+	entry := parseLog(t, &buf)
+	assert.Contains(t, entry, "status")
+}
