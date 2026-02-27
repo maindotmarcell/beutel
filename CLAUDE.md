@@ -16,10 +16,18 @@ beutel/
 
 ## Backend (Go)
 
-**Run locally:**
+A `Makefile` is provided in `backend/` — this is the Go industry standard equivalent of `package.json` scripts.
+
 ```bash
 cd backend
-NETWORK=testnet4 go run ./cmd/server
+make build        # compile to bin/server
+make run          # run with NETWORK=testnet4
+make test         # run all tests (fast, no race detector)
+make test-race    # run all tests with race detector — use before committing
+make test-cover   # run tests and print per-package coverage
+make fmt          # gofmt all source files
+make vet          # go vet (static correctness checks)
+make clean        # remove build artifacts
 ```
 
 **Docker:**
@@ -30,6 +38,11 @@ docker-compose up --build
 **Environment variables:** `PORT` (default: 3000), `NETWORK` (mainnet | testnet3 | testnet4 | signet, default: mainnet)
 
 **API endpoints:** `GET /health`, `GET /v1/address/{addr}/balance`, `GET /v1/address/{addr}/utxos`, `GET /v1/address/{addr}/transactions`, `GET /v1/fees`, `POST /v1/tx/broadcast`
+
+## Testing Policy
+
+- **Run `make test-race` after every new feature, before committing.** This catches regressions and data races introduced by the change.
+- **Never delete a failing test just to make the suite pass.** If a test is genuinely obsolete (e.g. the behaviour it covered was intentionally removed), explain why in the PR/commit message and remove it with that justification. Silently deleting tests to hide failures is not acceptable.
 
 ## Mobile (React Native / Expo)
 
