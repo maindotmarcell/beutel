@@ -1,4 +1,4 @@
-import { NetworkType, UTXO, FeeRates, Transaction } from "@/types/wallet";
+import { NetworkType, UTXO, OwnedUTXO, AddressChain, FeeRates, Transaction } from "@/types/wallet";
 import * as mempoolApi from "@/api/chainApi";
 import { satsToBtc } from "@/utils/bitcoinUtils";
 
@@ -81,4 +81,76 @@ export async function getAddressTransactions(
   transactions.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 
   return transactions;
+}
+
+/**
+ * Fetch and aggregate balance across multiple addresses
+ */
+export async function getAggregateBalance(
+  addresses: string[],
+  network: NetworkType
+): Promise<BalanceResult> {
+  const results = await Promise.all(addresses.map((addr) => getAddressBalance(addr, network)));
+  return results.reduce(
+    (acc, r) => ({
+      confirmed: acc.confirmed + r.confirmed,
+      unconfirmed: acc.unconfirmed + r.unconfirmed,
+      total: acc.total + r.total,
+    }),
+    { confirmed: 0, unconfirmed: 0, total: 0 }
+  );
+}
+
+export interface AddressDerivationInfo {
+  address: string;
+  chain: AddressChain;
+  index: number;
+}
+
+/**
+ * Fetch UTXOs across multiple addresses and tag each with owner metadata
+ */
+export async function getAggregateUtxos(
+  addressInfos: AddressDerivationInfo[],
+  network: NetworkType
+): Promise<OwnedUTXO[]> {
+  const results = await Promise.all(
+    addressInfos.map(async (info) => {
+      const utxos = await getAddressUtxos(info.address, network);
+      return utxos.map(
+        (utxo): OwnedUTXO => ({
+          ...utxo,
+          ownerAddress: info.address,
+          chain: info.chain,
+          addressIndex: info.index,
+        })
+      );
+    })
+  );
+  return results.flat();
+}
+
+/**
+ * Fetch and deduplicate transactions across multiple addresses
+ */
+export async function getAggregateTransactions(
+  addresses: string[],
+  network: NetworkType
+): Promise<Transaction[]> {
+  const results = await Promise.all(addresses.map((addr) => getAddressTransactions(addr, network)));
+
+  // Deduplicate by transaction id (same tx may appear for multiple owned addresses)
+  const seen = new Set<string>();
+  const deduped: Transaction[] = [];
+  for (const txList of results) {
+    for (const tx of txList) {
+      if (!seen.has(tx.id)) {
+        seen.add(tx.id);
+        deduped.push(tx);
+      }
+    }
+  }
+
+  deduped.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  return deduped;
 }

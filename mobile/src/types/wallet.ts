@@ -1,5 +1,8 @@
 export type NetworkType = "mainnet" | "testnet3" | "testnet4" | "signet";
 
+/** BIP44 chain index: 0 = external (receive), 1 = internal (change) */
+export type AddressChain = 0 | 1;
+
 export type TransactionType = "send" | "receive";
 
 export type TransactionStatus = "pending" | "confirmed" | "failed";
@@ -38,6 +41,16 @@ export interface UTXO {
 }
 
 /**
+ * UTXO tagged with its owning address and derivation info,
+ * so the signing logic knows which key to use per input.
+ */
+export interface OwnedUTXO extends UTXO {
+  ownerAddress: string;
+  chain: AddressChain;
+  addressIndex: number;
+}
+
+/**
  * Fee rates returned from mempool.space API (sat/vB)
  */
 export interface FeeRates {
@@ -59,4 +72,5 @@ export interface TransactionPreview {
   feeRate: number; // sat/vB used
   inputCount: number;
   changeAmount: number; // change back to sender in satoshis
+  changeAddress?: string; // the change address for this transaction
 }
