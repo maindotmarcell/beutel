@@ -1,0 +1,35 @@
+name: Claude Duplicate Issue Detection
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  deduplicate:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            A new issue has been opened in the **Beutel** repository.
+
+            New issue #${{ github.event.issue.number }}: "${{ github.event.issue.title }}"
+            Body: ${{ github.event.issue.body }}
+
+            Check if this is a duplicate of an existing open issue:
+            1. Run: `gh issue list --state open --limit 100 --json number,title,body`
+            2. Compare the new issue's topic, symptoms, and context against existing issues
+            3. If a duplicate is found:
+               - Comment on the new issue referencing the original (e.g. "This appears to be a duplicate of #X")
+               - Apply the label `duplicate` to the new issue (create it if it doesn't exist)
+            4. If no duplicate is found, do nothing (no comment, no label)
+
+            Only flag as duplicate if you are confident the issues describe the same underlying problem.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
