@@ -459,9 +459,13 @@ export const useWalletStore = create<WalletState>((set, get) => ({
 
       const txid = await chainService.broadcastTransaction(txHex, network);
 
-      // Advance change index and persist
-      const newNextChangeIndex = nextChangeIndex + 1;
-      await keyService.storeAddressState({ nextChangeIndex: newNextChangeIndex });
+      // Only advance change index if a change output was actually created (above dust threshold)
+      const hasChangeOutput = transactionPreview.changeAmount > 546;
+      const newNextChangeIndex = hasChangeOutput ? nextChangeIndex + 1 : nextChangeIndex;
+
+      if (hasChangeOutput) {
+        await keyService.storeAddressState({ nextChangeIndex: newNextChangeIndex });
+      }
 
       const changeAddresses = deriveChangeAddresses(mnemonic, network, newNextChangeIndex);
 
