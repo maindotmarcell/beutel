@@ -20,16 +20,8 @@ export default function ActionButton({
   const isPrimary = variant === "primary";
 
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      className="flex-1 mx-2"
-      activeOpacity={0.8}
-    >
-      <GlassCard
-        borderRadius={24}
-        intensity={30}
-        highlight
-      >
+    <TouchableOpacity onPress={onPress} className="flex-1 mx-2" activeOpacity={0.8}>
+      <GlassCard borderRadius={24} intensity={30} highlight>
         <View className="p-4 items-center justify-center">
           <View
             className="w-12 h-12 rounded-full items-center justify-center mb-2"
@@ -39,10 +31,7 @@ export default function ActionButton({
           >
             <Text className="text-2xl">{icon}</Text>
           </View>
-          <Text
-            className="font-semibold text-base"
-            style={{ color: theme.text.primary }}
-          >
+          <Text className="font-semibold text-base" style={{ color: theme.text.primary }}>
             {label}
           </Text>
         </View>

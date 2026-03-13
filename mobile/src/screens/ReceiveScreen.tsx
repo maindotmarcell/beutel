@@ -141,10 +141,7 @@ export default function ReceiveScreen() {
                 </TouchableOpacity>
               </View>
               {copied && (
-                <Text
-                  className="text-sm mt-2 text-center"
-                  style={{ color: theme.primary.light }}
-                >
+                <Text className="text-sm mt-2 text-center" style={{ color: theme.primary.light }}>
                   Copied!
                 </Text>
               )}

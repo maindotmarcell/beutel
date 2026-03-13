@@ -92,28 +92,16 @@ export default function TransactionItem({ transaction, onPress }: TransactionIte
       <View className="flex-row items-center justify-between">
         <View className="flex-1">
           <View className="flex-row items-center mb-1">
-            <Text
-              className="text-base font-semibold mr-2"
-              style={{ color: amountColor }}
-            >
+            <Text className="text-base font-semibold mr-2" style={{ color: amountColor }}>
               {amountPrefix} {transaction.amount.toFixed(8)} BTC
             </Text>
-            <View
-              className="px-2 py-1 rounded-full"
-              style={{ backgroundColor: statusColors.bg }}
-            >
-              <Text
-                className="text-xs font-medium capitalize"
-                style={{ color: statusColors.text }}
-              >
+            <View className="px-2 py-1 rounded-full" style={{ backgroundColor: statusColors.bg }}>
+              <Text className="text-xs font-medium capitalize" style={{ color: statusColors.text }}>
                 {transaction.status}
               </Text>
             </View>
           </View>
-          <Text
-            className="text-sm font-mono mb-1"
-            style={{ color: theme.text.secondary }}
-          >
+          <Text className="text-sm font-mono mb-1" style={{ color: theme.text.secondary }}>
             {formatAddress(transaction.address)}
           </Text>
           <Text className="text-xs" style={{ color: theme.text.muted }}>

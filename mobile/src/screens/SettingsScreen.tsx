@@ -213,9 +213,7 @@ export default function SettingsScreen() {
               <SwitchRow
                 title="Auto Lock"
                 subtitle={
-                  security.autoLock
-                    ? `Lock after ${security.autoLockTimeout} minutes`
-                    : "Disabled"
+                  security.autoLock ? `Lock after ${security.autoLockTimeout} minutes` : "Disabled"
                 }
                 value={security.autoLock}
                 showBorder={false}
@@ -441,8 +439,7 @@ export default function SettingsScreen() {
                             : theme.primary.main,
                         shadowColor: theme.primary.main,
                         shadowOffset: { width: 0, height: 4 },
-                        shadowOpacity:
-                          isImporting || !seedPhraseInput.trim() ? 0 : 0.3,
+                        shadowOpacity: isImporting || !seedPhraseInput.trim() ? 0 : 0.3,
                         shadowRadius: 12,
                         elevation: isImporting || !seedPhraseInput.trim() ? 0 : 6,
                       }}

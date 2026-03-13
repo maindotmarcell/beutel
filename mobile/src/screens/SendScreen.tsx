@@ -179,10 +179,7 @@ export default function SendScreen() {
 
       {/* Validation Error */}
       {validationError && (
-        <View
-          className="mb-4 p-3 rounded-xl"
-          style={{ backgroundColor: theme.status.error.light }}
-        >
+        <View className="mb-4 p-3 rounded-xl" style={{ backgroundColor: theme.status.error.light }}>
           <Text className="text-sm" style={{ color: theme.status.error.main }}>
             {validationError}
           </Text>
@@ -230,10 +227,7 @@ export default function SendScreen() {
 
     return (
       <>
-        <Text
-          className="text-lg font-semibold mb-4"
-          style={{ color: theme.text.primary }}
-        >
+        <Text className="text-lg font-semibold mb-4" style={{ color: theme.text.primary }}>
           Confirm Transaction
         </Text>
 
@@ -274,12 +268,12 @@ export default function SendScreen() {
 
           <View className="flex-row justify-between mb-3">
             <Text style={{ color: theme.text.muted }}>Fee Rate</Text>
-            <Text style={{ color: theme.text.primary }}>
-              {transactionPreview.feeRate} sat/vB
-            </Text>
+            <Text style={{ color: theme.text.primary }}>{transactionPreview.feeRate} sat/vB</Text>
           </View>
 
-          <View style={{ borderTopWidth: 1, borderTopColor: theme.border.main, marginVertical: 8 }} />
+          <View
+            style={{ borderTopWidth: 1, borderTopColor: theme.border.main, marginVertical: 8 }}
+          />
 
           <View className="flex-row justify-between">
             <Text className="font-semibold" style={{ color: theme.text.primary }}>
@@ -337,10 +331,7 @@ export default function SendScreen() {
   const renderSendingStep = () => (
     <View className="items-center py-8">
       <ActivityIndicator size="large" color={theme.primary.light} />
-      <Text
-        className="text-lg font-semibold mt-4"
-        style={{ color: theme.text.primary }}
-      >
+      <Text className="text-lg font-semibold mt-4" style={{ color: theme.text.primary }}>
         Sending Transaction...
       </Text>
       <Text className="mt-2 text-center" style={{ color: theme.text.muted }}>
@@ -359,10 +350,7 @@ export default function SendScreen() {
           ✓
         </Text>
       </View>
-      <Text
-        className="text-xl font-semibold mb-2"
-        style={{ color: theme.text.primary }}
-      >
+      <Text className="text-xl font-semibold mb-2" style={{ color: theme.text.primary }}>
         Transaction Sent!
       </Text>
       <Text className="text-center mb-4" style={{ color: theme.text.muted }}>
@@ -424,10 +412,7 @@ export default function SendScreen() {
           ✕
         </Text>
       </View>
-      <Text
-        className="text-xl font-semibold mb-2"
-        style={{ color: theme.text.primary }}
-      >
+      <Text className="text-xl font-semibold mb-2" style={{ color: theme.text.primary }}>
         Transaction Failed
       </Text>
       <Text className="text-center mb-4" style={{ color: theme.text.muted }}>

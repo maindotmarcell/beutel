@@ -51,10 +51,7 @@ export default function Navbar({ title, showCloseButton = false }: NavbarProps) 
         {hasBackAction ? (
           showCloseButton ? (
             <>
-              <Text
-                className="text-2xl font-bold"
-                style={{ color: theme.text.primary }}
-              >
+              <Text className="text-2xl font-bold" style={{ color: theme.text.primary }}>
                 {title || "Transaction"}
               </Text>
               <TouchableOpacity onPress={handleBack} className="p-2" activeOpacity={0.7}>
