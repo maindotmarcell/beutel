@@ -57,6 +57,15 @@ pnpm run android
 pnpm run format     # Prettier
 ```
 
+**iOS Simulator** (managed Expo — no `ios/` directory):
+```bash
+cd mobile
+pnpm run ios                                    # launch default simulator
+npx expo run:ios --device "iPhone 16e"          # pick a specific device
+```
+
+Available simulators on this machine include iPhone 17 Pro, iPhone 17 Pro Max, iPhone Air, iPhone 17, iPhone 16e, and various iPads (iOS 26.1 runtime).
+
 **Backend URL** is set in `mobile/app.json` under `expo.extra.backendUrl`. Default points to the Railway deployment; override locally as needed.
 
 ## Architecture
@@ -89,6 +98,10 @@ pnpm run format     # Prettier
 | Mobile | NativeWind + Tailwind | Styling |
 | Backend | Fiber v2 | HTTP framework |
 | Backend | rs/zerolog | Structured logging |
+
+## MCP Servers
+
+- **ios-simulator** — Controls the iOS Simulator (screenshots, UI inspection, tap/swipe). Requires a booted simulator. Added via `ios-simulator-mcp` npm package.
 
 ## TypeScript Path Alias
 
