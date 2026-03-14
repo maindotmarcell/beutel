@@ -1,0 +1,40 @@
+name: Claude Issue Triage
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            A new issue has been opened in the **Beutel** repository — a non-custodial Bitcoin wallet monorepo.
+
+            Issue #${{ github.event.issue.number }}: "${{ github.event.issue.title }}"
+
+            Project areas:
+            - `backend` — Go proxy server (Fiber v2), mempool.space integration, REST API
+            - `mobile` — React Native/Expo app, key management, transaction signing, UI
+            - `both` — affects the full stack
+
+            Triage this issue by:
+            1. Applying one type label: `bug`, `feature`, `question`, `docs`, or `chore`
+            2. Applying one area label: `backend`, `mobile`, or `both`
+            3. Applying one priority label: `priority: high`, `priority: medium`, or `priority: low`
+            4. Posting a brief triage comment:
+               - Confirm what the issue is about in 1-2 sentences
+               - State the affected area and priority reasoning
+               - If critical info is missing (steps to reproduce, environment, etc.), ask for it specifically
+
+            Create labels that don't exist yet before applying them.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

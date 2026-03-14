@@ -1,0 +1,42 @@
+name: Claude CI Failure Auto-Fix
+
+on:
+  workflow_run:
+    workflows: ["*"]
+    types: [completed]
+
+jobs:
+  fix:
+    if: github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            The CI workflow **"${{ github.event.workflow_run.name }}"** just failed on branch `${{ github.event.workflow_run.head_branch }}`.
+            Run ID: ${{ github.event.workflow_run.id }}
+
+            This is the **Beutel** monorepo — a non-custodial Bitcoin wallet:
+            - `backend/` — Go (Fiber v2). Test command: `make test-race` (NEVER delete a failing test to make it pass)
+            - `mobile/` — React Native/Expo/TypeScript. Package manager: pnpm
+
+            Steps:
+            1. Fetch the failed run logs: `gh run view ${{ github.event.workflow_run.id }} --log-failed`
+            2. Identify the root cause of the failure
+            3. Fix the code (do NOT skip hooks, delete tests, or use --no-verify)
+            4. Commit the fix with a clear message explaining what broke and why
+            5. Comment on the associated PR (if any) with a summary of the fix
+
+            If the failure is flaky/environmental and not a code bug, comment explaining that instead of pushing a fix.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
