@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"strings"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/maindotmarcell/beutel-backend/internal/api/middleware"
 )
@@ -13,7 +15,13 @@ func (h *Handler) GetTransactions(c *fiber.Ctx) error {
 	// Add request-specific fields to canonical log
 	logCtx.Add("address", address)
 
-	txs, err := h.provider.GetTransactions(logCtx, address)
+	// Parse optional owned addresses for multi-address enrichment
+	var ownedAddresses []string
+	if owned := c.Query("owned"); owned != "" {
+		ownedAddresses = strings.Split(owned, ",")
+	}
+
+	txs, err := h.provider.GetTransactions(logCtx, address, ownedAddresses)
 	if err != nil {
 		logCtx.Add("error", err.Error())
 		logCtx.Add("error_type", "upstream_error")

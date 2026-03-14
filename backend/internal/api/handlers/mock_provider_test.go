@@ -30,7 +30,7 @@ func (m *mockProvider) GetUTXOs(_ *logging.LogContext, _ string) ([]types.UTXO, 
 	return m.utxos, m.utxosErr
 }
 
-func (m *mockProvider) GetTransactions(_ *logging.LogContext, _ string) ([]types.Transaction, error) {
+func (m *mockProvider) GetTransactions(_ *logging.LogContext, _ string, _ []string) ([]types.Transaction, error) {
 	return m.transactions, m.transErr
 }
 

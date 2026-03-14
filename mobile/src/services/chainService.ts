@@ -45,13 +45,15 @@ export async function broadcastTransaction(txHex: string, network: NetworkType):
 
 /**
  * Fetch transaction history for a Bitcoin address
- * Backend returns enriched transactions with send/receive already calculated
+ * Backend returns enriched transactions with send/receive already calculated.
+ * Pass all owned addresses so the backend can correctly distinguish change from external outputs.
  */
 export async function getAddressTransactions(
   address: string,
-  network: NetworkType
+  network: NetworkType,
+  ownedAddresses?: string[]
 ): Promise<Transaction[]> {
-  const data = await mempoolApi.getAddressTransactions(address);
+  const data = await mempoolApi.getAddressTransactions(address, ownedAddresses);
 
   // Transform backend response to our Transaction type
   const transactions: Transaction[] = data.map((tx) => {
@@ -131,13 +133,17 @@ export async function getAggregateUtxos(
 }
 
 /**
- * Fetch and deduplicate transactions across multiple addresses
+ * Fetch and deduplicate transactions across multiple addresses.
+ * Passes the full owned address set to each request so the backend can
+ * correctly calculate send amounts (excluding change to owned addresses).
  */
 export async function getAggregateTransactions(
   addresses: string[],
   network: NetworkType
 ): Promise<Transaction[]> {
-  const results = await Promise.all(addresses.map((addr) => getAddressTransactions(addr, network)));
+  const results = await Promise.all(
+    addresses.map((addr) => getAddressTransactions(addr, network, addresses))
+  );
 
   // Deduplicate by transaction id (same tx may appear for multiple owned addresses)
   const seen = new Set<string>();

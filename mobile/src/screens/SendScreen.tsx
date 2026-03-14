@@ -106,6 +106,7 @@ export default function SendScreen() {
 
   const handleClose = () => {
     clearSendState();
+    setStep("input");
     closeSend();
   };
 

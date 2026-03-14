@@ -56,10 +56,17 @@ export async function getAddressUtxos(address: string): Promise<UTXO[]> {
 
 /**
  * Fetch transaction history for an address
- * Backend returns enriched transactions with send/receive already calculated
+ * Backend returns enriched transactions with send/receive already calculated.
+ * Pass all owned addresses so the backend can correctly distinguish change from external outputs.
  */
-export async function getAddressTransactions(address: string): Promise<TransactionResponse[]> {
-  const url = `${BACKEND_URL}/v1/address/${address}/transactions`;
+export async function getAddressTransactions(
+  address: string,
+  ownedAddresses?: string[]
+): Promise<TransactionResponse[]> {
+  let url = `${BACKEND_URL}/v1/address/${address}/transactions`;
+  if (ownedAddresses && ownedAddresses.length > 0) {
+    url += `?owned=${ownedAddresses.join(",")}`;
+  }
 
   const response = await fetch(url);
 

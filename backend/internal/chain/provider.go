@@ -39,8 +39,10 @@ type Provider interface {
 	// GetUTXOs returns unspent transaction outputs for an address
 	GetUTXOs(logCtx *logging.LogContext, address string) ([]types.UTXO, error)
 
-	// GetTransactions returns transaction history for an address
-	GetTransactions(logCtx *logging.LogContext, address string) ([]types.Transaction, error)
+	// GetTransactions returns transaction history for an address.
+	// ownedAddresses lists all wallet addresses so enrichment can correctly
+	// distinguish change outputs from external outputs.
+	GetTransactions(logCtx *logging.LogContext, address string, ownedAddresses []string) ([]types.Transaction, error)
 
 	// GetFeeRates returns recommended fee rates
 	GetFeeRates(logCtx *logging.LogContext) (*types.FeeRates, error)
