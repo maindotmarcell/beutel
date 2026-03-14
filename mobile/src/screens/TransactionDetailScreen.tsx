@@ -145,12 +145,7 @@ export default function TransactionDetailScreen() {
                 </Text>
               </DetailRow>
 
-              <DetailRow
-                label="Address"
-                showBorder
-                actionLabel="Copy"
-                onAction={handleCopyAddress}
-              >
+              <DetailRow label="Address" showBorder actionLabel="Copy" onAction={handleCopyAddress}>
                 <Text className="text-base font-mono" style={{ color: theme.text.primary }}>
                   {transaction.address}
                 </Text>

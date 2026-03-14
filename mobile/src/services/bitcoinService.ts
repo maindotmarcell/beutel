@@ -3,7 +3,7 @@ import { mnemonicToSeedSync } from "@scure/bip39";
 import * as btc from "@scure/btc-signer";
 import { signSchnorr } from "@scure/btc-signer/utils.js";
 import { hex } from "@scure/base";
-import { NetworkType, UTXO, TransactionPreview } from "@/types/wallet";
+import { NetworkType, UTXO, OwnedUTXO, AddressChain, TransactionPreview } from "@/types/wallet";
 
 // Bitcoin network configurations
 const NETWORKS = {
@@ -21,10 +21,11 @@ const NETWORKS = {
 function getDerivationPath(
   network: NetworkType,
   accountIndex: number = 0,
+  change: AddressChain = 0,
   addressIndex: number = 0
 ): string {
   const coinType = network === "mainnet" ? 0 : 1;
-  return `m/86'/${coinType}'/${accountIndex}'/0/${addressIndex}`;
+  return `m/86'/${coinType}'/${accountIndex}'/${change}/${addressIndex}`;
 }
 
 /**
@@ -42,10 +43,11 @@ function deriveKeyPair(
   mnemonic: string,
   network: NetworkType,
   accountIndex: number = 0,
+  change: AddressChain = 0,
   addressIndex: number = 0
 ): { privateKey: Uint8Array; xOnlyPubKey: Uint8Array } {
   const masterKey = getMasterKey(mnemonic);
-  const path = getDerivationPath(network, accountIndex, addressIndex);
+  const path = getDerivationPath(network, accountIndex, change, addressIndex);
   const child = masterKey.derive(path);
 
   if (!child.privateKey || !child.publicKey) {
@@ -68,9 +70,10 @@ export function derivePrivateKey(
   mnemonic: string,
   network: NetworkType,
   accountIndex: number = 0,
+  change: AddressChain = 0,
   addressIndex: number = 0
 ): Uint8Array {
-  return deriveKeyPair(mnemonic, network, accountIndex, addressIndex).privateKey;
+  return deriveKeyPair(mnemonic, network, accountIndex, change, addressIndex).privateKey;
 }
 
 /**
@@ -80,9 +83,10 @@ export function getPublicKey(
   mnemonic: string,
   network: NetworkType,
   accountIndex: number = 0,
+  change: AddressChain = 0,
   addressIndex: number = 0
 ): Uint8Array {
-  return deriveKeyPair(mnemonic, network, accountIndex, addressIndex).xOnlyPubKey;
+  return deriveKeyPair(mnemonic, network, accountIndex, change, addressIndex).xOnlyPubKey;
 }
 
 /**
@@ -92,9 +96,10 @@ export function getAddress(
   mnemonic: string,
   network: NetworkType,
   accountIndex: number = 0,
+  change: AddressChain = 0,
   addressIndex: number = 0
 ): string {
-  const { xOnlyPubKey } = deriveKeyPair(mnemonic, network, accountIndex, addressIndex);
+  const { xOnlyPubKey } = deriveKeyPair(mnemonic, network, accountIndex, change, addressIndex);
   const networkConfig = NETWORKS[network];
 
   // Create P2TR (Taproot) output using the x-only public key
@@ -114,9 +119,10 @@ export function getPublicKeyHex(
   mnemonic: string,
   network: NetworkType,
   accountIndex: number = 0,
+  change: AddressChain = 0,
   addressIndex: number = 0
 ): string {
-  const { xOnlyPubKey } = deriveKeyPair(mnemonic, network, accountIndex, addressIndex);
+  const { xOnlyPubKey } = deriveKeyPair(mnemonic, network, accountIndex, change, addressIndex);
   const networkConfig = NETWORKS[network];
   const p2tr = btc.p2tr(xOnlyPubKey, undefined, networkConfig);
 
@@ -138,12 +144,25 @@ export function getWalletInfo(
   mnemonic: string,
   network: NetworkType,
   accountIndex: number = 0,
+  change: AddressChain = 0,
   addressIndex: number = 0
 ): { address: string; publicKey: string } {
   return {
-    address: getAddress(mnemonic, network, accountIndex, addressIndex),
-    publicKey: getPublicKeyHex(mnemonic, network, accountIndex, addressIndex),
+    address: getAddress(mnemonic, network, accountIndex, change, addressIndex),
+    publicKey: getPublicKeyHex(mnemonic, network, accountIndex, change, addressIndex),
   };
+}
+
+/**
+ * Get a change address (internal chain, BIP86 path: m/86'/coin'/account'/1/index)
+ */
+export function getChangeAddress(
+  mnemonic: string,
+  network: NetworkType,
+  changeIndex: number,
+  accountIndex: number = 0
+): string {
+  return getAddress(mnemonic, network, accountIndex, 1, changeIndex);
 }
 
 /**
@@ -234,28 +253,23 @@ export function prepareTransactionPreview(
 }
 
 /**
- * Build and sign a Taproot transaction
+ * Build and sign a Taproot transaction with per-input key derivation.
+ * Each OwnedUTXO carries its derivation info so the correct key is used.
  * @returns The signed transaction hex
  */
 export function buildAndSignTransaction(
   mnemonic: string,
   network: NetworkType,
-  utxos: UTXO[],
+  ownedUtxos: OwnedUTXO[],
   recipientAddress: string,
   amountSats: number,
   feeRate: number,
-  senderAddress: string
+  changeAddress: string
 ): string {
   const networkConfig = NETWORKS[network];
 
-  // Get both private key and x-only public key
-  const { privateKey, xOnlyPubKey } = deriveKeyPair(mnemonic, network);
-
-  // Create P2TR spend info using the x-only public key
-  const p2tr = btc.p2tr(xOnlyPubKey, undefined, networkConfig);
-
   // Select UTXOs
-  const { selected, totalValue, fee } = selectUtxos(utxos, amountSats, feeRate);
+  const { selected, totalValue, fee } = selectUtxos(ownedUtxos, amountSats, feeRate);
 
   // Verify we have enough funds
   if (totalValue < amountSats + fee) {
@@ -268,8 +282,16 @@ export function buildAndSignTransaction(
   // Build the transaction
   const tx = new btc.Transaction();
 
-  // Add inputs with proper Taproot key-path spend data
-  for (const utxo of selected) {
+  // Derive per-input key pairs and add inputs
+  const selectedOwned = selected as OwnedUTXO[];
+  const inputKeys: { privateKey: Uint8Array; xOnlyPubKey: Uint8Array }[] = [];
+
+  for (const utxo of selectedOwned) {
+    const keyPair = deriveKeyPair(mnemonic, network, 0, utxo.chain, utxo.addressIndex);
+    inputKeys.push(keyPair);
+
+    const p2tr = btc.p2tr(keyPair.xOnlyPubKey, undefined, networkConfig);
+
     tx.addInput({
       txid: utxo.txid,
       index: utxo.vout,
@@ -277,7 +299,7 @@ export function buildAndSignTransaction(
         script: p2tr.script,
         amount: BigInt(utxo.value),
       },
-      tapInternalKey: xOnlyPubKey,
+      tapInternalKey: keyPair.xOnlyPubKey,
     });
   }
 
@@ -286,11 +308,13 @@ export function buildAndSignTransaction(
 
   // Add change output if there's change (dust threshold ~546 sats for P2TR)
   if (changeAmount > 546) {
-    tx.addOutputAddress(senderAddress, BigInt(changeAmount), networkConfig);
+    tx.addOutputAddress(changeAddress, BigInt(changeAmount), networkConfig);
   }
 
-  // Sign all inputs with the private key
-  tx.sign(privateKey);
+  // Sign each input with its corresponding private key
+  for (let i = 0; i < inputKeys.length; i++) {
+    tx.signIdx(inputKeys[i].privateKey, i);
+  }
 
   // Finalize the transaction
   tx.finalize();

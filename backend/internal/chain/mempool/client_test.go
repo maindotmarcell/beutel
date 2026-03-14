@@ -278,7 +278,7 @@ func TestGetTransactions(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := newTestClient(t, tt.handler)
-			txs, err := c.GetTransactions(logging.NewLogContext(), "SELF")
+			txs, err := c.GetTransactions(logging.NewLogContext(), "SELF", nil)
 			if tt.wantErr {
 				require.Error(t, err)
 				return
@@ -295,7 +295,7 @@ func TestGetTransactions(t *testing.T) {
 			io.WriteString(w, receiveTxBody)
 		}
 		c := newTestClient(t, http.HandlerFunc(handler))
-		txs, err := c.GetTransactions(logging.NewLogContext(), "SELF")
+		txs, err := c.GetTransactions(logging.NewLogContext(), "SELF", nil)
 		require.NoError(t, err)
 		require.Len(t, txs, 1)
 		tx := txs[0]
@@ -534,12 +534,14 @@ func TestEnrichTransaction(t *testing.T) {
 		},
 	}
 
+	ownedSet := map[string]bool{SELF: true}
+
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			tx := mempoolTx{Vin: tt.vin, Vout: tt.vout}
-			result := enrichTransaction(tx, SELF)
+			result := enrichTransaction(tx, ownedSet)
 			assert.Equal(t, tt.wantType, result.Type)
 			assert.Equal(t, tt.wantAmount, result.AmountSats)
 			assert.Equal(t, tt.wantOtherAddr, result.OtherAddr)
@@ -563,7 +565,7 @@ func TestEnrichTransaction(t *testing.T) {
 			Vout: []mempoolTxOutput{out(SELF, 900)},
 			Fee:  100,
 		}
-		result := enrichTransaction(tx, SELF)
+		result := enrichTransaction(tx, ownedSet)
 		assert.Equal(t, "deadbeef", result.Txid)
 		assert.Equal(t, "receive", result.Type)
 		assert.Equal(t, int64(900), result.AmountSats)
@@ -572,5 +574,19 @@ func TestEnrichTransaction(t *testing.T) {
 		assert.Equal(t, int64(800_001), result.BlockHeight)
 		assert.Equal(t, int64(1_700_000_000), result.BlockTime)
 		assert.Equal(t, int64(100), result.FeeSats)
+	})
+
+	t.Run("send_with_change_to_different_owned_address", func(t *testing.T) {
+		t.Parallel()
+		// Simulates a send where change goes to a different owned address (change address)
+		multiOwned := map[string]bool{"SELF": true, "CHANGE": true}
+		tx := mempoolTx{
+			Vin:  []mempoolTxInput{inp("SELF", 100_000)},
+			Vout: []mempoolTxOutput{out("RECIPIENT", 5_000), out("CHANGE", 94_000)},
+		}
+		result := enrichTransaction(tx, multiOwned)
+		assert.Equal(t, "send", result.Type)
+		assert.Equal(t, int64(5_000), result.AmountSats)
+		assert.Equal(t, "RECIPIENT", result.OtherAddr)
 	})
 }

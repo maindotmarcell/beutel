@@ -45,26 +45,15 @@ export default function GlassCard({
       ]}
       {...props}
     >
-      <BlurView
-        intensity={intensity}
-        tint="dark"
-        style={StyleSheet.absoluteFill}
-      />
+      <BlurView intensity={intensity} tint="dark" style={StyleSheet.absoluteFill} />
       {/* Glass background layer */}
-      <View
-        style={[
-          StyleSheet.absoluteFill,
-          { backgroundColor: theme.glass.background },
-        ]}
-      />
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: theme.glass.background }]} />
       {/* Top shine highlight */}
       <View
         style={[
           StyleSheet.absoluteFill,
           {
-            backgroundColor: highlight
-              ? theme.glass.highlight
-              : theme.glass.shine,
+            backgroundColor: highlight ? theme.glass.highlight : theme.glass.shine,
           },
         ]}
       />

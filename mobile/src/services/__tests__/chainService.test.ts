@@ -26,9 +26,7 @@ beforeEach(() => {
 
 describe("getAddressTransactions", () => {
   it("converts timestamps from unix seconds to Date objects", async () => {
-    mockedApi.getAddressTransactions.mockResolvedValue([
-      makeTxResponse({ blockTime: 1700000000 }),
-    ]);
+    mockedApi.getAddressTransactions.mockResolvedValue([makeTxResponse({ blockTime: 1700000000 })]);
 
     const txs = await getAddressTransactions(TEST_ADDRESS, "testnet4");
     expect(txs[0].timestamp).toEqual(new Date(1700000000 * 1000));
@@ -70,9 +68,7 @@ describe("getAddressTransactions", () => {
 
   it("uses current date when blockTime is missing", async () => {
     const before = Date.now();
-    mockedApi.getAddressTransactions.mockResolvedValue([
-      makeTxResponse({ blockTime: undefined }),
-    ]);
+    mockedApi.getAddressTransactions.mockResolvedValue([makeTxResponse({ blockTime: undefined })]);
 
     const txs = await getAddressTransactions(TEST_ADDRESS, "testnet4");
     const after = Date.now();
@@ -81,9 +77,7 @@ describe("getAddressTransactions", () => {
   });
 
   it("falls back to own address when otherAddr is empty", async () => {
-    mockedApi.getAddressTransactions.mockResolvedValue([
-      makeTxResponse({ otherAddr: "" }),
-    ]);
+    mockedApi.getAddressTransactions.mockResolvedValue([makeTxResponse({ otherAddr: "" })]);
 
     const txs = await getAddressTransactions(TEST_ADDRESS, "testnet4");
     expect(txs[0].address).toBe(TEST_ADDRESS);

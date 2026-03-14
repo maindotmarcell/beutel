@@ -6,6 +6,11 @@ import {
 import { wordlist } from "@scure/bip39/wordlists/english.js";
 
 const MNEMONIC_KEY = "beutel_wallet_mnemonic";
+const ADDRESS_STATE_KEY = "beutel_address_state";
+
+export interface AddressState {
+  nextChangeIndex: number;
+}
 
 /**
  * Generate a new 12-word BIP39 mnemonic seed phrase
@@ -55,6 +60,32 @@ export async function getMnemonic(): Promise<string | null> {
  */
 export async function deleteMnemonic(): Promise<void> {
   await SecureStore.deleteItemAsync(MNEMONIC_KEY);
+  await deleteAddressState();
+}
+
+/**
+ * Get the persisted address state (change index tracking)
+ */
+export async function getAddressState(): Promise<AddressState | null> {
+  const raw = await SecureStore.getItemAsync(ADDRESS_STATE_KEY);
+  if (!raw) return null;
+  return JSON.parse(raw) as AddressState;
+}
+
+/**
+ * Persist address state (change index tracking)
+ */
+export async function storeAddressState(state: AddressState): Promise<void> {
+  await SecureStore.setItemAsync(ADDRESS_STATE_KEY, JSON.stringify(state), {
+    keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+  });
+}
+
+/**
+ * Delete persisted address state
+ */
+export async function deleteAddressState(): Promise<void> {
+  await SecureStore.deleteItemAsync(ADDRESS_STATE_KEY);
 }
 
 /**

@@ -45,11 +45,7 @@ export default function WalletScreen() {
   };
 
   return (
-    <SafeAreaView
-      className="flex-1"
-      style={{ backgroundColor: theme.background.main }}
-      edges={[]}
-    >
+    <SafeAreaView className="flex-1" style={{ backgroundColor: theme.background.main }} edges={[]}>
       <StatusBar style="light" />
       <ScrollView
         className="flex-1"

@@ -208,7 +208,7 @@ type mempoolTx struct {
 	Fee  int64             `json:"fee"`
 }
 
-func (c *Client) GetTransactions(logCtx *logging.LogContext, address string) ([]types.Transaction, error) {
+func (c *Client) GetTransactions(logCtx *logging.LogContext, address string, ownedAddresses []string) ([]types.Transaction, error) {
 	url := fmt.Sprintf("%s/api/address/%s/txs", c.baseURL, address)
 
 	resp, err := c.doGet(logCtx, url)
@@ -231,28 +231,38 @@ func (c *Client) GetTransactions(logCtx *logging.LogContext, address string) ([]
 		return nil, fmt.Errorf("failed to decode response: %w", err)
 	}
 
+	// Build owned address set; fall back to the queried address if none provided
+	owned := make(map[string]bool, len(ownedAddresses)+1)
+	if len(ownedAddresses) > 0 {
+		for _, a := range ownedAddresses {
+			owned[a] = true
+		}
+	} else {
+		owned[address] = true
+	}
+
 	txs := make([]types.Transaction, len(mempoolTxs))
 	for i, tx := range mempoolTxs {
-		txs[i] = enrichTransaction(tx, address)
+		txs[i] = enrichTransaction(tx, owned)
 	}
 
 	return txs, nil
 }
 
-// enrichTransaction calculates send/receive direction and amounts for a transaction
-func enrichTransaction(tx mempoolTx, address string) types.Transaction {
-	// Check if address appears in inputs (sender) or outputs (receiver)
+// enrichTransaction calculates send/receive direction and amounts for a transaction.
+// ownedAddresses is the set of all addresses the wallet controls, so change
+// outputs are correctly excluded from the sent amount.
+func enrichTransaction(tx mempoolTx, ownedAddresses map[string]bool) types.Transaction {
+	// Check if any owned address appears in inputs (sender)
 	isInInputs := false
 	for _, vin := range tx.Vin {
-		if vin.Prevout != nil && vin.Prevout.ScriptpubkeyAddress == address {
+		if vin.Prevout != nil && ownedAddresses[vin.Prevout.ScriptpubkeyAddress] {
 			isInInputs = true
 			break
 		}
 	}
 
 	// Determine transaction type
-	// If address is in inputs, it's a send (we're spending)
-	// If only in outputs, it's a receive
 	txType := "receive"
 	if isInInputs {
 		txType = "send"
@@ -261,35 +271,33 @@ func enrichTransaction(tx mempoolTx, address string) types.Transaction {
 	// Calculate amount
 	var amountSats int64
 	if txType == "send" {
-		// For sends, sum all outputs to other addresses (excluding change back to us)
+		// For sends, sum outputs NOT going to any owned address
 		for _, vout := range tx.Vout {
-			if vout.ScriptpubkeyAddress != address {
+			if !ownedAddresses[vout.ScriptpubkeyAddress] {
 				amountSats += vout.Value
 			}
 		}
 	} else {
-		// For receives, sum all outputs to our address
+		// For receives, sum outputs going to any owned address
 		for _, vout := range tx.Vout {
-			if vout.ScriptpubkeyAddress == address {
+			if ownedAddresses[vout.ScriptpubkeyAddress] {
 				amountSats += vout.Value
 			}
 		}
 	}
 
-	// Get the other party's address
+	// Get the other party's address (first non-owned address)
 	var otherAddr string
 	if txType == "send" {
-		// For sends, get the recipient address (first output that's not us)
 		for _, vout := range tx.Vout {
-			if vout.ScriptpubkeyAddress != address {
+			if !ownedAddresses[vout.ScriptpubkeyAddress] {
 				otherAddr = vout.ScriptpubkeyAddress
 				break
 			}
 		}
 	} else {
-		// For receives, get the sender address (first input that's not us)
 		for _, vin := range tx.Vin {
-			if vin.Prevout != nil && vin.Prevout.ScriptpubkeyAddress != address {
+			if vin.Prevout != nil && !ownedAddresses[vin.Prevout.ScriptpubkeyAddress] {
 				otherAddr = vin.Prevout.ScriptpubkeyAddress
 				break
 			}
