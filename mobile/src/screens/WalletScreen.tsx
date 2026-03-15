@@ -1,7 +1,6 @@
 import { View, RefreshControl, ScrollView } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
 import { useCallback, useState } from "react";
 import Navbar from "@/components/Navbar";
 import BalanceCard from "@/components/BalanceCard";
@@ -57,23 +56,16 @@ export default function WalletScreen() {
           />
         }
       >
-        {/* Hero gradient — deep purple nebula fading into the void */}
-        <LinearGradient
-          colors={["#1A0938", "#110F1D", theme.background.main]}
-          locations={[0, 0.55, 1]}
-          className="pb-6"
-        >
-          <Navbar />
-          <BalanceCard
-            balance={balanceInBtc}
-            unconfirmedBalance={unconfirmedInBtc}
-            isLoading={isBalanceLoading}
-          />
-          <View className="flex-row px-4 mb-4">
-            <ActionButton label="Send" icon="↑" onPress={handleSend} variant="primary" />
-            <ActionButton label="Receive" icon="↓" onPress={handleReceive} variant="secondary" />
-          </View>
-        </LinearGradient>
+        <Navbar />
+        <BalanceCard
+          balance={balanceInBtc}
+          unconfirmedBalance={unconfirmedInBtc}
+          isLoading={isBalanceLoading}
+        />
+        <View className="flex-row px-4 mb-4">
+          <ActionButton label="Send" icon="↑" onPress={handleSend} variant="primary" />
+          <ActionButton label="Receive" icon="↓" onPress={handleReceive} variant="secondary" />
+        </View>
 
         <TransactionListHeader />
 
@@ -90,7 +82,14 @@ function TransactionListHeader() {
   const { theme } = useThemeStore();
 
   return (
-    <View className="px-4 mb-2 mt-6">
+    <View
+      className="px-5 mb-2 mt-8"
+      style={{
+        borderTopWidth: 1,
+        borderTopColor: theme.border.light,
+        paddingTop: 16,
+      }}
+    >
       <Text className="text-lg font-semibold" style={{ color: theme.text.primary }}>
         Recent Transactions
       </Text>

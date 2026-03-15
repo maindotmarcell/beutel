@@ -3,7 +3,6 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
-  Switch,
   TextInput,
   Modal,
   ActivityIndicator,
@@ -14,20 +13,13 @@ import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Navbar from "@/components/Navbar";
 import Text from "@/components/Text";
-import {
-  getUserProfile,
-  getSecuritySettings,
-  getNotificationSettings,
-  getAppInfo,
-} from "@/services";
+import { getUserProfile, getAppInfo } from "@/services";
 import { useNavigationStore } from "@/store/navigationStore";
 import { useThemeStore } from "@/store/themeStore";
 import { useWalletStore } from "@/store/walletStore";
 
 export default function SettingsScreen() {
   const profile = getUserProfile();
-  const security = getSecuritySettings();
-  const notifications = getNotificationSettings();
   const appInfo = getAppInfo();
   const { theme } = useThemeStore();
 
@@ -87,7 +79,6 @@ export default function SettingsScreen() {
     });
   };
 
-  // Reusable section card wrapper
   const SectionCard = ({ children }: { children: React.ReactNode }) => (
     <View
       style={{
@@ -102,7 +93,6 @@ export default function SettingsScreen() {
     </View>
   );
 
-  // Reusable row
   const SettingRow = ({
     children,
     showBorder = true,
@@ -122,38 +112,6 @@ export default function SettingsScreen() {
     </View>
   );
 
-  // Reusable switch row
-  const SwitchRow = ({
-    title,
-    subtitle,
-    value,
-    showBorder = true,
-  }: {
-    title: string;
-    subtitle: string;
-    value: boolean;
-    showBorder?: boolean;
-  }) => (
-    <SettingRow showBorder={showBorder}>
-      <View className="flex-row items-center justify-between">
-        <View className="flex-1">
-          <Text className="text-base font-medium mb-1" style={{ color: theme.text.primary }}>
-            {title}
-          </Text>
-          <Text className="text-sm" style={{ color: theme.text.secondary }}>
-            {subtitle}
-          </Text>
-        </View>
-        <Switch
-          value={value}
-          disabled
-          trackColor={{ false: theme.border.main, true: theme.primary.main }}
-          thumbColor={value ? "#ffffff" : theme.text.muted}
-        />
-      </View>
-    </SettingRow>
-  );
-
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: theme.background.main }} edges={[]}>
       <StatusBar style="light" />
@@ -161,8 +119,8 @@ export default function SettingsScreen() {
         <Navbar title="Settings" showCloseButton={true} />
 
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-          {/* Profile Section */}
-          <View className="px-4 py-6">
+          {/* Account Section */}
+          <View className="px-5 py-6">
             <Text className="text-lg font-semibold mb-4" style={{ color: theme.text.primary }}>
               Account
             </Text>
@@ -194,65 +152,8 @@ export default function SettingsScreen() {
             </SectionCard>
           </View>
 
-          {/* Security Section */}
-          <View className="px-4 pb-6">
-            <Text className="text-lg font-semibold mb-4" style={{ color: theme.text.primary }}>
-              Security
-            </Text>
-            <SectionCard>
-              <SwitchRow
-                title="Two-Factor Authentication"
-                subtitle={security.twoFactorAuth ? "Enabled" : "Disabled"}
-                value={security.twoFactorAuth}
-              />
-              <SwitchRow
-                title="Biometric Authentication"
-                subtitle={security.biometricAuth ? "Enabled" : "Disabled"}
-                value={security.biometricAuth}
-              />
-              <SwitchRow
-                title="Auto Lock"
-                subtitle={
-                  security.autoLock ? `Lock after ${security.autoLockTimeout} minutes` : "Disabled"
-                }
-                value={security.autoLock}
-                showBorder={false}
-              />
-            </SectionCard>
-          </View>
-
-          {/* Notifications Section */}
-          <View className="px-4 pb-6">
-            <Text className="text-lg font-semibold mb-4" style={{ color: theme.text.primary }}>
-              Notifications
-            </Text>
-            <SectionCard>
-              <SwitchRow
-                title="Transaction Alerts"
-                subtitle="Get notified about transactions"
-                value={notifications.transactionAlerts}
-              />
-              <SwitchRow
-                title="Price Alerts"
-                subtitle="Get notified about price changes"
-                value={notifications.priceAlerts}
-              />
-              <SwitchRow
-                title="Security Alerts"
-                subtitle="Get notified about security events"
-                value={notifications.securityAlerts}
-              />
-              <SwitchRow
-                title="Marketing Emails"
-                subtitle="Receive promotional content"
-                value={notifications.marketingEmails}
-                showBorder={false}
-              />
-            </SectionCard>
-          </View>
-
           {/* Wallet Section */}
-          <View className="px-4 pb-6">
+          <View className="px-5 pb-6">
             <Text className="text-lg font-semibold mb-4" style={{ color: theme.text.primary }}>
               Wallet
             </Text>
@@ -286,7 +187,7 @@ export default function SettingsScreen() {
           </View>
 
           {/* About Section */}
-          <View className="px-4 pb-6">
+          <View className="px-5 pb-6">
             <Text className="text-lg font-semibold mb-4" style={{ color: theme.text.primary }}>
               About
             </Text>
@@ -324,15 +225,15 @@ export default function SettingsScreen() {
           className="flex-1"
         >
           <View
-            className="flex-1 justify-center px-4"
-            style={{ backgroundColor: "rgba(7, 6, 14, 0.85)" }}
+            className="flex-1 justify-center px-5"
+            style={{ backgroundColor: "rgba(7, 6, 14, 0.92)" }}
           >
             <View
               style={{
                 backgroundColor: theme.background.surface,
-                borderRadius: 24,
+                borderRadius: 12,
                 borderWidth: 1,
-                borderColor: theme.glass.border,
+                borderColor: theme.border.main,
                 overflow: "hidden",
               }}
             >
@@ -350,8 +251,8 @@ export default function SettingsScreen() {
                   activeOpacity={0.7}
                   disabled={isImporting}
                 >
-                  <Text className="text-2xl" style={{ color: theme.text.muted }}>
-                    ✕
+                  <Text className="text-lg font-light" style={{ color: theme.text.muted }}>
+                    X
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -361,10 +262,13 @@ export default function SettingsScreen() {
                 {importSuccess ? (
                   <View className="items-center py-8">
                     <View
-                      className="w-16 h-16 rounded-full items-center justify-center mb-4"
+                      className="w-12 h-12 rounded-full items-center justify-center mb-4"
                       style={{ backgroundColor: theme.status.success.light }}
                     >
-                      <Text className="text-4xl" style={{ color: theme.status.success.main }}>
+                      <Text
+                        className="text-2xl font-bold"
+                        style={{ color: theme.status.success.main }}
+                      >
                         ✓
                       </Text>
                     </View>
@@ -418,9 +322,15 @@ export default function SettingsScreen() {
                       className="mt-4 p-3 rounded-xl"
                       style={{ backgroundColor: theme.status.warning.light }}
                     >
+                      <Text
+                        className="text-sm font-semibold mb-1"
+                        style={{ color: theme.status.warning.main }}
+                      >
+                        Warning
+                      </Text>
                       <Text className="text-sm" style={{ color: theme.status.warning.main }}>
-                        ⚠️ Warning: This will replace your current wallet. Make sure you have backed
-                        up your current seed phrase if needed.
+                        This will replace your current wallet. Make sure you have backed up your
+                        current seed phrase if needed.
                       </Text>
                     </View>
 
@@ -437,11 +347,7 @@ export default function SettingsScreen() {
                           isImporting || !seedPhraseInput.trim()
                             ? theme.background.elevated
                             : theme.primary.main,
-                        shadowColor: theme.primary.main,
-                        shadowOffset: { width: 0, height: 4 },
-                        shadowOpacity: isImporting || !seedPhraseInput.trim() ? 0 : 0.3,
-                        shadowRadius: 12,
-                        elevation: isImporting || !seedPhraseInput.trim() ? 0 : 6,
+                        elevation: isImporting || !seedPhraseInput.trim() ? 0 : 2,
                       }}
                     >
                       {isImporting ? (

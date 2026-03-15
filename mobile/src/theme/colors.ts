@@ -37,6 +37,10 @@ export interface Theme {
     main: string;
     light: string;
   };
+  card: {
+    background: string;
+    border: string;
+  };
   glass: {
     background: string;
     border: string;
@@ -84,6 +88,10 @@ export const lightTheme: Theme = {
     main: "#E8E8E8",
     light: "#F0F0F0",
   },
+  card: {
+    background: "#FFFFFF",
+    border: "#E8E8E8",
+  },
   glass: {
     background: "rgba(250, 250, 250, 0.75)",
     border: "rgba(0, 0, 0, 0.06)",
@@ -105,8 +113,8 @@ export const darkTheme: Theme = {
   },
   background: {
     main: "#07060E", // The void — almost-black with purple-indigo undertone
-    surface: "#110F1D", // Glass panels resting above the void
-    elevated: "#1A1829", // Interactive/elevated elements
+    surface: "#0F0E18", // Flat panels above the void
+    elevated: "#17152A", // Interactive/elevated elements
   },
   text: {
     primary: "#EEEAF6", // Off-white with faint lavender warmth
@@ -128,8 +136,12 @@ export const darkTheme: Theme = {
     },
   },
   border: {
-    main: "#1E1C2E", // Subtle glass edge
+    main: "#1E1C2E", // Subtle edge
     light: "#16142A", // Barely-there separator
+  },
+  card: {
+    background: "#12101F", // Solid card surface
+    border: "#1E1C2E", // Card edge
   },
   glass: {
     background: "rgba(17, 15, 29, 0.75)", // Translucent glass panel

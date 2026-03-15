@@ -17,9 +17,12 @@ export default function TransactionList({
 
   if (transactions.length === 0) {
     return (
-      <View className="flex-1 items-center justify-center py-12">
-        <Text className="text-lg" style={{ color: theme.text.muted }}>
-          No transactions yet
+      <View className="flex-1 items-center justify-center py-16">
+        <Text className="text-lg mb-1" style={{ color: theme.text.secondary }}>
+          No activity yet
+        </Text>
+        <Text className="text-sm" style={{ color: theme.text.muted }}>
+          Your transactions will appear here
         </Text>
       </View>
     );
@@ -27,17 +30,7 @@ export default function TransactionList({
 
   return (
     <ScrollView className="flex-1" style={{ backgroundColor: theme.background.main }}>
-      <View
-        style={{
-          backgroundColor: theme.background.surface,
-          borderTopLeftRadius: 24,
-          borderTopRightRadius: 24,
-          overflow: "hidden",
-          borderWidth: 1,
-          borderBottomWidth: 0,
-          borderColor: theme.border.main,
-        }}
-      >
+      <View>
         {transactions.map((transaction) => (
           <TransactionItem
             key={transaction.id}

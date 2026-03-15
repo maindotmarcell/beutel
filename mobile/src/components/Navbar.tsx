@@ -33,18 +33,13 @@ export default function Navbar({ title, showCloseButton = false }: NavbarProps) 
 
   const hasBackAction = showCloseButton || title;
 
-  // Always dark — transparent on wallet gradient, surface with bottom border elsewhere
-  const isOnGradient = !hasBackAction;
-
   return (
     <View
       style={{
         paddingTop: insets.top + 8,
         paddingBottom: 12,
         paddingHorizontal: 16,
-        backgroundColor: isOnGradient ? "transparent" : theme.background.surface,
-        borderBottomWidth: isOnGradient ? 0 : 1,
-        borderBottomColor: isOnGradient ? "transparent" : theme.border.main,
+        backgroundColor: theme.background.main,
       }}
     >
       <View className="flex-row items-center justify-between">
@@ -55,8 +50,8 @@ export default function Navbar({ title, showCloseButton = false }: NavbarProps) 
                 {title || "Transaction"}
               </Text>
               <TouchableOpacity onPress={handleBack} className="p-2" activeOpacity={0.7}>
-                <Text className="text-2xl" style={{ color: theme.text.muted }}>
-                  ✕
+                <Text className="text-lg font-light" style={{ color: theme.text.muted }}>
+                  X
                 </Text>
               </TouchableOpacity>
             </>
@@ -66,8 +61,8 @@ export default function Navbar({ title, showCloseButton = false }: NavbarProps) 
               className="flex-row items-center"
               activeOpacity={0.7}
             >
-              <Text className="text-xl mr-2" style={{ color: theme.text.primary }}>
-                ←
+              <Text className="text-lg mr-2" style={{ color: theme.text.primary }}>
+                {"<"}
               </Text>
               <Text className="text-lg font-semibold" style={{ color: theme.text.primary }}>
                 {title || "Back"}
@@ -75,15 +70,22 @@ export default function Navbar({ title, showCloseButton = false }: NavbarProps) 
             </TouchableOpacity>
           )
         ) : (
-          <Text className="text-2xl font-bold" style={{ color: theme.text.primary }}>
+          <Text
+            className="text-lg font-bold"
+            style={{
+              color: theme.text.primary,
+              letterSpacing: 2,
+              textTransform: "uppercase",
+            }}
+          >
             beutel
           </Text>
         )}
 
         {!hasBackAction && (
           <TouchableOpacity onPress={handleSettings} className="p-2" activeOpacity={0.7}>
-            <Text className="text-3xl" style={{ color: theme.text.secondary }}>
-              ☰
+            <Text className="text-lg font-medium" style={{ color: theme.text.secondary }}>
+              ...
             </Text>
           </TouchableOpacity>
         )}

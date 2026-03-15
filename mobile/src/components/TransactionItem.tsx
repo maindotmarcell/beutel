@@ -56,11 +56,9 @@ export default function TransactionItem({ transaction, onPress }: TransactionIte
   const isSend = transaction.type === "send";
   const statusColors = getStatusColors(transaction.status);
 
-  // Amount color: white for sends, status color for receives
   const amountColor = isSend ? theme.text.primary : statusColors.text;
   const amountPrefix = isSend ? "" : "+";
 
-  // Icon styling
   const iconBg =
     transaction.status === "failed"
       ? statusColors.bg
@@ -74,15 +72,15 @@ export default function TransactionItem({ transaction, onPress }: TransactionIte
         ? theme.text.primary
         : statusColors.text;
 
-  const icon = transaction.status === "failed" ? "✕" : isSend ? "↑" : "↓";
+  const icon = transaction.status === "failed" ? "X" : isSend ? "↑" : "↓";
 
   return (
     <TouchableOpacity
       style={{
-        backgroundColor: theme.background.surface,
+        backgroundColor: theme.background.main,
         borderBottomWidth: 1,
         borderBottomColor: theme.border.light,
-        paddingHorizontal: 16,
+        paddingHorizontal: 20,
         paddingVertical: 16,
       }}
       onPress={onPress}
@@ -95,11 +93,6 @@ export default function TransactionItem({ transaction, onPress }: TransactionIte
             <Text className="text-base font-semibold mr-2" style={{ color: amountColor }}>
               {amountPrefix} {transaction.amount.toFixed(8)} BTC
             </Text>
-            <View className="px-2 py-1 rounded-full" style={{ backgroundColor: statusColors.bg }}>
-              <Text className="text-xs font-medium capitalize" style={{ color: statusColors.text }}>
-                {transaction.status}
-              </Text>
-            </View>
           </View>
           <Text className="text-sm font-mono mb-1" style={{ color: theme.text.secondary }}>
             {formatAddress(transaction.address)}
@@ -109,10 +102,10 @@ export default function TransactionItem({ transaction, onPress }: TransactionIte
           </Text>
         </View>
         <View
-          className="w-12 h-12 rounded-full items-center justify-center"
+          className="w-10 h-10 rounded-full items-center justify-center"
           style={{ backgroundColor: iconBg }}
         >
-          <Text className="text-xl font-bold" style={{ color: iconTextColor }}>
+          <Text className="text-lg font-bold" style={{ color: iconTextColor }}>
             {icon}
           </Text>
         </View>
