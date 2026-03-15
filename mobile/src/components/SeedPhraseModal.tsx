@@ -18,7 +18,7 @@ export default function SeedPhraseModal({ seedPhrase, onDismiss }: SeedPhraseMod
       <View
         style={{
           flex: 1,
-          backgroundColor: "rgba(7, 6, 14, 0.9)",
+          backgroundColor: "rgba(7, 6, 14, 0.92)",
           justifyContent: "center",
           paddingHorizontal: 20,
           paddingTop: insets.top,
@@ -28,11 +28,11 @@ export default function SeedPhraseModal({ seedPhrase, onDismiss }: SeedPhraseMod
         <View
           style={{
             backgroundColor: theme.background.surface,
-            borderRadius: 24,
+            borderRadius: 12,
             padding: 24,
             maxHeight: "90%",
             borderWidth: 1,
-            borderColor: theme.glass.border,
+            borderColor: theme.border.main,
           }}
         >
           <ScrollView showsVerticalScrollIndicator={false}>
@@ -46,7 +46,7 @@ export default function SeedPhraseModal({ seedPhrase, onDismiss }: SeedPhraseMod
                   marginBottom: 8,
                 }}
               >
-                🔐 Your Recovery Phrase
+                Recovery Phrase
               </Text>
               <Text
                 style={{
@@ -66,18 +66,16 @@ export default function SeedPhraseModal({ seedPhrase, onDismiss }: SeedPhraseMod
                 borderRadius: 12,
                 padding: 12,
                 marginBottom: 20,
-                borderWidth: 1,
-                borderColor: "rgba(248, 113, 113, 0.3)",
               }}
             >
               <Text
                 style={{
                   color: theme.status.error.main,
-                  fontWeight: "600",
+                  fontWeight: "700",
                   marginBottom: 4,
                 }}
               >
-                ⚠️ Important
+                Important
               </Text>
               <Text style={{ color: theme.status.error.main, fontSize: 13, opacity: 0.85 }}>
                 Never share your recovery phrase. Anyone with these words can access your Bitcoin.
@@ -88,7 +86,7 @@ export default function SeedPhraseModal({ seedPhrase, onDismiss }: SeedPhraseMod
             <View
               style={{
                 backgroundColor: theme.background.main,
-                borderRadius: 16,
+                borderRadius: 12,
                 padding: 16,
                 marginBottom: 24,
               }}
@@ -111,8 +109,6 @@ export default function SeedPhraseModal({ seedPhrase, onDismiss }: SeedPhraseMod
                         paddingHorizontal: 12,
                         flexDirection: "row",
                         alignItems: "center",
-                        borderWidth: 1,
-                        borderColor: theme.border.main,
                       }}
                     >
                       <Text
@@ -144,14 +140,10 @@ export default function SeedPhraseModal({ seedPhrase, onDismiss }: SeedPhraseMod
               onPress={onDismiss}
               style={{
                 backgroundColor: theme.primary.main,
-                borderRadius: 16,
+                borderRadius: 12,
                 paddingVertical: 16,
                 alignItems: "center",
-                shadowColor: theme.primary.main,
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 12,
-                elevation: 6,
+                elevation: 2,
               }}
               activeOpacity={0.8}
             >

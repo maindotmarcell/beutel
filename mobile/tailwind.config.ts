@@ -37,11 +37,9 @@ const config: Config = {
         // Borders
         "theme-border": defaultTheme.border.main,
         "theme-border-light": defaultTheme.border.light,
-        // Glass
-        "theme-glass-border": "rgba(255, 255, 255, 0.08)",
-        "theme-glass-bg": "rgba(17, 15, 29, 0.75)",
-        "theme-glass-highlight": "rgba(139, 92, 246, 0.15)",
-        "theme-glass-shine": "rgba(255, 255, 255, 0.03)",
+        // Card
+        "theme-card": defaultTheme.card.background,
+        "theme-card-border": defaultTheme.card.border,
       },
       fontFamily: {
         "sans-medium": ["Inter_500Medium"],

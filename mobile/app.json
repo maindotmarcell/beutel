@@ -16,7 +16,8 @@
       "backgroundColor": "#07060E"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.beutel-app"
     },
     "android": {
       "adaptiveIcon": {

@@ -57,7 +57,7 @@ export default function TransactionDetailScreen() {
         ? theme.text.primary
         : statusColors.text;
 
-  const icon = transaction.status === "failed" ? "✕" : isSend ? "↑" : "↓";
+  const icon = transaction.status === "failed" ? "X" : isSend ? "↑" : "↓";
 
   const handleCopyAddress = async () => {
     try {
@@ -85,17 +85,17 @@ export default function TransactionDetailScreen() {
 
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {/* Transaction Header */}
-          <View className="px-4 py-6">
+          <View className="px-5 py-6">
             <View className="items-center mb-6">
               <View
-                className="w-20 h-20 rounded-full items-center justify-center mb-4"
+                className="w-14 h-14 rounded-full items-center justify-center mb-4"
                 style={{ backgroundColor: iconBg }}
               >
-                <Text className="text-4xl font-bold" style={{ color: iconTextColor }}>
+                <Text className="text-2xl font-bold" style={{ color: iconTextColor }}>
                   {icon}
                 </Text>
               </View>
-              <Text className="text-3xl font-bold mb-2" style={{ color: amountColor }}>
+              <Text className="text-2xl font-bold mb-2" style={{ color: amountColor }}>
                 {amountPrefix} {transaction.amount.toFixed(8)} BTC
               </Text>
               <View

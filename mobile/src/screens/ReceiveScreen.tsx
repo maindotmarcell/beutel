@@ -4,7 +4,7 @@ import * as Clipboard from "expo-clipboard";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import QRCode from "react-native-qrcode-svg";
 import Text from "@/components/Text";
-import GlassCard from "@/components/GlassCard";
+import Card from "@/components/Card";
 import { useNavigationStore } from "@/store/navigationStore";
 import { useThemeStore } from "@/store/themeStore";
 import { useWalletStore } from "@/store/walletStore";
@@ -33,10 +33,9 @@ export default function ReceiveScreen() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       className="flex-1"
     >
-      <View className="flex-1 justify-center px-4">
-        <GlassCard
-          borderRadius={24}
-          intensity={50}
+      <View className="flex-1 justify-center px-5">
+        <Card
+          borderRadius={12}
           style={{
             marginTop: insets.top + 20,
             marginBottom: insets.bottom + 20,
@@ -51,13 +50,23 @@ export default function ReceiveScreen() {
               <Text className="text-2xl font-bold" style={{ color: theme.text.primary }}>
                 Receive Bitcoin
               </Text>
-              <Text className="text-xs uppercase mt-1" style={{ color: theme.text.muted }}>
-                {network !== "mainnet" ? "⚠️ Testnet" : "Mainnet"}
-              </Text>
+              {network !== "mainnet" && (
+                <View
+                  className="mt-1 px-2 py-0.5 rounded-full self-start"
+                  style={{ backgroundColor: theme.status.warning.light }}
+                >
+                  <Text
+                    className="text-xs font-semibold"
+                    style={{ color: theme.status.warning.main, textTransform: "uppercase" }}
+                  >
+                    TESTNET
+                  </Text>
+                </View>
+              )}
             </View>
             <TouchableOpacity onPress={closeReceive} className="p-2" activeOpacity={0.7}>
-              <Text className="text-2xl" style={{ color: theme.text.muted }}>
-                ✕
+              <Text className="text-lg font-light" style={{ color: theme.text.muted }}>
+                X
               </Text>
             </TouchableOpacity>
           </View>
@@ -70,13 +79,8 @@ export default function ReceiveScreen() {
                 className="w-64 h-64 rounded-xl items-center justify-center overflow-hidden"
                 style={{
                   backgroundColor: "#FFFFFF",
-                  borderWidth: 2,
-                  borderColor: theme.glass.border,
-                  shadowColor: theme.primary.main,
-                  shadowOffset: { width: 0, height: 0 },
-                  shadowOpacity: 0.15,
-                  shadowRadius: 20,
-                  elevation: 8,
+                  borderWidth: 1,
+                  borderColor: theme.border.main,
                 }}
               >
                 {address ? (
@@ -109,7 +113,7 @@ export default function ReceiveScreen() {
                     borderColor: theme.border.main,
                     borderRadius: 12,
                     paddingHorizontal: 16,
-                    paddingVertical: 12,
+                    paddingVertical: 14,
                     color: theme.text.primary,
                     fontFamily: "monospace",
                     fontSize: 14,
@@ -129,14 +133,14 @@ export default function ReceiveScreen() {
                     borderColor: theme.border.main,
                     borderRadius: 12,
                     paddingHorizontal: 16,
-                    paddingVertical: 12,
+                    paddingVertical: 14,
                     alignItems: "center",
                     justifyContent: "center",
                     minWidth: 60,
                   }}
                 >
-                  <Text className="text-lg" style={{ color: theme.text.primary }}>
-                    {copied ? "✓" : "📋"}
+                  <Text className="text-sm font-medium" style={{ color: theme.text.primary }}>
+                    {copied ? "Copied" : "Copy"}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -147,7 +151,7 @@ export default function ReceiveScreen() {
               )}
             </View>
           </View>
-        </GlassCard>
+        </Card>
       </View>
     </KeyboardAvoidingView>
   );

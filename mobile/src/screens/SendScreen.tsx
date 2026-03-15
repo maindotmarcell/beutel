@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Text from "@/components/Text";
-import GlassCard from "@/components/GlassCard";
+import Card from "@/components/Card";
 import { useNavigationStore } from "@/store/navigationStore";
 import { useThemeStore } from "@/store/themeStore";
 import { useWalletStore } from "@/store/walletStore";
@@ -133,7 +133,7 @@ export default function SendScreen() {
             borderColor: theme.border.main,
             borderRadius: 12,
             paddingHorizontal: 16,
-            paddingVertical: 12,
+            paddingVertical: 14,
             color: theme.text.primary,
             fontFamily: "monospace",
             fontSize: 14,
@@ -159,7 +159,7 @@ export default function SendScreen() {
             borderColor: theme.border.main,
             borderRadius: 12,
             paddingHorizontal: 16,
-            paddingVertical: 12,
+            paddingVertical: 14,
             color: theme.text.primary,
             fontSize: 16,
           }}
@@ -196,11 +196,7 @@ export default function SendScreen() {
           borderRadius: 12,
           paddingVertical: 16,
           alignItems: "center",
-          shadowColor: theme.primary.main,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.3,
-          shadowRadius: 12,
-          elevation: 6,
+          elevation: 2,
         }}
       >
         <Text className="font-semibold text-base" style={{ color: "#FFFFFF" }}>
@@ -313,11 +309,7 @@ export default function SendScreen() {
               backgroundColor: theme.primary.main,
               borderRadius: 12,
               paddingVertical: 16,
-              shadowColor: theme.primary.main,
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.3,
-              shadowRadius: 12,
-              elevation: 6,
+              elevation: 2,
             }}
           >
             <Text className="font-semibold text-base" style={{ color: "#FFFFFF" }}>
@@ -344,15 +336,15 @@ export default function SendScreen() {
   const renderSuccessStep = () => (
     <View className="items-center py-6">
       <View
-        className="w-16 h-16 rounded-full items-center justify-center mb-4"
+        className="w-12 h-12 rounded-full items-center justify-center mb-4"
         style={{ backgroundColor: theme.status.success.light }}
       >
-        <Text className="text-4xl" style={{ color: theme.status.success.main }}>
+        <Text className="text-2xl font-bold" style={{ color: theme.status.success.main }}>
           ✓
         </Text>
       </View>
       <Text className="text-xl font-semibold mb-2" style={{ color: theme.text.primary }}>
-        Transaction Sent!
+        Transaction Sent
       </Text>
       <Text className="text-center mb-4" style={{ color: theme.text.muted }}>
         Your transaction has been broadcast to the network.
@@ -389,11 +381,7 @@ export default function SendScreen() {
           borderRadius: 12,
           paddingVertical: 16,
           paddingHorizontal: 32,
-          shadowColor: theme.primary.main,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.3,
-          shadowRadius: 12,
-          elevation: 6,
+          elevation: 2,
         }}
       >
         <Text className="font-semibold text-base" style={{ color: "#FFFFFF" }}>
@@ -406,11 +394,11 @@ export default function SendScreen() {
   const renderErrorStep = () => (
     <View className="items-center py-6">
       <View
-        className="w-16 h-16 rounded-full items-center justify-center mb-4"
+        className="w-12 h-12 rounded-full items-center justify-center mb-4"
         style={{ backgroundColor: theme.status.error.light }}
       >
-        <Text className="text-4xl" style={{ color: theme.status.error.main }}>
-          ✕
+        <Text className="text-2xl font-bold" style={{ color: theme.status.error.main }}>
+          X
         </Text>
       </View>
       <Text className="text-xl font-semibold mb-2" style={{ color: theme.text.primary }}>
@@ -446,11 +434,7 @@ export default function SendScreen() {
             backgroundColor: theme.primary.main,
             borderRadius: 12,
             paddingVertical: 16,
-            shadowColor: theme.primary.main,
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.3,
-            shadowRadius: 12,
-            elevation: 6,
+            elevation: 2,
           }}
         >
           <Text className="font-semibold text-base" style={{ color: "#FFFFFF" }}>
@@ -501,10 +485,9 @@ export default function SendScreen() {
         contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
         keyboardShouldPersistTaps="handled"
       >
-        <View className="flex-1 justify-center px-4">
-          <GlassCard
-            borderRadius={24}
-            intensity={50}
+        <View className="flex-1 justify-center px-5">
+          <Card
+            borderRadius={12}
             style={{
               marginTop: insets.top + 20,
               marginBottom: insets.bottom + 20,
@@ -520,8 +503,8 @@ export default function SendScreen() {
               </Text>
               {step !== "sending" && (
                 <TouchableOpacity onPress={handleClose} className="p-2" activeOpacity={0.7}>
-                  <Text className="text-2xl" style={{ color: theme.text.muted }}>
-                    ✕
+                  <Text className="text-lg font-light" style={{ color: theme.text.muted }}>
+                    X
                   </Text>
                 </TouchableOpacity>
               )}
@@ -529,7 +512,7 @@ export default function SendScreen() {
 
             {/* Content */}
             <View className="px-6 py-6">{renderContent()}</View>
-          </GlassCard>
+          </Card>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

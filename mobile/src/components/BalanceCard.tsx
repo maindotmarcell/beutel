@@ -1,6 +1,6 @@
 import { View, ActivityIndicator } from "react-native";
 import Text from "@/components/Text";
-import GlassCard from "@/components/GlassCard";
+import Card from "@/components/Card";
 import { useThemeStore } from "@/store/themeStore";
 
 interface BalanceCardProps {
@@ -18,20 +18,20 @@ export default function BalanceCard({
   const usdValue = balance * 100000;
 
   return (
-    <GlassCard className="mx-4 my-4" highlight>
+    <Card className="mx-4 my-4">
       <View className="p-6">
         <View className="flex-row items-center mb-2">
           <Text className="text-sm font-medium" style={{ color: theme.text.secondary }}>
-            Total Balance
+            Balance
           </Text>
           {isLoading && (
             <ActivityIndicator size="small" color={theme.primary.light} style={{ marginLeft: 8 }} />
           )}
         </View>
-        <Text className="text-4xl font-bold mb-1" style={{ color: theme.text.primary }}>
+        <Text className="text-5xl font-bold mb-1" style={{ color: theme.text.primary }}>
           {balance.toFixed(8)} BTC
         </Text>
-        <Text className="text-lg font-medium" style={{ color: theme.text.secondary }}>
+        <Text className="text-sm font-medium" style={{ color: theme.text.muted }}>
           $
           {usdValue.toLocaleString("en-US", {
             minimumFractionDigits: 2,
@@ -45,6 +45,6 @@ export default function BalanceCard({
           </Text>
         )}
       </View>
-    </GlassCard>
+    </Card>
   );
 }
